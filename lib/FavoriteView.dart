@@ -54,6 +54,31 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   var _favorites = favorites;
 
+  List<Widget> getTitleText() {
+    List<Widget> toReturn = [];
+    for (var i = 0; i < favorites.length; i++) {
+      toReturn.add(ListTile(
+        leading: const Icon(Icons.star),
+        trailing: IconButton(
+          icon: const Icon(Icons.remove_circle_outline),
+          onPressed: () {
+            //appValueNotifier.update();
+            favorites.removeAt(i);
+            setState(() {
+              _favorites = favorites;
+              saveFavs();
+            });
+          },
+        ),
+        title: Marquee(child: Text(favorites[i].albumName)),
+        subtitle: Marquee(
+          child: Text(favorites[i].albumLink),
+        ),
+      ));
+    }
+    return toReturn;
+  }
+
 /*
   Future<void> saveFavs() async {
   List<String> favNames = [];
@@ -70,7 +95,15 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
   await prefs.setStringList("favs_link", favLinks);
 }*/
 
+  var busy = false;
+
   Future<void> goToAlbum(BuildContext context, int index) async {
+    if (busy) {
+      debugPrint("Im busy yo");
+      return;
+    } else {
+      busy = true;
+    }
     // ignore: prefer_typing_uninitialized_variables
     var mp3, flac, ogg = false;
 
@@ -91,10 +124,22 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", AlbumLink,
-        trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    AlbumTags toPush = AlbumTags(
+        tracks,
+        trackDuration,
+        "Null",
+        AlbumLink,
+        trackURL,
+        coverURL,
+        false,
+        false,
+        false,
+        tags,
+        trackSizeMP3,
+        trackSizeFLAC,
+        trackSizeOGG);
 
-    http.read(completedUrl).then((contents) {
+    http.read(completedUrl).then((contents) async {
       BeautifulSoup bs = BeautifulSoup(contents);
 
       for (var element in bs.findAll('img')) {
@@ -110,16 +155,16 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       var link = bs.find('', id: 'songlist');
 
       for (var row in link!.findAll('tbody')) {
-        debugPrint("row");
+        //debugPrint("row");
         for (var col in row.findAll('tr')) {
           if (col.id != "" && col.id != null) {
-            debugPrint("COL-ID: " + col.id);
+            //debugPrint("COL-ID: " + col.id);
           }
           if (col.id == "songlist_header" || col.id == "songlist_footer") {
             for (var tag in col.findAll('th')) {
               tags.add(tag.text);
             }
-            debugPrint('TAGS: ' + tags.toString());
+            //debugPrint('TAGS: ' + tags.toString());
 
             flac = tags.contains('FLAC');
             mp3 = tags.contains('MP3');
@@ -144,45 +189,62 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
           }
 
           if (temptag.length == tags.length + 1) {
-                trackDuration.add(temptag[songname + 1]);
-                tracks.add(temptag[songname]);
+            trackDuration.add(temptag[songname + 1]);
+            tracks.add(temptag[songname]);
 
-                if (mp3) {
-                  trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
-                }
-                if (flac) {
-                  trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
-                }
-                if (ogg) {
-                  trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
-                }
-              }
+            if (mp3) {
+              trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
+            }
+            if (flac) {
+              trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
+            }
+            if (ogg) {
+              trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
+            }
+          }
         }
       }
 
-      toPush = AlbumTags(tracks, trackDuration, AlbumName, AlbumLink, trackURL,
-          coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+      toPush = AlbumTags(
+          tracks,
+          trackDuration,
+          AlbumName,
+          AlbumLink,
+          trackURL,
+          coverURL,
+          mp3,
+          flac,
+          ogg,
+          tags,
+          trackSizeMP3,
+          trackSizeFLAC,
+          trackSizeOGG);
 
-      debugPrint("Final: " + toPush.AlbumName);
+      //debugPrint("Final: " + toPush.AlbumName);
       if (toPush.AlbumName != "Null") {
-        Navigator.push(
+        busy = false;
+        final value = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => AlbumView(
                     tags: toPush,
                   )),
         );
+        setState(() {
+          
+        });
       } else {
+        busy = false;
         debugPrint("error");
       }
       //debugPrint(toPush.coverURL.toString());
-
     });
     /**/
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> TitleTextColumn = getTitleText();
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
     int heightCard = 75;
@@ -209,30 +271,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                     onTap: () async {
                       debugPrint(
                           "Tapped on favorite " + favorites[index].albumName);
-                      await goToAlbum(context, index);
+                      if (!busy) {
+                        await goToAlbum(context, index);
+                      }
                     },
                     child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.star),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            onPressed: () {
-                              //appValueNotifier.update();
-                              favorites.removeAt(index);
-                              setState(() {
-                                _favorites = favorites;
-                                saveFavs();
-                              });
-                            },
-                          ),
-                          title:
-                              Marquee(child: Text(favorites[index].albumName)),
-                          subtitle: Marquee(
-                            child: Text(favorites[index].albumLink),
-                          ),
-                        ),
-                      ],
+                      children: TitleTextColumn = getTitleText(),
                     ))),
           ),
         ));

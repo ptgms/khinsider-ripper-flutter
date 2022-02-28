@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khinrip/FavoriteView.dart';
 import 'package:khinrip/TrackList.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
@@ -69,11 +70,10 @@ Widget albumView(AlbumTags tags) {
   return Card(
       child: Row(children: [
     Container(
-      
         width: 100,
         height: 100,
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             color: const Color.fromRGBO(71, 71, 71, 0.2),
             image: DecorationImage(
                 fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
@@ -86,8 +86,8 @@ Widget albumView(AlbumTags tags) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Marquee(
-                    child:
-                        Text(tags.AlbumName, style: const TextStyle(fontSize: 20))),
+                    child: Text(tags.AlbumName,
+                        style: const TextStyle(fontSize: 20))),
                 Marquee(
                     child: Text(tags.AlbumLink,
                         style: const TextStyle(color: Colors.grey))),
@@ -95,9 +95,9 @@ Widget albumView(AlbumTags tags) {
                   child: Container(
                     alignment: Alignment.bottomRight,
                     child: Text("Available Formats: " + availableAddon,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey)),
                   ),
-                  flex: 2,
                 )
               ],
             ),
@@ -112,94 +112,103 @@ Widget albumView(AlbumTags tags) {
   ]));
 }
 
-Widget favCell(AlbumTags tags) {
-  debugPrint("Fav: " + tags.AlbumName);
-  debugPrint("Fav: " + favorites[0].albumName);
-  debugPrint(favorites.indexOf(AlbumStruct(tags.AlbumName, tags.AlbumLink.replaceAll(baseUrl, ""))).toString());
-  if (favorites.contains(AlbumStruct(tags.AlbumName, tags.AlbumLink.replaceAll(baseUrl, "")))) {
-    debugPrint("found");
-    return const SizedBox(
-          height: 55,
-          child: Card(
-              child: ListTile(
-            title: Text("Remove from Favorites"),
-            trailing: Icon(Icons.chevron_right),
-            leading: Icon(Icons.star_rounded),
-          )));
-  } else {
-    debugPrint("not found");
-    return SizedBox(
-          height: 55,
-          child: Card(
-              child: InkWell(onTap: (() {}), child: ListTile(
-            title: Text("Add to Favorites"),
-            trailing: Icon(Icons.chevron_right),
-            leading: Icon(Icons.star_outline_rounded),
-          ))));
-  }
-}
-
-Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
-  return ListView(
-    padding: const EdgeInsets.all(8),
-    children: <Widget>[
-      albumView(tags),
-      Container(height: 30, color: Colors.transparent),
-      Container(
-        height: 20,
-        padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-        alignment: Alignment.bottomLeft,
-        child: const Text(
-          "Options",
-          style: TextStyle(color: Colors.grey),
-        ),
-      ),
-      favCell(tags),
-      const SizedBox(
-          height: 55,
-          child: Card(
-              child: ListTile(
-            title: Text("Download all Tracks"),
-            trailing: Icon(Icons.chevron_right),
-            leading: Icon(Icons.download_rounded),
-          ))),
-      Container(height: 30, color: Colors.transparent),
-      Container(
-        height: 20,
-        padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-        alignment: Alignment.bottomLeft,
-        child: Text(
-          "Tracks: " + tags.tracks.length.toString(),
-          style: const TextStyle(color: Colors.grey),
-        ),
-      ),
-      Container(
-          height: 55,
-          padding: EdgeInsets.zero,
-          child: Card(
-                  child: InkWell(
-              mouseCursor: MouseCursor.uncontrolled,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TrackView(
-                            tags: tags,
-                          )),
-                );
-              },child: const ListTile(
-                title: Text("View all Tracks"),
-                leading: Icon(Icons.view_list_rounded),
-                trailing: Icon(Icons.chevron_right),
-              )))),
-    ],
-  );
-}
-
 class _AlbumViewState extends State<AlbumView> {
   final AlbumTags tags;
 
+  bool isExpanded = false;
+
   _AlbumViewState({required this.tags});
+
+  Widget favCell(AlbumTags tags) {
+    if (foundInFavorites(
+        AlbumStruct(tags.AlbumName, tags.AlbumLink.replaceAll(baseUrl, "")))) {
+      return SizedBox(
+          child: Card(
+              child: InkWell(
+                  onTap: (() {
+                    favorites.removeAt(locateInFavorites(AlbumStruct(tags.AlbumName, tags.AlbumLink.replaceAll(baseUrl, ""))));
+                    setState(() {
+                      saveFavs();
+                    });
+                  }),
+                  child: const ListTile(
+                    title: Text("Remove from Favorites"),
+                    trailing: Icon(Icons.chevron_right),
+                    leading: Icon(Icons.star_rounded),
+                  ))));
+    } else {
+      return SizedBox(
+          child: Card(
+              child: InkWell(
+                  onTap: (() {
+                    favorites.add(AlbumStruct(tags.AlbumName, tags.AlbumLink.replaceAll(baseUrl, "")));
+                    setState(() {
+                      saveFavs();
+                    });
+                  }),
+                  child: const ListTile(
+                    title: Text("Add to Favorites"),
+                    trailing: Icon(Icons.chevron_right),
+                    leading: Icon(Icons.star_outline_rounded),
+                  ))));
+    }
+  }
+
+  Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: <Widget>[
+        albumView(tags),
+        Container(height: 30, color: Colors.transparent),
+        Container(
+          height: 20,
+          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+          alignment: Alignment.bottomLeft,
+          child: const Text(
+            "Options",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        favCell(tags),
+        const SizedBox(
+            child: Card(
+                child: ListTile(
+          title: Text("Download all Tracks"),
+          trailing: Icon(Icons.chevron_right),
+          leading: Icon(Icons.download_rounded),
+        ))),
+        Container(height: 30, color: Colors.transparent),
+        Container(
+          height: 20,
+          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+          alignment: Alignment.bottomLeft,
+          child: Text(
+            "Tracks: " + tags.tracks.length.toString(),
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+        Container(
+            padding: EdgeInsets.zero,
+            child: Card(
+                child: InkWell(
+                    mouseCursor: MouseCursor.uncontrolled,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TrackView(
+                                  tags: tags,
+                                )),
+                      );
+                    },
+                    child: const ListTile(
+                      title: Text("View all Tracks"),
+                      leading: Icon(Icons.view_list_rounded),
+                      trailing: Icon(Icons.chevron_right),
+                    )))),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

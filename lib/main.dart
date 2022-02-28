@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:khinrip/SearchPage.dart';
+import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:window_size/window_size.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,8 @@ Future<void> main() async {
 
   var favNames = prefs.getStringList("favs_name");
   var favLink = prefs.getStringList("favs_link");
+
+  pathToSaveIn = prefs.getString("location") ?? "";
 
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
@@ -40,7 +43,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(useMaterial3: true),
       darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Khinsider Ripper'),
     );
   }
@@ -56,33 +59,41 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   var bodyToPush = const FavoriteWidget();
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final value = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
-              setState(() {
-                bodyToPush = const FavoriteWidget();
-              });
-            }, icon: const Icon(Icons.search),)
+        appBar: AppBar(
+          centerTitle: false,
+          title: Text(widget.title),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                final value = await Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const SearchWidget()));
+                setState(() {
+                  bodyToPush = const FavoriteWidget();
+                });
+              },
+              icon: const Icon(Icons.search),
+            ),
+            if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+              IconButton(
+                onPressed: (() {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SettingsPage()));
+                }),
+                icon: Icon(Icons.settings_rounded),
+              )
             /*=> Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const SearchWidget())),
             icon: const Icon(Icons.search),
           ),*/
-          //const CupertinoSearchTextField(placeholder: 'Search for OSTs',),
-        ],
-      ),
-      body:
-          bodyToPush
-    );
+            //const CupertinoSearchTextField(placeholder: 'Search for OSTs',),
+          ],
+        ),
+        body: bodyToPush);
 
     /*return Scaffold(
       appBar: AppBar(

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:khinrip/FavoriteView.dart';
 import 'package:khinrip/config.dart';
@@ -54,7 +52,30 @@ SizedBox emptySearch() {
 
 var _searchResults = searchResults;
 
-Future<void> goToAlbum(BuildContext context, int index) async {
+var busy = false;
+
+class SearchWidget extends StatefulWidget {
+  const SearchWidget({Key? key}) : super(key: key);
+
+  @override
+  _SearchWidgetState createState() => _SearchWidgetState();
+}
+
+List<AlbumStruct> searchResults = [];
+String searchTermBefore = "";
+
+class _SearchWidgetState extends State<SearchWidget> {
+  final fieldText = TextEditingController();
+  var searched = false;
+
+  Future<void> goToAlbum(BuildContext context, int index) async {
+    if (busy) {
+      debugPrint("Im busy yo");
+      return;
+    } else {
+      busy = true;
+    }
+
     // ignore: prefer_typing_uninitialized_variables
     var mp3, flac, ogg = false;
 
@@ -75,8 +96,20 @@ Future<void> goToAlbum(BuildContext context, int index) async {
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", AlbumLink,
-        trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    AlbumTags toPush = AlbumTags(
+        tracks,
+        trackDuration,
+        "Null",
+        AlbumLink,
+        trackURL,
+        coverURL,
+        false,
+        false,
+        false,
+        tags,
+        trackSizeMP3,
+        trackSizeFLAC,
+        trackSizeOGG);
 
     http.read(completedUrl).then((contents) {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -128,27 +161,40 @@ Future<void> goToAlbum(BuildContext context, int index) async {
           }
 
           if (temptag.length == tags.length + 1) {
-                trackDuration.add(temptag[songname + 1]);
-                tracks.add(temptag[songname]);
+            trackDuration.add(temptag[songname + 1]);
+            tracks.add(temptag[songname]);
 
-                if (mp3) {
-                  trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
-                }
-                if (flac) {
-                  trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
-                }
-                if (ogg) {
-                  trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
-                }
-              }
+            if (mp3) {
+              trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
+            }
+            if (flac) {
+              trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
+            }
+            if (ogg) {
+              trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
+            }
+          }
         }
       }
 
-      toPush = AlbumTags(tracks, trackDuration, AlbumName, AlbumLink, trackURL,
-          coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+      toPush = AlbumTags(
+          tracks,
+          trackDuration,
+          AlbumName,
+          AlbumLink,
+          trackURL,
+          coverURL,
+          mp3,
+          flac,
+          ogg,
+          tags,
+          trackSizeMP3,
+          trackSizeFLAC,
+          trackSizeOGG);
 
       debugPrint("Final: " + toPush.AlbumName);
       if (toPush.AlbumName != "Null") {
+        busy = false;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -157,31 +203,34 @@ Future<void> goToAlbum(BuildContext context, int index) async {
                   )),
         );
       } else {
+        busy = false;
         debugPrint("error");
       }
       //debugPrint(toPush.coverURL.toString());
-
     });
     /**/
   }
 
+  /*bool foundInFavorites(AlbumStruct element) {
+    for (var fav in favorites) {
+      if (fav.albumName == element.albumName && fav.albumLink == element.albumLink) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-class SearchWidget extends StatefulWidget {
-  const SearchWidget({Key? key}) : super(key: key);
-
-  @override
-  _SearchWidgetState createState() => _SearchWidgetState();
-}
-
-List<AlbumStruct> searchResults = [];
-String searchTermBefore = "";
-
-class _SearchWidgetState extends State<SearchWidget> {
-  final fieldText = TextEditingController();
-  var searched = false;
+  int locateInFavorites(AlbumStruct element) {
+    for (var i = 0; i < favorites.length; i++) {
+      if (favorites[i].albumName == element.albumName && favorites[i].albumLink == element.albumLink) {
+        return i;
+      }
+    }
+    return -1;
+  }*/
 
   Future<void> searchPressed(String term) async {
-    if (term=="") {
+    if (term == "") {
       debugPrint(term);
       searched = false;
       searchResults = [];
@@ -203,7 +252,8 @@ class _SearchWidgetState extends State<SearchWidget> {
       String resultName =
           redirectUri.toString().replaceAll(baseUrl + baseAlbumUrl, "");
 
-      if (searchResults.contains(AlbumStruct(resultName, redirectUri.toString()))) {
+      if (searchResults
+          .contains(AlbumStruct(resultName, redirectUri.toString()))) {
         return;
       }
 
@@ -248,11 +298,11 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
-    
+
     if (widthCard > width) {
       widthCard = width.toInt();
     }
-    
+
     int heightCard = 75;
 
     int count = width ~/ widthCard;
@@ -263,7 +313,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       bodyDisplay = emptySearch();
     } else {
       bodyDisplay = GridView.builder(
-        itemCount: _searchResults.length,
+          itemCount: _searchResults.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count,
             childAspectRatio: (widthCard / heightCard),
@@ -273,16 +323,20 @@ class _SearchWidgetState extends State<SearchWidget> {
                 splashColor: Colors.accents.first,
                 mouseCursor: MouseCursor.uncontrolled,
                 onTap: () {
-                  debugPrint("Tapped " + _searchResults[index].albumName);goToAlbum(context, index);
+                  debugPrint("Tapped " + _searchResults[index].albumName);
+                  goToAlbum(context, index);
                 },
                 child: Column(
                   children: [
                     ListTile(
                       trailing: IconButton(
-                        icon: favorites.contains(searchResults[index]) ? const Icon(Icons.star) : const Icon(Icons.star_border),
+                        icon: foundInFavorites(searchResults[index])
+                            ? const Icon(Icons.star)
+                            : const Icon(Icons.star_border),
                         onPressed: () {
                           if (favorites.contains(searchResults[index])) {
-                            favorites.remove(searchResults[index]);
+                            favorites.removeAt(
+                                locateInFavorites(searchResults[index]));
                           } else {
                             favorites.add(searchResults[index]);
                           }
@@ -291,8 +345,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                           });
                         },
                       ),
-                      title: Marquee(child: Text(_searchResults[index].albumName)),
-                      subtitle: Marquee(child: Text(_searchResults[index].albumLink),
+                      title:
+                          Marquee(child: Text(_searchResults[index].albumName)),
+                      subtitle: Marquee(
+                        child: Text(_searchResults[index].albumLink),
                       ),
                     ),
                   ],
@@ -315,32 +371,43 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     return Scaffold(
         appBar: AppBar(
-            // The search area here
-            title: Container(
-          width: double.infinity,
-          height: 40,
-          decoration: BoxDecoration(
-              color: colorSearch, borderRadius: BorderRadius.circular(10)),
-          child: Center(
-            child: TextField(
-              onSubmitted: (term) async {
-                searchPressed(term);
-              },
-              controller: fieldText,
-              decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      fieldText.clear();
-                    },
-                  ),
-                  hintText: 'Search for OSTs',
-                  
-                  border: InputBorder.none),
+          // The search area here
+          title: Container(
+            width: double.infinity,
+            height: 40,
+            decoration: BoxDecoration(
+                color: colorSearch, borderRadius: BorderRadius.circular(10)),
+            child: Center(
+              child: TextField(
+                onSubmitted: (term) async {
+                  searchPressed(term);
+                },
+                controller: fieldText,
+                decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        fieldText.clear();
+                      },
+                    ),
+                    hintText: 'Search for OSTs',
+                    border: InputBorder.none),
+              ),
             ),
           ),
-        )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  debugPrint("--- FAVORITES ---");
+                  for (var favorite in favorites) {
+                    debugPrint(favorite.albumName + "\n" + favorite.albumLink);
+                    debugPrint("-----------------");
+                  }
+                },
+                icon: const Icon(Icons.settings))
+          ],
+        ),
         body: bodyDisplay
 
         /*body: GridView.count(

@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  download:
+    dependency: "direct main"
+    description:
+      name: download
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+1"
   fake_async:
     dependency: transitive
     description:
@@ -99,6 +106,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
+  filesystem_picker:
+    dependency: "direct main"
+    description:
+      name: filesystem_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
