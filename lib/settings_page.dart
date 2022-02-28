@@ -84,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                 ])),
-            Container(
+            SizedBox(
                 height: 55,
                 child: Card(
                   child: OutlinedButton(
