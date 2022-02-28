@@ -249,6 +249,10 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     int widthCard = 400;
     int heightCard = 75;
 
+    if (widthCard>=width) {
+      widthCard = width.toInt()-1;
+    }
+
     int count = width ~/ widthCard;
 
     if (favorites.isEmpty) {

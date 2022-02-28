@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               icon: const Icon(Icons.search),
             ),
-            if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+            if (Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isIOS)
               IconButton(
                 onPressed: (() {
                   Navigator.push(context,

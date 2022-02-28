@@ -78,7 +78,7 @@ Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async
           .asUint8List();
   final stream = Stream.fromIterable(bytes);
   final bytesSave = await stream.toList();
-  var fileName = getSeperator() + tags.tracks[index] + ".$type";
+  var fileName = tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   if (pathToSaveIn != "") {
     fileName = pathToSaveIn + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   }

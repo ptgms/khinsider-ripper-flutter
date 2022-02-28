@@ -1,5 +1,5 @@
 name: khinrip
-description: A new Flutter project.
+description: Khinsider Ripper.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -45,7 +45,6 @@ dependencies:
   http: ^0.13.4
   url_launcher: ^6.0.20
   audioplayers: ^0.20.1
-  download: ^0.0.1+1
   filesystem_picker: ^2.0.0
 
 
