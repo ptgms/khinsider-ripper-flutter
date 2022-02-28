@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:khinrip/SearchPage.dart';
+import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:window_size/window_size.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'FavoriteView.dart';
+import 'favorite_view.dart';
 import 'config.dart';
 
 Future<void> main() async {
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             IconButton(
               onPressed: () async {
-                final value = await Navigator.push(context,
+                final _ = await Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const SearchWidget()));
                 setState(() {
                   bodyToPush = const FavoriteWidget();
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const SettingsPage()));
                 }),
-                icon: Icon(Icons.settings_rounded),
+                icon: const Icon(Icons.settings_rounded),
               )
             /*=> Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const SearchWidget())),

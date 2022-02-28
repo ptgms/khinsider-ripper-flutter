@@ -7,8 +7,8 @@ class AlbumStruct {
  class AlbumTags {
     final List<String> tracks; // List<String>
     final List<String> trackDuration; // [String]
-    final String AlbumName; // String
-    final String AlbumLink;
+    final String albumName; // String
+    final String albumLink;
     final List<String> trackURL; // [String]
     final List<String> coverURL; // [String]
 
@@ -21,5 +21,5 @@ class AlbumStruct {
     final List<String> trackSizeFLAC; // [String]
     final List<String> trackSizeOGG; // [String]
     
-    const AlbumTags(this.tracks, this.trackDuration, this.AlbumName, this.AlbumLink, this.trackURL, this.coverURL, this.mp3, this.flac, this.ogg, this.tags, this.trackSizeMP3, this.trackSizeFLAC, this.trackSizeOGG);
+    const AlbumTags(this.tracks, this.trackDuration, this.albumName, this.albumLink, this.trackURL, this.coverURL, this.mp3, this.flac, this.ogg, this.tags, this.trackSizeMP3, this.trackSizeFLAC, this.trackSizeOGG);
 }
