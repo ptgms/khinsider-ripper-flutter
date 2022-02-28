@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:khinrip/download_utils.dart';
+import 'package:khinrip/downloading_view.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/track_list.dart';
 import 'package:khinrip/config.dart';
@@ -126,7 +128,9 @@ class _AlbumViewState extends State<AlbumView> {
           child: Card(
               child: InkWell(
                   onTap: (() {
-                    favorites.removeAt(locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""))));
+                    favorites.removeAt(locateInFavorites(AlbumStruct(
+                        tags.albumName,
+                        tags.albumLink.replaceAll(baseUrl, ""))));
                     setState(() {
                       saveFavs();
                     });
@@ -141,7 +145,8 @@ class _AlbumViewState extends State<AlbumView> {
           child: Card(
               child: InkWell(
                   onTap: (() {
-                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")));
+                    favorites.add(AlbumStruct(tags.albumName,
+                        tags.albumLink.replaceAll(baseUrl, "")));
                     setState(() {
                       saveFavs();
                     });
@@ -152,6 +157,30 @@ class _AlbumViewState extends State<AlbumView> {
                     leading: Icon(Icons.star_outline_rounded),
                   ))));
     }
+  }
+
+  List<Widget> getButtons(AlbumTags tags) {
+    return <Widget>[
+      TextButton(
+        onPressed: () => Navigator.pop(context, null),
+        child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+      ),
+      if (tags.mp3)
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'mp3'),
+          child: const Text('MP3'),
+        ),
+      if (tags.flac)
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'flac'),
+          child: const Text('FLAC'),
+        ),
+      if (tags.ogg)
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'ogg'),
+          child: const Text('OGG'),
+        ),
+    ];
   }
 
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
@@ -170,13 +199,36 @@ class _AlbumViewState extends State<AlbumView> {
           ),
         ),
         favCell(tags),
-        const SizedBox(
+        SizedBox(
             child: Card(
-                child: ListTile(
-          title: Text("Download all Tracks"),
-          trailing: Icon(Icons.chevron_right),
-          leading: Icon(Icons.download_rounded),
-        ))),
+                child: InkWell(
+                    onTap: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Download Album'),
+                            content: Text(tags.albumName),
+                            actions: getButtons(tags)),
+                      ).then((value) {
+                        if (value != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DownloadingView(
+                                      tags: tags,
+                                      type: value
+                                    )),
+                          );
+
+                          //downloadAlbum(tags, value);
+                        }
+                      });
+                    },
+                    child: const ListTile(
+                      title: Text("Download all Tracks"),
+                      trailing: Icon(Icons.chevron_right),
+                      leading: Icon(Icons.download_rounded),
+                    )))),
         Container(height: 30, color: Colors.transparent),
         Container(
           height: 20,

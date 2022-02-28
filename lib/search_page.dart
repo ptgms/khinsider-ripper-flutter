@@ -396,7 +396,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               ),
             ),
           ),
-          actions: [
+          /*actions: [
             IconButton(
                 onPressed: () {
                   debugPrint("--- FAVORITES ---");
@@ -406,7 +406,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                   }
                 },
                 icon: const Icon(Icons.settings))
-          ],
+          ],*/
         ),
         body: bodyDisplay
 
