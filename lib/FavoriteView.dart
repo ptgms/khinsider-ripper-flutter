@@ -1,0 +1,240 @@
+import 'package:beautiful_soup_dart/beautiful_soup.dart';
+import 'package:flutter/material.dart';
+import 'package:khinrip/AlbumView.dart';
+import 'package:khinrip/config.dart';
+import 'package:khinrip/structs.dart';
+import 'package:marquee_widget/marquee_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+SizedBox noFavs() {
+  return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+        Center(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Text("Welcome to Khinsider Ripper!",
+                    style: TextStyle(fontSize: 25),
+                    textAlign: TextAlign.center))),
+        Center(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Text(
+                  'Welcome to Khinsider Ripper! Start searching for albums at the top. Future favorites will be displayed here.',
+                  textAlign: TextAlign.center)),
+        ),
+      ]));
+}
+
+Future<void> saveFavs() async {
+  List<String> favNames = [];
+  List<String> favLinks = [];
+
+  for (var favItem in favorites) {
+    favNames.add(favItem.albumName);
+    favLinks.add(favItem.albumLink);
+  }
+
+  final prefs = await SharedPreferences.getInstance();
+
+  await prefs.setStringList("favs_name", favNames);
+  await prefs.setStringList("favs_link", favLinks);
+}
+
+class FavoriteWidget extends StatefulWidget {
+  const FavoriteWidget({Key? key}) : super(key: key);
+
+  @override
+  _FavoriteWidgetState createState() => _FavoriteWidgetState();
+}
+
+class _FavoriteWidgetState extends State<FavoriteWidget> {
+  var _favorites = favorites;
+
+/*
+  Future<void> saveFavs() async {
+  List<String> favNames = [];
+  List<String> favLinks = [];
+
+  for (var favItem in favorites) {
+    favNames.add(favItem.albumName);
+    favLinks.add(favItem.albumLink);
+  }
+
+  final prefs = await SharedPreferences.getInstance();
+
+  await prefs.setStringList("favs_name", favNames);
+  await prefs.setStringList("favs_link", favLinks);
+}*/
+
+  Future<void> goToAlbum(BuildContext context, int index) async {
+    // ignore: prefer_typing_uninitialized_variables
+    var mp3, flac, ogg = false;
+
+    List<String> tracks = [];
+    List<String> trackDuration = [];
+    String AlbumName = _favorites[index].albumName;
+    String AlbumLink = baseUrl + _favorites[index].albumLink;
+    List<String> trackURL = [];
+    List<String> coverURL = [];
+
+    List<String> tags = [];
+    List<String> trackSizeMP3 = [];
+    List<String> trackSizeFLAC = [];
+    List<String> trackSizeOGG = [];
+
+    Uri completedUrl = Uri.parse(
+        baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
+
+    //debugPrint(completed_url.toString());
+
+    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", AlbumLink,
+        trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+
+    http.read(completedUrl).then((contents) {
+      BeautifulSoup bs = BeautifulSoup(contents);
+
+      for (var element in bs.findAll('img')) {
+        var imgurl = element['src'];
+        //debugPrint(imgurl);
+        if (imgurl!.endsWith("/album_views.php")) {
+          coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png");
+        } else {
+          coverURL.add(element['src']!);
+        }
+      }
+
+      var link = bs.find('', id: 'songlist');
+
+      for (var row in link!.findAll('tbody')) {
+        debugPrint("row");
+        for (var col in row.findAll('tr')) {
+          if (col.id != "" && col.id != null) {
+            debugPrint("COL-ID: " + col.id);
+          }
+          if (col.id == "songlist_header" || col.id == "songlist_footer") {
+            for (var tag in col.findAll('th')) {
+              tags.add(tag.text);
+            }
+            debugPrint('TAGS: ' + tags.toString());
+
+            flac = tags.contains('FLAC');
+            mp3 = tags.contains('MP3');
+            ogg = tags.contains('OGG');
+            continue;
+          }
+
+          List<String> temptag = [];
+
+          var songname = tags.indexOf('Song Name');
+
+          for (var title in col.findAll('td')) {
+            temptag.add(title.text);
+            if (title.find('a') != null) {
+              var titleurl = title.find('a')!.attributes['href'];
+
+              if ((titleurl != "" || titleurl != null) &&
+                  !trackURL.contains(titleurl)) {
+                trackURL.add(titleurl!);
+              }
+            }
+          }
+
+          if (temptag.length == tags.length + 1) {
+                trackDuration.add(temptag[songname + 1]);
+                tracks.add(temptag[songname]);
+
+                if (mp3) {
+                  trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
+                }
+                if (flac) {
+                  trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
+                }
+                if (ogg) {
+                  trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
+                }
+              }
+        }
+      }
+
+      toPush = AlbumTags(tracks, trackDuration, AlbumName, AlbumLink, trackURL,
+          coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+
+      debugPrint("Final: " + toPush.AlbumName);
+      if (toPush.AlbumName != "Null") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AlbumView(
+                    tags: toPush,
+                  )),
+        );
+      } else {
+        debugPrint("error");
+      }
+      //debugPrint(toPush.coverURL.toString());
+
+    });
+    /**/
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    int widthCard = 400;
+    int heightCard = 75;
+
+    int count = width ~/ widthCard;
+
+    if (favorites.isEmpty) {
+      return noFavs();
+    }
+
+    return SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: GridView.builder(
+          itemCount: favorites.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: count,
+            childAspectRatio: (widthCard / heightCard),
+          ),
+          itemBuilder: (context, index) => Container(
+            child: Card(
+                child: InkWell(
+                    mouseCursor: MouseCursor.uncontrolled,
+                    onTap: () async {
+                      debugPrint(
+                          "Tapped on favorite " + favorites[index].albumName);
+                      await goToAlbum(context, index);
+                    },
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.star),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: () {
+                              //appValueNotifier.update();
+                              favorites.removeAt(index);
+                              setState(() {
+                                _favorites = favorites;
+                                saveFavs();
+                              });
+                            },
+                          ),
+                          title:
+                              Marquee(child: Text(favorites[index].albumName)),
+                          subtitle: Marquee(
+                            child: Text(favorites[index].albumLink),
+                          ),
+                        ),
+                      ],
+                    ))),
+          ),
+        ));
+  }
+}
