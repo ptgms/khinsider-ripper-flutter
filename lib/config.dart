@@ -1,5 +1,6 @@
 library config.globals;
 
+import 'package:flutter/material.dart';
 import 'package:khinrip/structs.dart';
 
 // Variables telling our App where to find stuff.
@@ -10,6 +11,14 @@ String baseAlbumUrl = "/game-soundtracks/album/";
 List<AlbumStruct> favorites = [];
 
 String pathToSaveIn = "";
+
+var appTheme = 1;
+var favoriteHome = true;
+ValueNotifier<int> notifier = ValueNotifier(0);
+
+
+// Welcome to janky-hut, may I take your order?
+ValueNotifier<int> favUpdater = ValueNotifier(0);
 
 bool foundInFavorites(AlbumStruct element) {
   for (var fav in favorites) {

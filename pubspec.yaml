@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.0.20
   audioplayers: ^0.20.1
   filesystem_picker: ^2.0.0
+  flutter_phoenix: ^1.0.0
 
 
 dev_dependencies:

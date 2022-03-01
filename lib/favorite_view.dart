@@ -145,7 +145,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       for (var element in bs.findAll('img')) {
         var imgurl = element['src'];
         //debugPrint(imgurl);
-        if (imgurl!.endsWith("/album_views.php")) {
+        if (imgurl!.startsWith("/album_views.php")) {
           coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png");
         } else {
           coverURL.add(element['src']!);
@@ -223,16 +223,14 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       //debugPrint("Final: " + toPush.AlbumName);
       if (toPush.albumName != "Null") {
         busy = false;
-        final _ = await Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => AlbumView(
                     tags: toPush,
                   )),
         );
-        setState(() {
-          
-        });
+        setState(() {});
       } else {
         busy = false;
         debugPrint("error");
@@ -247,22 +245,48 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     //List<Widget> TitleTextColumn = getTitleText();
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
-    int heightCard = 75;
 
-    if (widthCard>=width) {
-      widthCard = width.toInt()-1;
+    if (widthCard > width) {
+      widthCard = width.toInt();
     }
+
+    int heightCard = 72;
 
     int count = width ~/ widthCard;
 
-    if (favorites.isEmpty) {
-      return noFavs();
-    }
-
     return SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: GridView.builder(
+      width: double.infinity,
+      height: double.infinity,
+
+      // TODO: favUpdater
+      child: ValueListenableBuilder<int>(
+        valueListenable: favUpdater,
+        builder: (_, __, ___) {
+          debugPrint("called!");
+          if (favorites.isEmpty && favoriteHome) return noFavs();
+          return GridView.builder(
+            itemCount: favorites.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: count,
+              childAspectRatio: (widthCard / heightCard),
+            ),
+            itemBuilder: (context, index) => Card(
+                child: InkWell(
+                    mouseCursor: MouseCursor.uncontrolled,
+                    onTap: () async {
+                      debugPrint(
+                          "Tapped on favorite " + favorites[index].albumName);
+                      if (!busy) {
+                        await goToAlbum(context, index);
+                      }
+                    },
+                    child: Column(
+                      children: getTitleText(),
+                    ))),
+          );
+        },
+      ),
+      /*GridView.builder(
           itemCount: favorites.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count,
@@ -281,6 +305,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   child: Column(
                     children: getTitleText(),
                   ))),
-        ));
+        )*/
+    );
   }
 }

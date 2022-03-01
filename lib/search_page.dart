@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/config.dart';
+import 'package:khinrip/main.dart';
+import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
@@ -117,7 +119,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       for (var element in bs.findAll('img')) {
         var imgurl = element['src'];
         //debugPrint(imgurl);
-        if (imgurl!.endsWith("/album_views.php")) {
+        if (imgurl!.startsWith("/album_views.php")) {
           coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png");
         } else {
           coverURL.add(element['src']!);
@@ -303,7 +305,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       widthCard = width.toInt();
     }
 
-    int heightCard = 75;
+    int heightCard = 72;
 
     int count = width ~/ widthCard;
 
@@ -316,44 +318,50 @@ class _SearchWidgetState extends State<SearchWidget> {
           itemCount: _searchResults.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count,
-            childAspectRatio: (widthCard / heightCard),
+            childAspectRatio: (widthCard/heightCard),
           ),
-          itemBuilder: (context, index) => Card(
-                  child: InkWell(
-                splashColor: Colors.accents.first,
-                mouseCursor: MouseCursor.uncontrolled,
-                onTap: () {
-                  debugPrint("Tapped " + _searchResults[index].albumName);
-                  goToAlbum(context, index);
-                },
-                child: Column(
-                  children: [
-                    ListTile(
-                      trailing: IconButton(
-                        icon: foundInFavorites(searchResults[index])
-                            ? const Icon(Icons.star)
-                            : const Icon(Icons.star_border),
-                        onPressed: () {
-                          if (favorites.contains(searchResults[index])) {
-                            favorites.removeAt(
-                                locateInFavorites(searchResults[index]));
-                          } else {
-                            favorites.add(searchResults[index]);
-                          }
-                          setState(() {
-                            saveFavs();
-                          });
-                        },
+          itemBuilder: (context, index) => ValueListenableBuilder<int>(
+              valueListenable: favUpdater,
+              builder: (_, __, ___) {
+                return Card(
+                    child: InkWell(
+                  splashColor: Colors.accents.first,
+                  mouseCursor: MouseCursor.uncontrolled,
+                  onTap: () {
+                    debugPrint("Tapped " + _searchResults[index].albumName);
+                    goToAlbum(context, index);
+                  },
+                  child: Column(
+                    children: [
+                      ListTile(
+                        trailing: IconButton(
+                          icon: foundInFavorites(searchResults[index])
+                              ? const Icon(Icons.star)
+                              : const Icon(Icons.star_border),
+                          onPressed: () {
+                            if (favorites.contains(searchResults[index])) {
+                              favorites.removeAt(
+                                  locateInFavorites(searchResults[index]));
+                            } else {
+                              favorites.add(searchResults[index]);
+                            }
+                            setState(() {
+                              saveFavs();
+                              favUpdater.value += 1;
+                            });
+                          },
+                        ),
+                        title: Marquee(
+                            child: Text(_searchResults[index].albumName)),
+                        subtitle: Marquee(
+                          child: Text(_searchResults[index].albumLink),
+                        ),
                       ),
-                      title:
-                          Marquee(child: Text(_searchResults[index].albumName)),
-                      subtitle: Marquee(
-                        child: Text(_searchResults[index].albumLink),
-                      ),
-                    ),
-                  ],
-                ),
-              )));
+                    ],
+                  ),
+                ));
+              }) /**/
+          );
     }
 
     var colorSearch = Colors.white;
@@ -362,7 +370,13 @@ class _SearchWidgetState extends State<SearchWidget> {
     bool isDarkMode = brightness == Brightness.dark;
 
     if (isDarkMode) {
+      colorSearch = Colors.black54;
+    }
+
+    if (appTheme == 1) {
       //print(isDarkMode);
+      colorSearch = Colors.white;
+    } else if (appTheme == 2) {
       colorSearch = Colors.black54;
     }
 
@@ -396,17 +410,22 @@ class _SearchWidgetState extends State<SearchWidget> {
               ),
             ),
           ),
-          /*actions: [
-            IconButton(
+          actions: [
+            if (!favoriteHome) IconButton(
                 onPressed: () {
-                  debugPrint("--- FAVORITES ---");
-                  for (var favorite in favorites) {
-                    debugPrint(favorite.albumName + "\n" + favorite.albumLink);
-                    debugPrint("-----------------");
-                  }
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const FavoriteHome(title: 'Favorites',)));
                 },
-                icon: const Icon(Icons.settings))
-          ],*/
+                icon: const Icon(Icons.star_rounded)),
+            if (!favoriteHome)
+              IconButton(
+                onPressed: (() {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SettingsPage()));
+                }),
+                icon: const Icon(Icons.settings_rounded),
+              )
+          ],
         ),
         body: bodyDisplay
 

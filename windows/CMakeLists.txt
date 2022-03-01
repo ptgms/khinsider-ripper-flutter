@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(khinrip LANGUAGES CXX)
 
-set(BINARY_NAME "Khinsider Ripper")
+set(BINARY_NAME "khinrip")
 
 cmake_policy(SET CMP0063 NEW)
 

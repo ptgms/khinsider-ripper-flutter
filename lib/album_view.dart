@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/downloading_view.dart';
@@ -133,6 +135,7 @@ class _AlbumViewState extends State<AlbumView> {
                         tags.albumLink.replaceAll(baseUrl, ""))));
                     setState(() {
                       saveFavs();
+                      favUpdater.value += 1;
                     });
                   }),
                   child: const ListTile(
@@ -149,6 +152,7 @@ class _AlbumViewState extends State<AlbumView> {
                         tags.albumLink.replaceAll(baseUrl, "")));
                     setState(() {
                       saveFavs();
+                      favUpdater.value += 1;
                     });
                   }),
                   child: const ListTile(
@@ -183,7 +187,13 @@ class _AlbumViewState extends State<AlbumView> {
     ];
   }
 
+  String downloadText = "";
+
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
+    downloadText = tags.albumName;
+    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      downloadText = "Warning: No saving path specified! Using the programs' directory.\n" + tags.albumName;
+    }
     return ListView(
       padding: const EdgeInsets.all(8),
       children: <Widget>[
@@ -207,7 +217,7 @@ class _AlbumViewState extends State<AlbumView> {
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
                             title: const Text('Download Album'),
-                            content: Text(tags.albumName),
+                            content: Text(downloadText),
                             actions: getButtons(tags)),
                       ).then((value) {
                         if (value != null) {

@@ -139,6 +139,10 @@ class _TrackViewState extends State<TrackView> {
 
   @override
   Widget build(BuildContext context) {
+    String downloadText = "";
+    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
+    }
     return Scaffold(
         appBar: AppBar(
           title: const Text("Tracks"),
@@ -265,7 +269,7 @@ class _TrackViewState extends State<TrackView> {
                                                 child: ListTile(
                                               title: Text("Download song"),
                                               subtitle:
-                                                  Text(tags.tracks[index]),
+                                                  Text(downloadText + tags.tracks[index]),
                                             )),
                                             Container(
                                                 height: 30,

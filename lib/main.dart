@@ -6,6 +6,7 @@ import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:window_size/window_size.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 import 'favorite_view.dart';
 import 'config.dart';
@@ -13,6 +14,7 @@ import 'config.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    setWindowTitle('Khinsider Ripper');
     setWindowMinSize(const Size(512, 384));
   }
   final prefs = await SharedPreferences.getInstance();
@@ -21,13 +23,16 @@ Future<void> main() async {
   var favLink = prefs.getStringList("favs_link");
 
   pathToSaveIn = prefs.getString("location") ?? "";
+  favoriteHome = prefs.getBool("fav_home") ?? true;
+  appTheme = prefs.getInt("app_theme") ?? 0;
 
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
       favorites.add(AlbumStruct(favNames[i], favLink[i]));
     }
   }
-  runApp(const MyApp());
+  runApp(Phoenix(child: const MyApp()));
+  //runApp();
 }
 
 var dark = true;
@@ -38,27 +43,54 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    //final ValueNotifier<int> _notifier = ValueNotifier(appTheme);
+
+    return ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (_, mode, __) {
+          var theme = ThemeMode.system;
+          switch (mode) {
+            case 0:
+              theme = ThemeMode.system;
+              break;
+            case 1:
+              theme = ThemeMode.light;
+              break;
+            case 2:
+              theme = ThemeMode.dark;
+              break;
+            default:
+          }
+          return MaterialApp(
+            title: 'Khinsider Ripper',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData.light().copyWith(useMaterial3: true),
+            darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
+            themeMode: theme,
+            home: favoriteHome ? const FavoriteHome(title: 'Khinsider Ripper') : const SearchWidget(),
+          );
+        });
+    /*return MaterialApp(
       title: 'Khinsider Ripper',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(useMaterial3: true),
       darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Khinsider Ripper'),
-    );
+    );*/
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class FavoriteHome extends StatefulWidget {
+  const FavoriteHome({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<FavoriteHome> createState() => _FavoriteHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _FavoriteHomeState extends State<FavoriteHome> {
   var bodyToPush = const FavoriteWidget();
 
   @override
@@ -68,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           centerTitle: false,
           title: Text(widget.title),
           actions: [
+            if (favoriteHome)
             IconButton(
               onPressed: () async {
                 final _ = await Navigator.push(context,
@@ -78,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               icon: const Icon(Icons.search),
             ),
-            if (Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isIOS)
+            if (favoriteHome)
               IconButton(
                 onPressed: (() {
                   Navigator.push(context,
@@ -86,56 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }),
                 icon: const Icon(Icons.settings_rounded),
               )
-            /*=> Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const SearchWidget())),
-            icon: const Icon(Icons.search),
-          ),*/
-            //const CupertinoSearchTextField(placeholder: 'Search for OSTs',),
           ],
         ),
         body: bodyToPush);
-
-    /*return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times :)',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );*/
   }
 }
