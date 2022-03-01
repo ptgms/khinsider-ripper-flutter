@@ -54,29 +54,25 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   var _favorites = favorites;
 
-  List<Widget> getTitleText() {
-    List<Widget> toReturn = [];
-    for (var i = 0; i < favorites.length; i++) {
-      toReturn.add(ListTile(
-        leading: const Icon(Icons.star),
-        trailing: IconButton(
-          icon: const Icon(Icons.remove_circle_outline),
-          onPressed: () {
-            //appValueNotifier.update();
-            favorites.removeAt(i);
-            setState(() {
-              _favorites = favorites;
-              saveFavs();
-            });
-          },
-        ),
-        title: Marquee(child: Text(favorites[i].albumName)),
-        subtitle: Marquee(
-          child: Text(favorites[i].albumLink),
-        ),
-      ));
-    }
-    return toReturn;
+  Widget getTitleText(int index) {
+    return ListTile(
+      leading: const Icon(Icons.star),
+      trailing: IconButton(
+        icon: const Icon(Icons.remove_circle_outline),
+        onPressed: () {
+          //appValueNotifier.update();
+          favorites.removeAt(index);
+          setState(() {
+            _favorites = favorites;
+            saveFavs();
+          });
+        },
+      ),
+      title: Marquee(child: Text(favorites[index].albumName)),
+      subtitle: Marquee(
+        child: Text(favorites[index].albumLink),
+      ),
+    );
   }
 
 /*
@@ -280,9 +276,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                         await goToAlbum(context, index);
                       }
                     },
-                    child: Column(
-                      children: getTitleText(),
-                    ))),
+                    child: getTitleText(index))),
           );
         },
       ),
