@@ -59,9 +59,23 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     var themes = ["System", "Light", "Dark"];
+    var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
 
+    var trackListSelect = trackListBehavior;
+
+    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
+      trackListSelect = 1;
+    }
     return Scaffold(
-        appBar: AppBar(title: const Text("Settings")),
+        appBar: AppBar(
+            title: const Text("Settings"),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                Navigator.pop(context);
+              },
+            )),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: ListView(
@@ -199,6 +213,57 @@ class _SettingsPageState extends State<SettingsPage> {
                       DropdownMenuItem(
                         child: Text("Dark"),
                         value: "Dark",
+                      )
+                    ]),
+              ))),
+              Container(height: 30, color: Colors.transparent),
+              Container(
+                  height: 20,
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  alignment: Alignment.bottomLeft,
+                  child: const Text("Behavior",
+                      style: TextStyle(color: Colors.grey))),
+              SizedBox(
+                  child: Card(
+                      child: ListTile(
+                title: const Text("Track-list tap behavior"),
+                subtitle: const Text("The action that occurs when tapped on item in the track-list."),
+                //subtitle: const Text("If none selected, System will be used."),
+                trailing: DropdownButton<String>(
+                  value: trackListBehaviorStrings[trackListSelect],
+                    onChanged: (value) {
+                      debugPrint(value);
+                      switch (value) {
+                        case "Preview":
+                          setState(() {
+                            trackListBehavior = 0;
+                          });
+                          break;
+                        case "Browser":
+                          setState(() {
+                            trackListBehavior = 1;
+                          });
+                          break;
+                        case "Download":
+                          setState(() {
+                            trackListBehavior = 2;
+                          });
+                          break;
+                        default:
+                      }
+                    },
+                    items: [
+                      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) const DropdownMenuItem (
+                        child: Text("Preview song"),
+                        value: "Preview",
+                      ),
+                      const DropdownMenuItem(
+                        child: Text("Open in Browser"),
+                        value: "Browser",
+                      ),
+                      const DropdownMenuItem(
+                        child: Text("Download song"),
+                        value: "Download",
                       )
                     ]),
               ))),

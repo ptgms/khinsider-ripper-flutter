@@ -5,6 +5,7 @@ import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 
+// ignore: must_be_immutable
 class DownloadingView extends StatefulWidget {
   AlbumTags tags;
   String type;
@@ -15,14 +16,17 @@ class DownloadingView extends StatefulWidget {
   @override
   // ignore: no_logic_in_create_state
   _DownloadingViewState createState() =>
+      // ignore: no_logic_in_create_state
       _DownloadingViewState(tags: tags, type: type);
 }
 
-int currentIndex = 0;
-bool busy = false;
-bool cancel = false;
+int currentIndex = 0; // currently downloading song
+bool busy = false; // if app already doing something async
+bool cancel = false; // if user cancelled out
 
 class _DownloadingViewState extends State<DownloadingView> {
+
+  // goes through all tracks in album and uses function in download_utils to download each track
   Future<bool> downloadAlbum(AlbumTags tags, String type) async {
     if (!busy) {
       busy = true;
@@ -50,6 +54,15 @@ class _DownloadingViewState extends State<DownloadingView> {
     return false;
   }
 
+  // add hint for android users as path is rather complicated.
+  String getAddOnText() {
+    if (Platform.isAndroid) {
+      return "After Download, you can find the Album under Files → Android → data → xyz.ptgms.khinrip → files. This is due to Android 10's storage requirements.\n";
+    }
+    return "";
+  }
+
+  // download progress
   SizedBox downloadingRightNow() {
     return SizedBox(
         width: double.infinity,
@@ -66,7 +79,8 @@ class _DownloadingViewState extends State<DownloadingView> {
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Text(
-                    currentIndex.toString() +
+                    getAddOnText() +
+                        currentIndex.toString() +
                         " / " +
                         tags.trackURL.length.toString(),
                     textAlign: TextAlign.center)),

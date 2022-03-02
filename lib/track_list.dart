@@ -123,6 +123,16 @@ class _TrackViewState extends State<TrackView> {
 
   _TrackViewState({required this.tags});
 
+  String getSnackBarContent(String pathToSaveIn) {
+    if (Platform.isAndroid) {
+      return "Saved to Files → Android → data → xyz.ptgms.khinrip → files!";
+    } else if (Platform.isIOS) {
+      return "Saved to Files App!";
+    } else {
+      return "Saved to $pathToSaveIn!";
+    }
+  }
+
   void downloadSong(int index, String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       dismissDirection: DismissDirection.none,
@@ -133,7 +143,7 @@ class _TrackViewState extends State<TrackView> {
     downloadFile(tags, index, value);
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("Saved to $pathToSaveIn!"),
+      content: Text(getSnackBarContent(pathToSaveIn)),
       behavior: SnackBarBehavior.floating,
     ));
   }
@@ -159,9 +169,10 @@ class _TrackViewState extends State<TrackView> {
                   child: Card(
                       child: InkWell(
                           onTap: () async {
-                            if (Platform.isMacOS ||
-                                Platform.isAndroid ||
-                                Platform.isIOS) {
+                            if (trackListBehavior == 0 &&
+                                (Platform.isMacOS ||
+                                    Platform.isAndroid ||
+                                    Platform.isIOS)) {
                               if (!busy) {
                                 busy = true;
                                 Uri completedUrl =
@@ -194,48 +205,43 @@ class _TrackViewState extends State<TrackView> {
                                 playingURL = "";
                                 busy = false;
                               }
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 201, 96, 61),
-                                content: const Text(
-                                    'Due to technical limitations in your platform, the preview player is not yet available.'),
-                                action: SnackBarAction(
-                                    textColor: Colors.white,
-                                    label: 'Preview in Browser instead',
-                                    onPressed: () async {
-                                      Uri completedUrl = Uri.parse(
-                                          baseUrl + tags.trackURL[index]);
+                            } else if ((Platform.isWindows &&
+                                    trackListBehavior == 0) ||
+                                trackListBehavior == 1) {
+                              Uri completedUrl =
+                                  Uri.parse(baseUrl + tags.trackURL[index]);
 
-                                      await http
-                                          .read(completedUrl)
-                                          .then((contents) {
-                                        BeautifulSoup bs =
-                                            BeautifulSoup(contents);
+                              await http.read(completedUrl).then((contents) {
+                                BeautifulSoup bs = BeautifulSoup(contents);
 
-                                        var element =
-                                            bs.find('', id: 'EchoTopic')!;
+                                var element = bs.find('', id: 'EchoTopic')!;
 
-                                        for (var link in element.findAll('a')) {
-                                          if (link.attributes['href'] != null) {
-                                            if (link.attributes['href']!
-                                                .endsWith(".mp3")) {
-                                              playingURL =
-                                                  link.attributes['href']!;
-                                            } else if (link.attributes['href']!
-                                                .endsWith(".ogg")) {
-                                              playingURL =
-                                                  link.attributes['href']!;
-                                            }
-                                          }
-                                        }
-                                      });
-                                      await launch(playingURL);
-                                      playingURL = "";
-                                    }),
-                              ));
+                                for (var link in element.findAll('a')) {
+                                  if (link.attributes['href'] != null) {
+                                    if (link.attributes['href']!
+                                        .endsWith(".mp3")) {
+                                      playingURL = link.attributes['href']!;
+                                    } else if (link.attributes['href']!
+                                        .endsWith(".ogg")) {
+                                      playingURL = link.attributes['href']!;
+                                    }
+                                  }
+                                }
+                              });
+                              await launch(playingURL);
+                              playingURL = "";
+                            } else if (trackListBehavior == 2) {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                    title: const Text('Download song'),
+                                    content: Text(tags.tracks[index]),
+                                    actions: getButtons(tags, index)),
+                              ).then((value) {
+                                if (value != null) {
+                                  downloadSong(index, value);
+                                }
+                              });
                             }
                           },
                           child: Row(
@@ -267,7 +273,7 @@ class _TrackViewState extends State<TrackView> {
                                     )),
                                 flex: 2,
                               ),
-                              IconButton(
+                              if (trackListBehavior != 2) IconButton(
                                   onPressed: () async {
                                     if (MediaQuery.of(context).size.width < 0) {
                                       // TODO: Work on bottom sheet
@@ -276,7 +282,7 @@ class _TrackViewState extends State<TrackView> {
                                           return ListView(children: [
                                             Card(
                                                 child: ListTile(
-                                              title: Text("Download song"),
+                                              title: const Text("Download song"),
                                               subtitle: Text(downloadText +
                                                   tags.tracks[index]),
                                             )),

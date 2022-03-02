@@ -9,12 +9,19 @@ String baseUrl = "https://downloads.khinsider.com";
 String baseSearchUrl = "/search?search=";
 String baseAlbumUrl = "/game-soundtracks/album/";
 
+// List of saved favorites
 List<AlbumStruct> favorites = [];
 
+// The path to save the music to. Empty on iOS.
 String pathToSaveIn = "";
 
+// The apps theme (0 = system, 1 = light, 2 = dark)
 var appTheme = 1;
+// If the favorite page is the default home screen
 var favoriteHome = true;
+// The track list behavior on tap
+var trackListBehavior = 0;
+//Notifies app if theme changes
 ValueNotifier<int> notifier = ValueNotifier(0);
 
 // Welcome to janky-hut, may I take your order?
@@ -24,6 +31,12 @@ Future<String> get localPath async {
   final directory = await getApplicationDocumentsDirectory();
 
   return directory.path;
+}
+
+Future<String> get localPathAndroid async {
+  final directory = await getExternalStorageDirectory();
+
+  return directory!.path;
 }
 
 bool foundInFavorites(AlbumStruct element) {

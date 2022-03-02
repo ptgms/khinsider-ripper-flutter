@@ -13,10 +13,12 @@ import 'config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) { // on desktops, the window title would be something random otherwise.
     setWindowTitle('Khinsider Ripper');
     setWindowMinSize(const Size(512, 384));
   }
+
+  // --- load preferences ---
   final prefs = await SharedPreferences.getInstance();
 
   var favNames = prefs.getStringList("favs_name");
@@ -25,7 +27,10 @@ Future<void> main() async {
   pathToSaveIn = prefs.getString("location") ?? "";
   favoriteHome = prefs.getBool("fav_home") ?? true;
   appTheme = prefs.getInt("app_theme") ?? 0;
+  trackListBehavior = prefs.getInt("track_behavior") ?? 0;
+  // ------
 
+  // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
       favorites.add(AlbumStruct(favNames[i], favLink[i]));

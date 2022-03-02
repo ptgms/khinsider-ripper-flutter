@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 String getSeperator() {
   if (Platform.isWindows) {
@@ -17,6 +16,7 @@ String getSeperator() {
   }
 }
 
+// for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   String toDownload = "";
   await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
@@ -50,10 +50,20 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
         getSeperator() +
         tags.tracks[index] +
         ".$type";
+  } else if (pathToSaveIn == "" && Platform.isAndroid) {
+    fileName = await localPathAndroid +
+        getSeperator() +
+        "KhinsiderRipper" +
+        getSeperator() +
+        tags.albumName.replaceAll(" ", "_") +
+        getSeperator() +
+        tags.tracks[index] +
+        ".$type";
   }
 
-  final file = File(fileName).create(recursive: true).then(
+  final _ = File(fileName).create(recursive: true).then(
     (file) {
+      debugPrint(file.path);
       file.writeAsBytes(bytesSave);
     },
   );
@@ -61,6 +71,7 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   return true;
 }
 
+// used for downloading singular file from the album, used in track view.
 Future<bool> downloadFileFromAlbum(
     AlbumTags tags, int index, String type) async {
   String toDownload = "";
@@ -103,9 +114,18 @@ Future<bool> downloadFileFromAlbum(
         getSeperator() +
         tags.tracks[index] +
         ".$type";
+  } else if (pathToSaveIn == "" && Platform.isAndroid) {
+    fileName = await localPathAndroid +
+        getSeperator() +
+        "KhinsiderRipper" +
+        getSeperator() +
+        tags.albumName.replaceAll(" ", "_") +
+        getSeperator() +
+        tags.tracks[index] +
+        ".$type";
   }
 
-  final file = File(fileName).create(recursive: true).then(
+  final _ = File(fileName).create(recursive: true).then(
     (file) {
       file.writeAsBytes(bytesSave);
     },

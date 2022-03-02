@@ -19,46 +19,9 @@ class AlbumView extends StatefulWidget {
   _AlbumViewState createState() => _AlbumViewState(tags: tags);
 }
 
-/*Widget albumViews(AlbumTags tags) {
-  return Card(
-      child: Row(
-    children: [
-      Container(
-          decoration: BoxDecoration(
-              color: Colors.red,
-              image: DecorationImage(
-                  fit: BoxFit.fill, image: NetworkImage(tags.coverURL[0])))),
-      Column(children: [
-        SizedBox(
-          height: 110,
-          child: ListTile(
-            trailing: IconButton(
-              icon: const Icon(Icons.open_in_browser),
-              onPressed: () async {
-                await launch(tags.AlbumLink);
-              },
-            ),
-            title: Marquee(
-                child: Text(tags.AlbumName, style: TextStyle(fontSize: 25))),
-            subtitle: Marquee(
-              child: Text(tags.AlbumLink, style: TextStyle(fontSize: 16)),
-            ),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: const <Widget>[
-            Text("Available formats: FLAC MP3 OGG"),
-            SizedBox(width: 8),
-          ],
-        )
-      ])
-    ],
-  ));
-}*/
-
+// The small cell at the top containing the album information
 Widget albumView(AlbumTags tags) {
-  String availableAddon = "";
+  String availableAddon = ""; // Building the String for "Available formats"
 
   if (tags.mp3) {
     availableAddon += "MP3 ";
@@ -122,8 +85,8 @@ class _AlbumViewState extends State<AlbumView> {
 
   _AlbumViewState({required this.tags});
 
-  Widget favCell(AlbumTags tags) {
-    if (foundInFavorites(
+  Widget favCell(AlbumTags tags) { // the add/remove from favorites cell/button.
+    if (foundInFavorites( // if album being viewed is in favorites, show remove button
         AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")))) {
       return SizedBox(
           child: Card(
@@ -142,7 +105,7 @@ class _AlbumViewState extends State<AlbumView> {
                     trailing: Icon(Icons.chevron_right),
                     leading: Icon(Icons.star_rounded),
                   ))));
-    } else {
+    } else { // if not, show the add button
       return SizedBox(
           child: Card(
               child: InkWell(
@@ -162,7 +125,7 @@ class _AlbumViewState extends State<AlbumView> {
     }
   }
 
-  List<Widget> getButtons(AlbumTags tags) {
+  List<Widget> getButtons(AlbumTags tags) { // gets the available formats for the download alert and returns a widget list with options
     return <Widget>[
       TextButton(
         onPressed: () => Navigator.pop(context, null),
@@ -186,7 +149,7 @@ class _AlbumViewState extends State<AlbumView> {
     ];
   }
 
-  String downloadText = "";
+  String downloadText = ""; // download add-on text if no custom path specified.
 
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
     downloadText = tags.albumName;
@@ -212,7 +175,7 @@ class _AlbumViewState extends State<AlbumView> {
           ),
         ),
         favCell(tags),
-        SizedBox(
+        SizedBox( // download album button
             child: Card(
                 child: InkWell(
                     onTap: () {
@@ -240,8 +203,8 @@ class _AlbumViewState extends State<AlbumView> {
                       trailing: Icon(Icons.chevron_right),
                       leading: Icon(Icons.download_rounded),
                     )))),
-        Container(height: 30, color: Colors.transparent),
-        Container(
+        Container(height: 30, color: Colors.transparent), // little spacer
+        Container( // spacer/category text
           height: 20,
           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
           alignment: Alignment.bottomLeft,
@@ -252,7 +215,7 @@ class _AlbumViewState extends State<AlbumView> {
         ),
         Container(
             padding: EdgeInsets.zero,
-            child: Card(
+            child: Card( // view all tracks button
                 child: InkWell(
                     mouseCursor: MouseCursor.uncontrolled,
                     onTap: () {

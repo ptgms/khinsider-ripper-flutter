@@ -7,7 +7,7 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-SizedBox noFavs() {
+SizedBox noFavs() { // if no favs saved return placeholder
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -29,7 +29,7 @@ SizedBox noFavs() {
       ]));
 }
 
-Future<void> saveFavs() async {
+Future<void> saveFavs() async { // save favorites in preferences
   List<String> favNames = [];
   List<String> favLinks = [];
 
@@ -54,7 +54,7 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   var _favorites = favorites;
 
-  Widget getTitleText(int index) {
+  Widget getTitleText(int index) { // gets the cell text for a particular favorite
     return ListTile(
       leading: const Icon(Icons.star),
       trailing: IconButton(
@@ -75,27 +75,10 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     );
   }
 
-/*
-  Future<void> saveFavs() async {
-  List<String> favNames = [];
-  List<String> favLinks = [];
+  var busy = false; // indicates if app is busy with other task
 
-  for (var favItem in favorites) {
-    favNames.add(favItem.albumName);
-    favLinks.add(favItem.albumLink);
-  }
-
-  final prefs = await SharedPreferences.getInstance();
-
-  await prefs.setStringList("favs_name", favNames);
-  await prefs.setStringList("favs_link", favLinks);
-}*/
-
-  var busy = false;
-
-  Future<void> goToAlbum(BuildContext context, int index) async {
+  Future<void> goToAlbum(BuildContext context, int index) async { // if clicked on favorite, load the album in view
     if (busy) {
-      debugPrint("Im busy yo");
       return;
     } else {
       busy = true;
@@ -254,7 +237,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       width: double.infinity,
       height: double.infinity,
 
-      // TODO: favUpdater
       child: ValueListenableBuilder<int>(
         valueListenable: favUpdater,
         builder: (_, __, ___) {
