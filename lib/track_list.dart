@@ -24,6 +24,7 @@ class _TrackViewState extends State<TrackView> {
   final AlbumTags tags;
 
   String playingURL = "";
+  var busy = false;
 
   List<Widget> getButtons(AlbumTags tags, int index) {
     return <Widget>[
@@ -140,8 +141,11 @@ class _TrackViewState extends State<TrackView> {
   @override
   Widget build(BuildContext context) {
     String downloadText = "";
-    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
+    if (pathToSaveIn == "" && Platform.isWindows ||
+        Platform.isMacOS ||
+        Platform.isLinux) {
+      downloadText =
+          "Warning: No saving path specified! Using the programs' directory.\n";
     }
     return Scaffold(
         appBar: AppBar(
@@ -158,33 +162,38 @@ class _TrackViewState extends State<TrackView> {
                             if (Platform.isMacOS ||
                                 Platform.isAndroid ||
                                 Platform.isIOS) {
-                              Uri completedUrl =
-                                  Uri.parse(baseUrl + tags.trackURL[index]);
+                              if (!busy) {
+                                busy = true;
+                                Uri completedUrl =
+                                    Uri.parse(baseUrl + tags.trackURL[index]);
 
-                              await http.read(completedUrl).then((contents) {
-                                BeautifulSoup bs = BeautifulSoup(contents);
+                                await http.read(completedUrl).then((contents) {
+                                  BeautifulSoup bs = BeautifulSoup(contents);
 
-                                var element = bs.find('', id: 'EchoTopic')!;
+                                  var element = bs.find('', id: 'EchoTopic')!;
 
-                                for (var link in element.findAll('a')) {
-                                  if (link.attributes['href'] != null) {
-                                    if (link.attributes['href']!
-                                        .endsWith(".mp3")) {
-                                      playingURL = link.attributes['href']!;
-                                    } else if (link.attributes['href']!
-                                        .endsWith(".ogg")) {
-                                      playingURL = link.attributes['href']!;
+                                  for (var link in element.findAll('a')) {
+                                    if (link.attributes['href'] != null) {
+                                      if (link.attributes['href']!
+                                          .endsWith(".mp3")) {
+                                        playingURL = link.attributes['href']!;
+                                      } else if (link.attributes['href']!
+                                          .endsWith(".ogg")) {
+                                        playingURL = link.attributes['href']!;
+                                      }
                                     }
                                   }
-                                }
-                              });
-                              await showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      previewDialog(tags, index));
-                              debugPrint("dismissed");
-                              audioPlayer.stop();
-                              playingURL = "";
+                                });
+
+                                await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        previewDialog(tags, index));
+                                debugPrint("dismissed");
+                                audioPlayer.stop();
+                                playingURL = "";
+                                busy = false;
+                              }
                             } else {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
@@ -260,16 +269,16 @@ class _TrackViewState extends State<TrackView> {
                               ),
                               IconButton(
                                   onPressed: () async {
-                                    if (MediaQuery.of(context).size.width <
-                                        0) { // TODO: Work on bottom sheet
+                                    if (MediaQuery.of(context).size.width < 0) {
+                                      // TODO: Work on bottom sheet
                                       showModalBottomSheet<String>(
                                         builder: (BuildContext context) {
                                           return ListView(children: [
                                             Card(
                                                 child: ListTile(
                                               title: Text("Download song"),
-                                              subtitle:
-                                                  Text(downloadText + tags.tracks[index]),
+                                              subtitle: Text(downloadText +
+                                                  tags.tracks[index]),
                                             )),
                                             Container(
                                                 height: 30,
@@ -375,7 +384,8 @@ class _TrackViewState extends State<TrackView> {
                                                     const Text('Download song'),
                                                 content:
                                                     Text(tags.tracks[index]),
-                                                actions: getButtons(tags, index)),
+                                                actions:
+                                                    getButtons(tags, index)),
                                       ).then((value) {
                                         if (value != null) {
                                           downloadSong(index, value);

@@ -32,15 +32,19 @@ class _DownloadingViewState extends State<DownloadingView> {
           //cancel = false;
           return false;
         }
-        await downloadFileFromAlbum(tags, i, type);
-        if (cancel) { // Called again as user could have exited during await
-          cancel = false;
-          return false;
-        }
         setState(() {
           currentIndex = i;
         });
+        await downloadFileFromAlbum(tags, i, type);
+        if (cancel) {
+          // Called again as user could have exited during await
+          cancel = false;
+          return false;
+        }
       }
+      currentIndex = 0;
+      busy = false;
+      Navigator.pop(context);
       return true;
     }
     return false;
@@ -54,9 +58,10 @@ class _DownloadingViewState extends State<DownloadingView> {
           Center(
               child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: Marquee(child: Text("Downloading " + tags.albumName + "...",
-                      style: const TextStyle(fontSize: 25),
-                      textAlign: TextAlign.center)))),
+                  child: Marquee(
+                      child: Text("Downloading " + tags.albumName + "...",
+                          style: const TextStyle(fontSize: 25),
+                          textAlign: TextAlign.center)))),
           Center(
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),

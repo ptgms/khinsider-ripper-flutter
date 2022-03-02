@@ -25,8 +25,7 @@ String homeDirectory() {
       // Probably want internal storage.
       return '/storage/sdcard0';
     case 'ios':
-      // iOS doesn't really have a home directory.
-      return "/";
+      return "";
     case 'fuchsia':
       // I have no idea.
       return "/";
@@ -59,154 +58,152 @@ class _SettingsPageState extends State<SettingsPage> {
       folderToSave = pathToSaveIn;
     }
 
+    var themes = ["System", "Light", "Dark"];
+
     return Scaffold(
         appBar: AppBar(title: const Text("Settings")),
-        body: ListView(
-          children: [
-            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+          child: ListView(
+            children: [
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+                Container(height: 30, color: Colors.transparent),
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+                Container(
+                    height: 20,
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    alignment: Alignment.bottomLeft,
+                    child: Row(children: [
+                      const Text(
+                        "Saving path",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                pathToSaveIn = "";
+                                saveLocation();
+                                folderToSave = "Default: Path of executable";
+                              });
+                            },
+                            child: const Text("Set default"),
+                          ),
+                        ),
+                      ),
+                    ])),
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+                SizedBox(
+                    height: 55,
+                    child: Card(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          String? path = await FilesystemPicker.open(
+                            rootName: "Home folder",
+                            title: 'Use folder',
+                            context: context,
+                            rootDirectory: Directory(homeDirectory()),
+                            fsType: FilesystemType.folder,
+                            pickText: 'Use this folder for Downloads',
+                            folderIconColor: Colors.teal,
+                          );
+
+                          if (path != null) {
+                            setState(() {
+                              pathToSaveIn = path;
+                              saveLocation();
+                              folderToSave = path;
+                            });
+                          }
+                        },
+                        child: Marquee(child: Text(folderToSave)),
+                      ),
+                    )),
               Container(height: 30, color: Colors.transparent),
-            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
               Container(
                   height: 20,
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   alignment: Alignment.bottomLeft,
-                  child: Row(children: [
-                    const Text(
-                      "Saving path",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              pathToSaveIn = "";
-                              saveLocation();
-                              folderToSave = "Default: Path of executable";
-                            });
-                          },
-                          child: const Text("Set default"),
-                        ),
-                      ),
-                    ),
-                  ])),
-            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+                  child: const Text("Appearance",
+                      style: TextStyle(color: Colors.grey))),
               SizedBox(
-                  height: 55,
                   child: Card(
-                    child: OutlinedButton(
-                      onPressed: () async {
-                        String? path = await FilesystemPicker.open(
-                          rootName: "Home folder",
-                          title: 'Use folder',
-                          context: context,
-                          rootDirectory: Directory(homeDirectory()),
-                          fsType: FilesystemType.folder,
-                          pickText: 'Use this folder for Downloads',
-                          folderIconColor: Colors.teal,
-                        );
-
-                        if (path != null) {
+                      child: ListTile(
+                title: const Text("Favorites is home-page"),
+                subtitle: const Text(
+                    "If off, search will be home-page. Requires restart."),
+                trailing: Switch(
+                  value: favoriteHome,
+                  onChanged: (bool value) {
+                    //debugPrint(value.toString());
+                    setState(() {
+                      favoriteHome = value;
+                      saveSettings();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: const Text('Restart the app?'),
+                      action: SnackBarAction(
+                          //textColor: Colors.white,
+                          label: 'Restart',
+                          onPressed: () {
+                            Phoenix.rebirth(context);
+                          }),
+                    ));
+                  },
+                ),
+              ))),
+              //Container(height: 10, color: Colors.transparent),
+              SizedBox(
+                  child: Card(
+                      child: ListTile(
+                title: const Text("App Theme"),
+                //subtitle: const Text("If none selected, System will be used."),
+                trailing: DropdownButton<String>(
+                    value: themes[appTheme],
+                    onChanged: (value) {
+                      switch (value) {
+                        case "System":
                           setState(() {
-                            pathToSaveIn = path;
-                            saveLocation();
-                            folderToSave = path;
+                            appTheme = 0;
+                            notifier.value = 0;
                           });
-                        }
-                      },
-                      child: Marquee(child: Text(folderToSave)),
-                    ),
-                  )),
-            Container(height: 30, color: Colors.transparent),
-            Container(
-                height: 20,
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                alignment: Alignment.bottomLeft,
-                child: const Text("Appearance",
-                    style: TextStyle(color: Colors.grey))),
-            SizedBox(
-                child: Card(
-                    child: ListTile(
-              title: const Text("Favorites is home-page"),
-              subtitle: const Text(
-                  "If off, search will be home-page. Requires restart."),
-              trailing: Switch(
-                value: favoriteHome,
-                onChanged: (bool value) {
-                  //debugPrint(value.toString());
-                  setState(() {
-                    favoriteHome = value;
-                    saveSettings();
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    behavior: SnackBarBehavior.floating,
-                    content: const Text(
-                        'Restart the app?'),
-                    action: SnackBarAction(
-                        //textColor: Colors.white,
-                        label: 'Restart',
-                        onPressed: () {
-                          Phoenix.rebirth(context);
-                        }),
-                  ));
-                },
-              ),
-            ))),
-            Container(height: 10, color: Colors.transparent),
-            const SizedBox(
-                child: Card(
-                    child: ListTile(
-                        title: Text("App Theme"),
-                        subtitle:
-                            Text("If none selected, System will be used.")))),
-            SizedBox(
-                child: Card(
-                    child: ListTile(
-              title: const Text("Light Theme"),
-              trailing: Switch(
-                value: (appTheme == 1),
-                onChanged: (bool value) {
-                  // debugPrint(value.toString());
-                  if (value == true) {
-                    setState(() {
-                      appTheme = 1;
-                      notifier.value = 1;
-                    });
-                  } else {
-                    setState(() {
-                      appTheme = 0;
-                      notifier.value = 0;
-                    });
-                  }
-                  saveSettings();
-                },
-              ),
-            ))),
-            SizedBox(
-                child: Card(
-                    child: ListTile(
-              title: const Text("Dark Theme"),
-              trailing: Switch(
-                value: (appTheme == 2),
-                onChanged: (bool value) {
-                  //debugPrint(value.toString());
-                  if (value == true) {
-                    setState(() {
-                      appTheme = 2;
-                      notifier.value = 2;
-                    });
-                  } else {
-                    setState(() {
-                      appTheme = 0;
-                      notifier.value = 0;
-                    });
-                  }
-                },
-              ),
-            ))),
-          ],
+                          break;
+                        case "Light":
+                          setState(() {
+                            appTheme = 1;
+                            notifier.value = 1;
+                          });
+                          break;
+                        case "Dark":
+                          setState(() {
+                            appTheme = 2;
+                            notifier.value = 2;
+                          });
+                          break;
+                        default:
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text("System"),
+                        value: "System",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Light"),
+                        value: "Light",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Dark"),
+                        value: "Dark",
+                      )
+                    ]),
+              ))),
+            ],
+          ),
         ));
   }
 }
