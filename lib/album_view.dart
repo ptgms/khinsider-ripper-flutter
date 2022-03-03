@@ -85,8 +85,98 @@ class _AlbumViewState extends State<AlbumView> {
 
   _AlbumViewState({required this.tags});
 
-  Widget favCell(AlbumTags tags) { // the add/remove from favorites cell/button.
-    if (foundInFavorites( // if album being viewed is in favorites, show remove button
+  void showDownloadModal(bool isPopUp) {
+    if (!isPopUp) {
+      showModalBottomSheet<String>(
+        builder: (BuildContext context) {
+          return Container(
+              child: Wrap(children: [
+            Card(
+                child: ListTile(
+              title: const Text("Download Album"),
+              subtitle: Text(downloadText),
+            )),
+            Container(height: 30, color: Colors.transparent),
+            Container(
+              height: 20,
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              alignment: Alignment.bottomLeft,
+              child: const Text(
+                "Formats",
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            if (tags.mp3)
+              Card(
+                  child: InkWell(
+                      onTap: () => Navigator.pop(context, 'mp3'),
+                      child: const ListTile(
+                        leading: Icon(Icons.download_rounded),
+                        title: Text("Download in MP3"),
+                      ))),
+            if (tags.flac)
+              Card(
+                  child: InkWell(
+                      onTap: () => Navigator.pop(context, 'flac'),
+                      child: const ListTile(
+                        leading: Icon(Icons.download_rounded),
+                        title: Text("Download in FLAC"),
+                      ))),
+            if (tags.ogg)
+              Card(
+                  child: InkWell(
+                      onTap: () => Navigator.pop(context, 'ogg'),
+                      child: const ListTile(
+                        leading: Icon(Icons.download_rounded),
+                        title: Text("Download in OGG"),
+                      ))),
+            Card(
+                child: InkWell(
+              child: const ListTile(
+                leading: Icon(Icons.cancel_outlined),
+                title: Text("Cancel"),
+              ),
+              onTap: () => Navigator.pop(context, null),
+            )),
+          ]));
+        },
+        context: context,
+      ).then((value) {
+        if (value != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DownloadingView(tags: tags, type: value)),
+          );
+
+          //downloadAlbum(tags, value);
+        }
+      });
+    } else {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+            title: const Text('Download Album'),
+            content: Text(downloadText),
+            actions: getButtons(tags)),
+      ).then((value) {
+        if (value != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DownloadingView(tags: tags, type: value)),
+          );
+
+          //downloadAlbum(tags, value);
+        }
+      });
+    }
+  }
+
+  Widget favCell(AlbumTags tags) {
+    // the add/remove from favorites cell/button.
+    if (foundInFavorites(
+        // if album being viewed is in favorites, show remove button
         AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")))) {
       return SizedBox(
           child: Card(
@@ -105,7 +195,8 @@ class _AlbumViewState extends State<AlbumView> {
                     trailing: Icon(Icons.chevron_right),
                     leading: Icon(Icons.star_rounded),
                   ))));
-    } else { // if not, show the add button
+    } else {
+      // if not, show the add button
       return SizedBox(
           child: Card(
               child: InkWell(
@@ -125,7 +216,8 @@ class _AlbumViewState extends State<AlbumView> {
     }
   }
 
-  List<Widget> getButtons(AlbumTags tags) { // gets the available formats for the download alert and returns a widget list with options
+  List<Widget> getButtons(AlbumTags tags) {
+    // gets the available formats for the download alert and returns a widget list with options
     return <Widget>[
       TextButton(
         onPressed: () => Navigator.pop(context, null),
@@ -151,7 +243,7 @@ class _AlbumViewState extends State<AlbumView> {
 
   String downloadText = ""; // download add-on text if no custom path specified.
 
-  Widget buildAlbumScreen(BuildContext context, AlbumTags tags) {
+  Widget buildAlbumScreen(BuildContext context, AlbumTags tags, bool isPopUp) {
     downloadText = tags.albumName;
     if (pathToSaveIn == "" && Platform.isWindows ||
         Platform.isMacOS ||
@@ -175,28 +267,12 @@ class _AlbumViewState extends State<AlbumView> {
           ),
         ),
         favCell(tags),
-        SizedBox( // download album button
+        SizedBox(
+            // download album button
             child: Card(
                 child: InkWell(
                     onTap: () {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Download Album'),
-                            content: Text(downloadText),
-                            actions: getButtons(tags)),
-                      ).then((value) {
-                        if (value != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    DownloadingView(tags: tags, type: value)),
-                          );
-
-                          //downloadAlbum(tags, value);
-                        }
-                      });
+                      showDownloadModal(isPopUp);
                     },
                     child: const ListTile(
                       title: Text("Download all Tracks"),
@@ -204,7 +280,8 @@ class _AlbumViewState extends State<AlbumView> {
                       leading: Icon(Icons.download_rounded),
                     )))),
         Container(height: 30, color: Colors.transparent), // little spacer
-        Container( // spacer/category text
+        Container(
+          // spacer/category text
           height: 20,
           padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
           alignment: Alignment.bottomLeft,
@@ -215,7 +292,8 @@ class _AlbumViewState extends State<AlbumView> {
         ),
         Container(
             padding: EdgeInsets.zero,
-            child: Card( // view all tracks button
+            child: Card(
+                // view all tracks button
                 child: InkWell(
                     mouseCursor: MouseCursor.uncontrolled,
                     onTap: () {
@@ -238,10 +316,19 @@ class _AlbumViewState extends State<AlbumView> {
 
   @override
   Widget build(BuildContext context) {
+    bool isPopup = true;
+
+    if (popupStyle == 0) {
+      isPopup = !(MediaQuery.of(context).size.width < 400);
+    } else if (popupStyle == 1) {
+      isPopup = true;
+    } else if (popupStyle == 2) {
+      isPopup = false;
+    }
     return Scaffold(
         appBar: AppBar(
           title: const Text("Album Details"),
         ),
-        body: buildAlbumScreen(context, tags));
+        body: buildAlbumScreen(context, tags, isPopup));
   }
 }

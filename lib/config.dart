@@ -19,8 +19,11 @@ String pathToSaveIn = "";
 var appTheme = 1;
 // If the favorite page is the default home screen
 var favoriteHome = true;
-// The track list behavior on tap
+// The track list behavior on tap (0=preview, 1=preview in browser, 2=download)
+// since on some platforms, preview doesnt work, it will automatically use 1.
 var trackListBehavior = 0;
+// The download format popup style (0=auto, 1=alert, 2=bottom sheet)
+var popupStyle = 0;
 //Notifies app if theme changes
 ValueNotifier<int> notifier = ValueNotifier(0);
 

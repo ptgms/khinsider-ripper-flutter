@@ -13,7 +13,8 @@ import 'config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) { // on desktops, the window title would be something random otherwise.
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    // on desktops, the window title would be something random otherwise.
     setWindowTitle('Khinsider Ripper');
     setWindowMinSize(const Size(512, 384));
   }
@@ -28,6 +29,7 @@ Future<void> main() async {
   favoriteHome = prefs.getBool("fav_home") ?? true;
   appTheme = prefs.getInt("app_theme") ?? 0;
   trackListBehavior = prefs.getInt("track_behavior") ?? 0;
+  popupStyle = prefs.getInt("popup_style") ?? 0;
   // ------
 
   // convert favorites in string list format to albumstruct list
@@ -54,7 +56,7 @@ class MyApp extends StatelessWidget {
         valueListenable: notifier,
         builder: (_, mode, __) {
           var theme = ThemeMode.system;
-          switch (mode) {
+          switch (appTheme) {
             case 0:
               theme = ThemeMode.system;
               break;
@@ -72,7 +74,9 @@ class MyApp extends StatelessWidget {
             theme: ThemeData.light().copyWith(useMaterial3: true),
             darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
             themeMode: theme,
-            home: favoriteHome ? const FavoriteHome(title: 'Khinsider Ripper') : const SearchWidget(),
+            home: favoriteHome
+                ? const FavoriteHome(title: 'Khinsider Ripper')
+                : const SearchWidget(),
           );
         });
     /*return MaterialApp(
@@ -106,16 +110,16 @@ class _FavoriteHomeState extends State<FavoriteHome> {
           title: Text(widget.title),
           actions: [
             if (favoriteHome)
-            IconButton(
-              onPressed: () async {
-                final _ = await Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const SearchWidget()));
-                setState(() {
-                  bodyToPush = const FavoriteWidget();
-                });
-              },
-              icon: const Icon(Icons.search),
-            ),
+              IconButton(
+                onPressed: () async {
+                  final _ = await Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SearchWidget()));
+                  setState(() {
+                    bodyToPush = const FavoriteWidget();
+                  });
+                },
+                icon: const Icon(Icons.search),
+              ),
             if (favoriteHome)
               IconButton(
                 onPressed: (() {

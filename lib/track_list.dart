@@ -157,6 +157,96 @@ class _TrackViewState extends State<TrackView> {
       downloadText =
           "Warning: No saving path specified! Using the programs' directory.\n";
     }
+
+    bool isPopup = true;
+
+    if (popupStyle == 0) {
+      isPopup = !(MediaQuery.of(context).size.width < 400);
+    } else if (popupStyle == 1) {
+      isPopup = true;
+    } else if (popupStyle == 2) {
+      isPopup = false;
+    }
+
+    void showDownloadPopup(int index) {
+      if (!isPopup) {
+        showModalBottomSheet<String>(
+          builder: (BuildContext context) {
+            return Container(
+                child: Wrap(children: [
+              Card(
+                  child: ListTile(
+                title: const Text("Download song"),
+                subtitle: Text(downloadText + tags.tracks[index]),
+              )),
+              Container(height: 30, color: Colors.transparent),
+              Container(
+                height: 20,
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                alignment: Alignment.bottomLeft,
+                child: const Text(
+                  "Formats",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              if (tags.mp3)
+                Card(
+                    child: InkWell(
+                        onTap: () => Navigator.pop(context, 'mp3'),
+                        child: ListTile(
+                          leading: const Icon(Icons.download_rounded),
+                          title: const Text("Download in MP3"),
+                          subtitle: Text(tags.trackSizeMP3[index]),
+                        ))),
+              if (tags.flac)
+                Card(
+                    child: InkWell(
+                        onTap: () => Navigator.pop(context, 'flac'),
+                        child: ListTile(
+                          leading: const Icon(Icons.download_rounded),
+                          title: const Text("Download in FLAC"),
+                          subtitle: Text(tags.trackSizeFLAC[index]),
+                        ))),
+              if (tags.ogg)
+                Card(
+                    child: InkWell(
+                        onTap: () => Navigator.pop(context, 'ogg'),
+                        child: ListTile(
+                          leading: const Icon(Icons.download_rounded),
+                          title: const Text("Download in OGG"),
+                          subtitle: Text(tags.trackSizeOGG[index]),
+                        ))),
+              Card(
+                  child: InkWell(
+                child: const ListTile(
+                  leading: Icon(Icons.cancel_outlined),
+                  title: Text("Cancel"),
+                ),
+                onTap: () => Navigator.pop(context, null),
+              )),
+            ]));
+          },
+          context: context,
+        ).then((value) {
+          if (value != null) {
+            downloadSong(index, value);
+          }
+        });
+      } else {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+              title: const Text('Download song'),
+              content: Text(tags.tracks[index]),
+              actions: getButtons(tags, index)),
+        ).then((value) {
+          if (value != null) {
+            downloadSong(index, value);
+          }
+        });
+      }
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("Tracks"),
@@ -231,17 +321,7 @@ class _TrackViewState extends State<TrackView> {
                               await launch(playingURL);
                               playingURL = "";
                             } else if (trackListBehavior == 2) {
-                              showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                    title: const Text('Download song'),
-                                    content: Text(tags.tracks[index]),
-                                    actions: getButtons(tags, index)),
-                              ).then((value) {
-                                if (value != null) {
-                                  downloadSong(index, value);
-                                }
-                              });
+                              showDownloadPopup(index);
                             }
                           },
                           child: Row(
@@ -273,133 +353,12 @@ class _TrackViewState extends State<TrackView> {
                                     )),
                                 flex: 2,
                               ),
-                              if (trackListBehavior != 2) IconButton(
-                                  onPressed: () async {
-                                    if (MediaQuery.of(context).size.width < 0) {
-                                      // TODO: Work on bottom sheet
-                                      showModalBottomSheet<String>(
-                                        builder: (BuildContext context) {
-                                          return ListView(children: [
-                                            Card(
-                                                child: ListTile(
-                                              title: const Text("Download song"),
-                                              subtitle: Text(downloadText +
-                                                  tags.tracks[index]),
-                                            )),
-                                            Container(
-                                                height: 30,
-                                                color: Colors.transparent),
-                                            Container(
-                                              height: 20,
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 0, 0, 0),
-                                              alignment: Alignment.bottomLeft,
-                                              child: const Text(
-                                                "Formats",
-                                                style: TextStyle(
-                                                    color: Colors.grey),
-                                              ),
-                                            ),
-                                            if (tags.mp3)
-                                              Card(
-                                                  child: InkWell(
-                                                      onTap: () =>
-                                                          Navigator.pop(
-                                                              context, 'mp3'),
-                                                      child: ListTile(
-                                                        leading: const Icon(Icons
-                                                            .download_rounded),
-                                                        title: const Text(
-                                                            "Download in MP3"),
-                                                        subtitle: Text(
-                                                            tags.trackSizeMP3[
-                                                                index]),
-                                                      ))),
-                                            if (tags.flac)
-                                              Card(
-                                                  child: InkWell(
-                                                      onTap: () =>
-                                                          Navigator.pop(
-                                                              context, 'flac'),
-                                                      child: ListTile(
-                                                        leading: const Icon(Icons
-                                                            .download_rounded),
-                                                        title: const Text(
-                                                            "Download in FLAC"),
-                                                        subtitle: Text(
-                                                            tags.trackSizeFLAC[
-                                                                index]),
-                                                      ))),
-                                            if (tags.ogg)
-                                              Card(
-                                                  child: InkWell(
-                                                      onTap: () =>
-                                                          Navigator.pop(
-                                                              context, 'ogg'),
-                                                      child: ListTile(
-                                                        leading: const Icon(Icons
-                                                            .download_rounded),
-                                                        title: const Text(
-                                                            "Download in OGG"),
-                                                        subtitle: Text(
-                                                            tags.trackSizeOGG[
-                                                                index]),
-                                                      ))),
-                                            Card(
-                                                child: InkWell(
-                                              child: const ListTile(
-                                                leading:
-                                                    Icon(Icons.cancel_outlined),
-                                                title: Text("Cancel"),
-                                              ),
-                                              onTap: () =>
-                                                  Navigator.pop(context, null),
-                                            )),
-                                          ]);
-                                          /*Container(
-                                            //height: 200,
-                                            //color: Colors.amber,
-                                            child: Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
-                                                  const Text(
-                                                      'Modal BottomSheet'),
-                                                  ElevatedButton(
-                                                    child: const Text(
-                                                        'Close BottomSheet'),
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          );*/
-                                        },
-                                        context: context,
-                                      );
-                                    } else {
-                                      showDialog<String>(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            AlertDialog(
-                                                title:
-                                                    const Text('Download song'),
-                                                content:
-                                                    Text(tags.tracks[index]),
-                                                actions:
-                                                    getButtons(tags, index)),
-                                      ).then((value) {
-                                        if (value != null) {
-                                          downloadSong(index, value);
-                                        }
-                                      });
-                                    }
-                                  },
-                                  icon: const Icon(Icons.download_rounded))
+                              if (trackListBehavior != 2)
+                                IconButton(
+                                    onPressed: () async {
+                                      showDownloadPopup(index);
+                                    },
+                                    icon: const Icon(Icons.download_rounded))
                             ],
                           ))));
             })));

@@ -39,6 +39,8 @@ Future<void> saveSettings() async {
 
   prefs.setBool("fav_home", favoriteHome);
   prefs.setInt("app_theme", appTheme);
+  prefs.setInt("track_behavior", trackListBehavior);
+  prefs.setInt("popup_style", popupStyle);
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -60,10 +62,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
     var themes = ["System", "Light", "Dark"];
     var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
+    var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
 
     var trackListSelect = trackListBehavior;
 
-    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
+    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) &&
+        trackListSelect == 0) {
       trackListSelect = 1;
     }
     return Scaffold(
@@ -227,10 +231,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Card(
                       child: ListTile(
                 title: const Text("Track-list tap behavior"),
-                subtitle: const Text("The action that occurs when tapped on item in the track-list."),
+                subtitle: const Text(
+                    "The action that occurs when tapped on item in the track-list."),
                 //subtitle: const Text("If none selected, System will be used."),
                 trailing: DropdownButton<String>(
-                  value: trackListBehaviorStrings[trackListSelect],
+                    value: trackListBehaviorStrings[trackListSelect],
                     onChanged: (value) {
                       debugPrint(value);
                       switch (value) {
@@ -250,13 +255,18 @@ class _SettingsPageState extends State<SettingsPage> {
                           });
                           break;
                         default:
+                          return;
                       }
+                      saveSettings();
                     },
                     items: [
-                      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) const DropdownMenuItem (
-                        child: Text("Preview song"),
-                        value: "Preview",
-                      ),
+                      if (Platform.isIOS ||
+                          Platform.isMacOS ||
+                          Platform.isAndroid)
+                        const DropdownMenuItem(
+                          child: Text("Preview song"),
+                          value: "Preview",
+                        ),
                       const DropdownMenuItem(
                         child: Text("Open in Browser"),
                         value: "Browser",
@@ -264,6 +274,53 @@ class _SettingsPageState extends State<SettingsPage> {
                       const DropdownMenuItem(
                         child: Text("Download song"),
                         value: "Download",
+                      )
+                    ]),
+              ))),
+              SizedBox(
+                  child: Card(
+                      child: ListTile(
+                title: const Text("Download Format Pop-up"),
+                subtitle: const Text(
+                    "The pop-up displayed when downloading an song/album."),
+                //subtitle: const Text("If none selected, System will be used."),
+                trailing: DropdownButton<String>(
+                    value: popupBehaviorStrings[popupStyle],
+                    onChanged: (value) {
+                      debugPrint(value);
+                      switch (value) {
+                        case "Auto":
+                          setState(() {
+                            popupStyle = 0;
+                          });
+                          break;
+                        case "Pop-up":
+                          setState(() {
+                            popupStyle = 1;
+                          });
+                          break;
+                        case "Bottom":
+                          setState(() {
+                            popupStyle = 2;
+                          });
+                          break;
+                        default:
+                          return;
+                      }
+                      saveSettings();
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text("Auto"),
+                        value: "Auto",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Pop-up"),
+                        value: "Pop-up",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Bottom"),
+                        value: "Bottom",
                       )
                     ]),
               ))),
