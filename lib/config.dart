@@ -36,12 +36,6 @@ Future<String> get localPath async {
   return directory.path;
 }
 
-Future<String> get localPathAndroid async {
-  final directory = await getExternalStorageDirectory();
-
-  return directory!.path;
-}
-
 bool foundInFavorites(AlbumStruct element) {
   for (var fav in favorites) {
     if (fav.albumName == element.albumName &&

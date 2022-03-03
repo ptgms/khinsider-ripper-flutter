@@ -89,8 +89,7 @@ class _AlbumViewState extends State<AlbumView> {
     if (!isPopUp) {
       showModalBottomSheet<String>(
         builder: (BuildContext context) {
-          return Container(
-              child: Wrap(children: [
+          return Wrap(children: [
             Card(
                 child: ListTile(
               title: const Text("Download Album"),
@@ -138,7 +137,7 @@ class _AlbumViewState extends State<AlbumView> {
               ),
               onTap: () => Navigator.pop(context, null),
             )),
-          ]));
+          ]);
         },
         context: context,
       ).then((value) {
