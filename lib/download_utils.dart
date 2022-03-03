@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 
 String getSeperator() {
   if (Platform.isWindows) {
@@ -18,6 +19,10 @@ String getSeperator() {
 
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
   String toDownload = "";
   await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
@@ -51,7 +56,7 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
         tags.tracks[index] +
         ".$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
-    fileName = await localPathAndroid +
+    fileName = "/storage/emulated/0/Download" +
         getSeperator() +
         "KhinsiderRipper" +
         getSeperator() +
@@ -74,6 +79,10 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
 // used for downloading singular file from the album, used in track view.
 Future<bool> downloadFileFromAlbum(
     AlbumTags tags, int index, String type) async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
   String toDownload = "";
   await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
@@ -115,7 +124,7 @@ Future<bool> downloadFileFromAlbum(
         tags.tracks[index] +
         ".$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
-    fileName = await localPathAndroid +
+    fileName = "/storage/emulated/0/Download" +
         getSeperator() +
         "KhinsiderRipper" +
         getSeperator() +

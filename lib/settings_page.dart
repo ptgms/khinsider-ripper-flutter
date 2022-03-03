@@ -22,8 +22,7 @@ String homeDirectory() {
     case 'windows':
       return Platform.environment['USERPROFILE']!;
     case 'android':
-      // Probably want internal storage.
-      return '/storage/sdcard0';
+      return '/storage/emulated/0/';
     case 'ios':
       return "";
     case 'fuchsia':
@@ -54,10 +53,23 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    var defaultText = "Default: Path of executable";
+    double toAdd = 0;
+
+    if (Platform.isAndroid) {
+      defaultText = "Default: Downloads folder";
+      toAdd = 10;
+    }
+
     if (pathToSaveIn == "") {
-      folderToSave = "Default: Path of executable";
+      folderToSave = defaultText;
     } else {
-      folderToSave = pathToSaveIn;
+      if (Platform.isAndroid &&
+          pathToSaveIn == "/storage/emulated/0/Download") {
+        folderToSave = "Default: Downloads folder";
+      } else {
+        folderToSave = pathToSaveIn;
+      }
     }
 
     var themes = ["System", "Light", "Dark"];
@@ -84,11 +96,17 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: ListView(
             children: [
-              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              if (Platform.isLinux ||
+                  Platform.isWindows ||
+                  Platform.isMacOS ||
+                  Platform.isAndroid)
                 Container(height: 30, color: Colors.transparent),
-              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              if (Platform.isLinux ||
+                  Platform.isWindows ||
+                  Platform.isMacOS ||
+                  Platform.isAndroid)
                 Container(
-                    height: 20,
+                    height: 20 + toAdd,
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                     alignment: Alignment.bottomLeft,
                     child: Row(children: [
@@ -105,7 +123,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               setState(() {
                                 pathToSaveIn = "";
                                 saveLocation();
-                                folderToSave = "Default: Path of executable";
+                                folderToSave = defaultText;
                               });
                             },
                             child: const Text("Set default"),
@@ -113,7 +131,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ])),
-              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              if (Platform.isLinux ||
+                  Platform.isWindows ||
+                  Platform.isMacOS ||
+                  Platform.isAndroid)
                 SizedBox(
                     height: 55,
                     child: Card(

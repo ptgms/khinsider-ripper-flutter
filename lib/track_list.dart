@@ -125,7 +125,11 @@ class _TrackViewState extends State<TrackView> {
 
   String getSnackBarContent(String pathToSaveIn) {
     if (Platform.isAndroid) {
-      return "Saved to Files → Android → data → xyz.ptgms.khinrip → files!";
+      if (pathToSaveIn != "" &&
+          pathToSaveIn != "/storage/emulated/0/Download") {
+        return "Saved to $pathToSaveIn!";
+      }
+      return "Saved to Downloads!";
     } else if (Platform.isIOS) {
       return "Saved to Files App!";
     } else {
@@ -133,15 +137,15 @@ class _TrackViewState extends State<TrackView> {
     }
   }
 
-  void downloadSong(int index, String value) {
+  Future<void> downloadSong(int index, String value) async {
     if (busy) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       dismissDirection: DismissDirection.none,
       //duration: const Duration(seconds: 30),
-      content: Text("Please wait, downloading to $pathToSaveIn..."),
+      content: Text("Please wait, downloading..."),
       behavior: SnackBarBehavior.floating,
     ));
-    downloadFile(tags, index, value);
+    await downloadFile(tags, index, value);
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(getSnackBarContent(pathToSaveIn)),
@@ -173,8 +177,7 @@ class _TrackViewState extends State<TrackView> {
       if (!isPopup) {
         showModalBottomSheet<String>(
           builder: (BuildContext context) {
-            return Container(
-                child: Wrap(children: [
+            return Wrap(children: [
               Card(
                   child: ListTile(
                 title: const Text("Download song"),
@@ -225,7 +228,7 @@ class _TrackViewState extends State<TrackView> {
                 ),
                 onTap: () => Navigator.pop(context, null),
               )),
-            ]));
+            ]);
           },
           context: context,
         ).then((value) {
