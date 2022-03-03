@@ -52,6 +52,21 @@ SizedBox emptySearch() {
       ]));
 }
 
+SizedBox searchingIndicator() {
+  return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Center(
+            child:
+                CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
+          )
+        ],
+      ));
+}
+
 var _searchResults = searchResults;
 
 var busy = false;
@@ -231,6 +246,8 @@ class _SearchWidgetState extends State<SearchWidget> {
     return -1;
   }*/
 
+  bool searching = false;
+
   Future<void> searchPressed(String term) async {
     if (term == "") {
       debugPrint(term);
@@ -242,6 +259,10 @@ class _SearchWidgetState extends State<SearchWidget> {
     searchResults = [];
     searchTermBefore = term;
     searched = true;
+
+    setState(() {
+      searching = true;
+    });
 
     Uri searchURL = Uri.parse(baseUrl + baseSearchUrl + Uri.encodeFull(term));
 
@@ -284,6 +305,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         }
 
         setState(() {
+          searching = false;
           for (var search in searchResults) {
             debugPrint(search.albumName);
           }
@@ -309,7 +331,9 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     int count = width ~/ widthCard;
 
-    if (searched && _searchResults.isEmpty) {
+    if (searching) {
+      bodyDisplay = searchingIndicator();
+    } else if (searched && _searchResults.isEmpty) {
       bodyDisplay = noResults();
     } else if (!searched) {
       bodyDisplay = emptySearch();
@@ -318,7 +342,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           itemCount: _searchResults.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count,
-            childAspectRatio: (widthCard/heightCard),
+            childAspectRatio: (widthCard / heightCard),
           ),
           itemBuilder: (context, index) => ValueListenableBuilder<int>(
               valueListenable: favUpdater,
@@ -411,12 +435,17 @@ class _SearchWidgetState extends State<SearchWidget> {
             ),
           ),
           actions: [
-            if (!favoriteHome) IconButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const FavoriteHome(title: 'Favorites',)));
-                },
-                icon: const Icon(Icons.star_rounded)),
+            if (!favoriteHome)
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const FavoriteHome(
+                                  title: 'Favorites',
+                                )));
+                  },
+                  icon: const Icon(Icons.star_rounded)),
             if (!favoriteHome)
               IconButton(
                 onPressed: (() {

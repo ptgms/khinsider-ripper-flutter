@@ -134,6 +134,7 @@ class _TrackViewState extends State<TrackView> {
   }
 
   void downloadSong(int index, String value) {
+    if (busy) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       dismissDirection: DismissDirection.none,
       //duration: const Duration(seconds: 30),
