@@ -201,21 +201,18 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
 
-    if (widthCard > width) {
-      widthCard = width.toInt();
-    }
-
     int heightCard = 72;
 
     int count = width ~/ widthCard;
 
+    widthCard = width ~/ count;
+    
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: ValueListenableBuilder<int>(
         valueListenable: favUpdater,
         builder: (_, __, ___) {
-          debugPrint("called!");
           if (favorites.isEmpty && favoriteHome) return noFavs();
           return GridView.builder(
             itemCount: favorites.length,

@@ -285,13 +285,11 @@ class _SearchWidgetState extends State<SearchWidget> {
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
 
-    if (widthCard > width) {
-      widthCard = width.toInt();
-    }
-
     int heightCard = 72;
 
     int count = width ~/ widthCard;
+
+    widthCard = width ~/ count;
 
     if (searching) {
       bodyDisplay = searchingIndicator();
