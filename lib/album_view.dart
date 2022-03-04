@@ -41,8 +41,7 @@ Widget albumView(AlbumTags tags) {
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(5)),
             color: const Color.fromRGBO(71, 71, 71, 0.2),
-            image: DecorationImage(
-                fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
+            image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
     Expanded(
       child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
@@ -51,18 +50,13 @@ Widget albumView(AlbumTags tags) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Marquee(
-                    child: Text(tags.albumName,
-                        style: const TextStyle(fontSize: 20))),
-                Marquee(
-                    child: Text(tags.albumLink,
-                        style: const TextStyle(color: Colors.grey))),
+                Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
+                Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
                 Expanded(
                   child: Container(
                     alignment: Alignment.bottomRight,
                     child: Text("Available Formats: " + availableAddon,
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.grey)),
+                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ),
                 )
               ],
@@ -144,8 +138,7 @@ class _AlbumViewState extends State<AlbumView> {
         if (value != null) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => DownloadingView(tags: tags, type: value)),
+            MaterialPageRoute(builder: (context) => DownloadingView(tags: tags, type: value)),
           );
 
           //downloadAlbum(tags, value);
@@ -154,16 +147,13 @@ class _AlbumViewState extends State<AlbumView> {
     } else {
       showDialog<String>(
         context: context,
-        builder: (BuildContext context) => AlertDialog(
-            title: const Text('Download Album'),
-            content: Text(downloadText),
-            actions: getButtons(tags)),
+        builder: (BuildContext context) =>
+            AlertDialog(title: const Text('Download Album'), content: Text(downloadText), actions: getButtons(tags)),
       ).then((value) {
         if (value != null) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => DownloadingView(tags: tags, type: value)),
+            MaterialPageRoute(builder: (context) => DownloadingView(tags: tags, type: value)),
           );
 
           //downloadAlbum(tags, value);
@@ -181,9 +171,8 @@ class _AlbumViewState extends State<AlbumView> {
           child: Card(
               child: InkWell(
                   onTap: (() {
-                    favorites.removeAt(locateInFavorites(AlbumStruct(
-                        tags.albumName,
-                        tags.albumLink.replaceAll(baseUrl, ""))));
+                    favorites.removeAt(
+                        locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""))));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -200,8 +189,7 @@ class _AlbumViewState extends State<AlbumView> {
           child: Card(
               child: InkWell(
                   onTap: (() {
-                    favorites.add(AlbumStruct(tags.albumName,
-                        tags.albumLink.replaceAll(baseUrl, "")));
+                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -244,12 +232,8 @@ class _AlbumViewState extends State<AlbumView> {
 
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags, bool isPopUp) {
     downloadText = tags.albumName;
-    if (pathToSaveIn == "" && Platform.isWindows ||
-        Platform.isMacOS ||
-        Platform.isLinux) {
-      downloadText =
-          "Warning: No saving path specified! Using the programs' directory.\n" +
-              tags.albumName;
+    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      downloadText = "Warning: No saving path specified! Using the programs' directory.\n" + tags.albumName;
     }
     return ListView(
       padding: const EdgeInsets.all(8),

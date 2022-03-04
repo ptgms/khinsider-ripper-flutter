@@ -38,8 +38,7 @@ Future<String> get localPath async {
 
 bool foundInFavorites(AlbumStruct element) {
   for (var fav in favorites) {
-    if (fav.albumName == element.albumName &&
-        fav.albumLink == element.albumLink) {
+    if (fav.albumName == element.albumName && fav.albumLink == element.albumLink) {
       return true;
     }
   }
@@ -48,8 +47,7 @@ bool foundInFavorites(AlbumStruct element) {
 
 int locateInFavorites(AlbumStruct element) {
   for (var i = 0; i < favorites.length; i++) {
-    if (favorites[i].albumName == element.albumName &&
-        favorites[i].albumLink == element.albumLink) {
+    if (favorites[i].albumName == element.albumName && favorites[i].albumLink == element.albumLink) {
       return i;
     }
   }

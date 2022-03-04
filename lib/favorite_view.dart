@@ -7,18 +7,17 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-SizedBox noFavs() { // if no favs saved return placeholder
+SizedBox noFavs() {
+  // if no favs saved return placeholder
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
         Center(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Text("Welcome to Khinsider Ripper!",
-                    style: TextStyle(fontSize: 25),
-                    textAlign: TextAlign.center))),
+                child:
+                    Text("Welcome to Khinsider Ripper!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -29,7 +28,8 @@ SizedBox noFavs() { // if no favs saved return placeholder
       ]));
 }
 
-Future<void> saveFavs() async { // save favorites in preferences
+Future<void> saveFavs() async {
+  // save favorites in preferences
   List<String> favNames = [];
   List<String> favLinks = [];
 
@@ -54,7 +54,8 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   var _favorites = favorites;
 
-  Widget getTitleText(int index) { // gets the cell text for a particular favorite
+  Widget getTitleText(int index) {
+    // gets the cell text for a particular favorite
     return ListTile(
       leading: const Icon(Icons.star),
       trailing: IconButton(
@@ -77,7 +78,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   var busy = false; // indicates if app is busy with other task
 
-  Future<void> goToAlbum(BuildContext context, int index) async { // if clicked on favorite, load the album in view
+  Future<void> goToAlbum(BuildContext context, int index) async {
+    // if clicked on favorite, load the album in view
     if (busy) {
       return;
     } else {
@@ -98,25 +100,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     List<String> trackSizeFLAC = [];
     List<String> trackSizeOGG = [];
 
-    Uri completedUrl = Uri.parse(
-        baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
+    Uri completedUrl = Uri.parse(baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(
-        tracks,
-        trackDuration,
-        "Null",
-        albumLink,
-        trackURL,
-        coverURL,
-        false,
-        false,
-        false,
-        tags,
-        trackSizeMP3,
-        trackSizeFLAC,
-        trackSizeOGG);
+    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false,
+        tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
     http.read(completedUrl).then((contents) async {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -160,8 +149,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
             if (title.find('a') != null) {
               var titleurl = title.find('a')!.attributes['href'];
 
-              if ((titleurl != "" || titleurl != null) &&
-                  !trackURL.contains(titleurl)) {
+              if ((titleurl != "" || titleurl != null) && !trackURL.contains(titleurl)) {
                 trackURL.add(titleurl!);
               }
             }
@@ -184,20 +172,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         }
       }
 
-      toPush = AlbumTags(
-          tracks,
-          trackDuration,
-          albumName,
-          albumLink,
-          trackURL,
-          coverURL,
-          mp3,
-          flac,
-          ogg,
-          tags,
-          trackSizeMP3,
-          trackSizeFLAC,
-          trackSizeOGG);
+      toPush = AlbumTags(tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
+          trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
       //debugPrint("Final: " + toPush.AlbumName);
       if (toPush.albumName != "Null") {
@@ -236,7 +212,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
-
       child: ValueListenableBuilder<int>(
         valueListenable: favUpdater,
         builder: (_, __, ___) {
@@ -252,8 +227,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                 child: InkWell(
                     mouseCursor: MouseCursor.uncontrolled,
                     onTap: () async {
-                      debugPrint(
-                          "Tapped on favorite " + favorites[index].albumName);
+                      debugPrint("Tapped on favorite " + favorites[index].albumName);
                       if (!busy) {
                         await goToAlbum(context, index);
                       }

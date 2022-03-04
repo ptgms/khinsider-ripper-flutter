@@ -62,8 +62,7 @@ class _TrackViewState extends State<TrackView> {
     audioPlayer.setReleaseMode(ReleaseMode.STOP);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0)), //this right here
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
       child: SizedBox(
         height: 300.0,
         width: 300.0,
@@ -125,8 +124,7 @@ class _TrackViewState extends State<TrackView> {
 
   String getSnackBarContent(String pathToSaveIn) {
     if (Platform.isAndroid) {
-      if (pathToSaveIn != "" &&
-          pathToSaveIn != "/storage/emulated/0/Download") {
+      if (pathToSaveIn != "" && pathToSaveIn != "/storage/emulated/0/Download") {
         return "Saved to $pathToSaveIn!";
       }
       return "Saved to Downloads!";
@@ -156,11 +154,8 @@ class _TrackViewState extends State<TrackView> {
   @override
   Widget build(BuildContext context) {
     String downloadText = "";
-    if (pathToSaveIn == "" && Platform.isWindows ||
-        Platform.isMacOS ||
-        Platform.isLinux) {
-      downloadText =
-          "Warning: No saving path specified! Using the programs' directory.\n";
+    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
     }
 
     bool isPopup = true;
@@ -240,9 +235,7 @@ class _TrackViewState extends State<TrackView> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-              title: const Text('Download song'),
-              content: Text(tags.tracks[index]),
-              actions: getButtons(tags, index)),
+              title: const Text('Download song'), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
             downloadSong(index, value);
@@ -263,14 +256,10 @@ class _TrackViewState extends State<TrackView> {
                   child: Card(
                       child: InkWell(
                           onTap: () async {
-                            if (trackListBehavior == 0 &&
-                                (Platform.isMacOS ||
-                                    Platform.isAndroid ||
-                                    Platform.isIOS)) {
+                            if (trackListBehavior == 0 && (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
                               if (!busy) {
                                 busy = true;
-                                Uri completedUrl =
-                                    Uri.parse(baseUrl + tags.trackURL[index]);
+                                Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
                                 await http.read(completedUrl).then((contents) {
                                   BeautifulSoup bs = BeautifulSoup(contents);
@@ -279,11 +268,9 @@ class _TrackViewState extends State<TrackView> {
 
                                   for (var link in element.findAll('a')) {
                                     if (link.attributes['href'] != null) {
-                                      if (link.attributes['href']!
-                                          .endsWith(".mp3")) {
+                                      if (link.attributes['href']!.endsWith(".mp3")) {
                                         playingURL = link.attributes['href']!;
-                                      } else if (link.attributes['href']!
-                                          .endsWith(".ogg")) {
+                                      } else if (link.attributes['href']!.endsWith(".ogg")) {
                                         playingURL = link.attributes['href']!;
                                       }
                                     }
@@ -291,19 +278,14 @@ class _TrackViewState extends State<TrackView> {
                                 });
 
                                 await showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        previewDialog(tags, index));
+                                    context: context, builder: (BuildContext context) => previewDialog(tags, index));
                                 debugPrint("dismissed");
                                 audioPlayer.stop();
                                 playingURL = "";
                                 busy = false;
                               }
-                            } else if ((Platform.isWindows &&
-                                    trackListBehavior == 0) ||
-                                trackListBehavior == 1) {
-                              Uri completedUrl =
-                                  Uri.parse(baseUrl + tags.trackURL[index]);
+                            } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
+                              Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
                               await http.read(completedUrl).then((contents) {
                                 BeautifulSoup bs = BeautifulSoup(contents);
@@ -312,11 +294,9 @@ class _TrackViewState extends State<TrackView> {
 
                                 for (var link in element.findAll('a')) {
                                   if (link.attributes['href'] != null) {
-                                    if (link.attributes['href']!
-                                        .endsWith(".mp3")) {
+                                    if (link.attributes['href']!.endsWith(".mp3")) {
                                       playingURL = link.attributes['href']!;
-                                    } else if (link.attributes['href']!
-                                        .endsWith(".ogg")) {
+                                    } else if (link.attributes['href']!.endsWith(".ogg")) {
                                       playingURL = link.attributes['href']!;
                                     }
                                   }
@@ -341,18 +321,12 @@ class _TrackViewState extends State<TrackView> {
                                     height: double.infinity,
                                     alignment: Alignment.topLeft,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Marquee(
-                                            child: Text(tags.tracks[index],
-                                                style: const TextStyle(
-                                                    fontSize: 16))),
+                                        Marquee(child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
                                         Marquee(
                                             child: Text(tags.trackURL[index],
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey)))
+                                                style: const TextStyle(fontSize: 12, color: Colors.grey)))
                                       ],
                                     )),
                                 flex: 2,

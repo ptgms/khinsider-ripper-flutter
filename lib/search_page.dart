@@ -14,19 +14,15 @@ SizedBox noResults() {
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
         Center(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Text("No results!",
-                    style: TextStyle(fontSize: 25),
-                    textAlign: TextAlign.center))),
+                child: Text("No results!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text("Try adjusting your search term.",
-                  textAlign: TextAlign.center)),
+              child: Text("Try adjusting your search term.", textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -35,19 +31,15 @@ SizedBox emptySearch() {
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
         Center(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Text("Start a search!",
-                    style: TextStyle(fontSize: 25),
-                    textAlign: TextAlign.center))),
+                child: Text("Start a search!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text("Start searching to show results!",
-                  textAlign: TextAlign.center)),
+              child: Text("Start searching to show results!", textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -60,8 +52,7 @@ SizedBox searchingIndicator() {
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
           Center(
-            child:
-                CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
+            child: CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
           )
         ],
       ));
@@ -108,25 +99,12 @@ class _SearchWidgetState extends State<SearchWidget> {
     List<String> trackSizeFLAC = [];
     List<String> trackSizeOGG = [];
 
-    Uri completedUrl = Uri.parse(
-        baseUrl + _searchResults[index].albumLink.replaceAll(baseUrl, ""));
+    Uri completedUrl = Uri.parse(baseUrl + _searchResults[index].albumLink.replaceAll(baseUrl, ""));
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(
-        tracks,
-        trackDuration,
-        "Null",
-        albumLink,
-        trackURL,
-        coverURL,
-        false,
-        false,
-        false,
-        tags,
-        trackSizeMP3,
-        trackSizeFLAC,
-        trackSizeOGG);
+    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false,
+        tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
     http.read(completedUrl).then((contents) {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -170,8 +148,7 @@ class _SearchWidgetState extends State<SearchWidget> {
             if (title.find('a') != null) {
               var titleurl = title.find('a')!.attributes['href'];
 
-              if ((titleurl != "" || titleurl != null) &&
-                  !trackURL.contains(titleurl)) {
+              if ((titleurl != "" || titleurl != null) && !trackURL.contains(titleurl)) {
                 trackURL.add(titleurl!);
               }
             }
@@ -194,20 +171,8 @@ class _SearchWidgetState extends State<SearchWidget> {
         }
       }
 
-      toPush = AlbumTags(
-          tracks,
-          trackDuration,
-          albumName,
-          albumLink,
-          trackURL,
-          coverURL,
-          mp3,
-          flac,
-          ogg,
-          tags,
-          trackSizeMP3,
-          trackSizeFLAC,
-          trackSizeOGG);
+      toPush = AlbumTags(tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
+          trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
       debugPrint("Final: " + toPush.albumName);
       if (toPush.albumName != "Null") {
@@ -272,11 +237,9 @@ class _SearchWidgetState extends State<SearchWidget> {
     Uri redirectUri = Uri.parse(response.headers['location'] ?? "error");
 
     if (redirectUri.toString().contains("game-soundtracks/album")) {
-      String resultName =
-          redirectUri.toString().replaceAll(baseUrl + baseAlbumUrl, "");
+      String resultName = redirectUri.toString().replaceAll(baseUrl + baseAlbumUrl, "");
 
-      if (searchResults
-          .contains(AlbumStruct(resultName, redirectUri.toString()))) {
+      if (searchResults.contains(AlbumStruct(resultName, redirectUri.toString()))) {
         return;
       }
 
@@ -289,8 +252,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
         for (var row in link!.findAll('p')) {
           for (var col in row.findAll('a')) {
-            if (col['href']!.contains("game-soundtracks/browse/") ||
-                col['href']!.contains("/forums/")) {
+            if (col['href']!.contains("game-soundtracks/browse/") || col['href']!.contains("/forums/")) {
               continue;
             }
             if (col['href']!.contains("game-soundtracks/browse/")) {
@@ -364,8 +326,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                               : const Icon(Icons.star_border),
                           onPressed: () {
                             if (favorites.contains(searchResults[index])) {
-                              favorites.removeAt(
-                                  locateInFavorites(searchResults[index]));
+                              favorites.removeAt(locateInFavorites(searchResults[index]));
                             } else {
                               favorites.add(searchResults[index]);
                             }
@@ -375,8 +336,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                             });
                           },
                         ),
-                        title: Marquee(
-                            child: Text(_searchResults[index].albumName)),
+                        title: Marquee(child: Text(_searchResults[index].albumName)),
                         subtitle: Marquee(
                           child: Text(_searchResults[index].albumLink),
                         ),
@@ -413,8 +373,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           title: Container(
             width: double.infinity,
             height: 40,
-            decoration: BoxDecoration(
-                color: colorSearch, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
             child: Center(
               child: TextField(
                 onSubmitted: (term) async {
@@ -449,39 +408,12 @@ class _SearchWidgetState extends State<SearchWidget> {
             if (!favoriteHome)
               IconButton(
                 onPressed: (() {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SettingsPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
                 }),
                 icon: const Icon(Icons.settings_rounded),
               )
           ],
         ),
-        body: bodyDisplay
-
-        /*body: GridView.count(
-            crossAxisCount: count,
-            childAspectRatio: (widthCard / heightCard),
-            children: List.generate(100, (index) {
-              return Card(
-                  child: InkWell(
-                splashColor: Colors.accents.first,
-                mouseCursor: MouseCursor.uncontrolled,
-                onTap: () {
-                  debugPrint("Rapped.");
-                },
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text('Album $index'),
-                      subtitle: Marquee(
-                        child: Text(
-                            'Album location $index AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-            }))*/
-        );
+        body: bodyDisplay);
   }
 }

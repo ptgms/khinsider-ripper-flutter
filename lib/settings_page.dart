@@ -64,8 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (pathToSaveIn == "") {
       folderToSave = defaultText;
     } else {
-      if (Platform.isAndroid &&
-          pathToSaveIn == "/storage/emulated/0/Download") {
+      if (Platform.isAndroid && pathToSaveIn == "/storage/emulated/0/Download") {
         folderToSave = "Default: Downloads folder";
       } else {
         folderToSave = pathToSaveIn;
@@ -78,8 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     var trackListSelect = trackListBehavior;
 
-    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) &&
-        trackListSelect == 0) {
+    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
       trackListSelect = 1;
     }
     return Scaffold(
@@ -96,15 +94,9 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: ListView(
             children: [
-              if (Platform.isLinux ||
-                  Platform.isWindows ||
-                  Platform.isMacOS ||
-                  Platform.isAndroid)
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isAndroid)
                 Container(height: 30, color: Colors.transparent),
-              if (Platform.isLinux ||
-                  Platform.isWindows ||
-                  Platform.isMacOS ||
-                  Platform.isAndroid)
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isAndroid)
                 Container(
                     height: 20 + toAdd,
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -131,10 +123,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ])),
-              if (Platform.isLinux ||
-                  Platform.isWindows ||
-                  Platform.isMacOS ||
-                  Platform.isAndroid)
+              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isAndroid)
                 SizedBox(
                     height: 55,
                     child: Card(
@@ -166,14 +155,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   height: 20,
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   alignment: Alignment.bottomLeft,
-                  child: const Text("Appearance",
-                      style: TextStyle(color: Colors.grey))),
+                  child: const Text("Appearance", style: TextStyle(color: Colors.grey))),
               SizedBox(
                   child: Card(
                       child: ListTile(
                 title: const Text("Favorites is home-page"),
-                subtitle: const Text(
-                    "If off, search will be home-page. Requires restart."),
+                subtitle: const Text("If off, search will be home-page. Requires restart."),
                 trailing: Switch(
                   value: favoriteHome,
                   onChanged: (bool value) {
@@ -246,14 +233,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   height: 20,
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   alignment: Alignment.bottomLeft,
-                  child: const Text("Behavior",
-                      style: TextStyle(color: Colors.grey))),
+                  child: const Text("Behavior", style: TextStyle(color: Colors.grey))),
               SizedBox(
                   child: Card(
                       child: ListTile(
                 title: const Text("Track-list tap behavior"),
-                subtitle: const Text(
-                    "The action that occurs when tapped on item in the track-list."),
+                subtitle: const Text("The action that occurs when tapped on item in the track-list."),
                 //subtitle: const Text("If none selected, System will be used."),
                 trailing: DropdownButton<String>(
                     value: trackListBehaviorStrings[trackListSelect],
@@ -281,9 +266,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       saveSettings();
                     },
                     items: [
-                      if (Platform.isIOS ||
-                          Platform.isMacOS ||
-                          Platform.isAndroid)
+                      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
                         const DropdownMenuItem(
                           child: Text("Preview song"),
                           value: "Preview",
@@ -302,8 +285,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Card(
                       child: ListTile(
                 title: const Text("Download Format Pop-up"),
-                subtitle: const Text(
-                    "The pop-up displayed when downloading an song/album."),
+                subtitle: const Text("The pop-up displayed when downloading an song/album."),
                 //subtitle: const Text("If none selected, System will be used."),
                 trailing: DropdownButton<String>(
                     value: popupBehaviorStrings[popupStyle],

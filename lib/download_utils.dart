@@ -38,10 +38,7 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
     }
     return false;
   });
-  Uint8List bytes =
-      (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload))
-          .buffer
-          .asUint8List();
+  Uint8List bytes = (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload)).buffer.asUint8List();
   final stream = Stream.fromIterable(bytes);
   final bytesSave = await stream.toList();
   var fileName = tags.tracks[index] + ".$type";
@@ -77,8 +74,7 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
 }
 
 // used for downloading singular file from the album, used in track view.
-Future<bool> downloadFileFromAlbum(
-    AlbumTags tags, int index, String type) async {
+Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async {
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
@@ -98,16 +94,10 @@ Future<bool> downloadFileFromAlbum(
     }
     return false;
   });
-  Uint8List bytes =
-      (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload))
-          .buffer
-          .asUint8List();
+  Uint8List bytes = (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload)).buffer.asUint8List();
   final stream = Stream.fromIterable(bytes);
   final bytesSave = await stream.toList();
-  var fileName = tags.albumName.replaceAll(" ", "_") +
-      getSeperator() +
-      tags.tracks[index] +
-      ".$type";
+  var fileName = tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   debugPrint(await localPath);
   if (pathToSaveIn != "") {
     fileName = pathToSaveIn +

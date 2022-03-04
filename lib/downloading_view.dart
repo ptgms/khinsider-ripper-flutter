@@ -10,8 +10,7 @@ class DownloadingView extends StatefulWidget {
   AlbumTags tags;
   String type;
 
-  DownloadingView({Key? key, required this.tags, required this.type})
-      : super(key: key);
+  DownloadingView({Key? key, required this.tags, required this.type}) : super(key: key);
 
   @override
   // ignore: no_logic_in_create_state
@@ -25,7 +24,6 @@ bool busy = false; // if app already doing something async
 bool cancel = false; // if user cancelled out
 
 class _DownloadingViewState extends State<DownloadingView> {
-
   // goes through all tracks in album and uses function in download_utils to download each track
   Future<bool> downloadAlbum(AlbumTags tags, String type) async {
     if (!busy) {
@@ -54,14 +52,6 @@ class _DownloadingViewState extends State<DownloadingView> {
     return false;
   }
 
-  // add hint for android users as path is rather complicated.
-  String getAddOnText() {
-    if (Platform.isAndroid) {
-      return "After Download, you can find the Album under Files → Android → data → xyz.ptgms.khinrip → files. This is due to Android 10's storage requirements.\n";
-    }
-    return "";
-  }
-
   // download progress
   SizedBox downloadingRightNow() {
     return SizedBox(
@@ -73,23 +63,17 @@ class _DownloadingViewState extends State<DownloadingView> {
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: Marquee(
                       child: Text("Downloading " + tags.albumName + "...",
-                          style: const TextStyle(fontSize: 25),
-                          textAlign: TextAlign.center)))),
+                          style: const TextStyle(fontSize: 25), textAlign: TextAlign.center)))),
           Center(
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Text(
-                    getAddOnText() +
-                        currentIndex.toString() +
-                        " / " +
-                        tags.trackURL.length.toString(),
+                child: Text(currentIndex.toString() + " / " + tags.trackURL.length.toString(),
                     textAlign: TextAlign.center)),
           ),
           Center(
               child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: LinearProgressIndicator(
-                value: currentIndex / tags.trackURL.length),
+            child: LinearProgressIndicator(value: currentIndex / tags.trackURL.length),
           ))
         ]));
   }

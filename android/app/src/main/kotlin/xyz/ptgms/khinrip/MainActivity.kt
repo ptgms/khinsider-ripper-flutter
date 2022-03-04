@@ -1,4 +1,4 @@
-package com.example.khinrip
+package xyz.ptgms.khinrip
 
 import io.flutter.embedding.android.FlutterActivity
 

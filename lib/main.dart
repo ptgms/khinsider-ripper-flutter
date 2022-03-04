@@ -74,9 +74,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData.light().copyWith(useMaterial3: true),
             darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
             themeMode: theme,
-            home: favoriteHome
-                ? const FavoriteHome(title: 'Khinsider Ripper')
-                : const SearchWidget(),
+            home: favoriteHome ? const FavoriteHome(title: 'Khinsider Ripper') : const SearchWidget(),
           );
         });
     /*return MaterialApp(
@@ -112,8 +110,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
             if (favoriteHome)
               IconButton(
                 onPressed: () async {
-                  final _ = await Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SearchWidget()));
+                  final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
                   setState(() {
                     bodyToPush = const FavoriteWidget();
                   });
@@ -123,8 +120,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
             if (favoriteHome)
               IconButton(
                 onPressed: (() {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SettingsPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
                 }),
                 icon: const Icon(Icons.settings_rounded),
               )
