@@ -5,6 +5,7 @@ import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
 import 'package:marquee_widget/marquee_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -111,7 +112,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         child: Container(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              if (Platform.isAndroid) {
+                                var status = await Permission.storage.status;
+                                if (!status.isGranted) {
+                                  await Permission.storage.request();
+                                }
+                              }
                               setState(() {
                                 pathToSaveIn = "";
                                 saveLocation();
