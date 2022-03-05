@@ -287,6 +287,10 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     int heightCard = 72;
 
+    if (width < widthCard) {
+      widthCard = width.toInt() - 1;
+    }
+
     int count = width ~/ widthCard;
 
     widthCard = width ~/ count;

@@ -1,4 +1,5 @@
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
+import 'package:contextmenu/contextmenu.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/album_view.dart';
 import 'package:khinrip/config.dart';
@@ -203,10 +204,14 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
     int heightCard = 72;
 
+    if (width < widthCard) {
+      widthCard = width.toInt() - 1;
+    }
+
     int count = width ~/ widthCard;
 
     widthCard = width ~/ count;
-    
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,

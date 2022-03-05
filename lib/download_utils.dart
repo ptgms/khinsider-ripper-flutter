@@ -19,10 +19,13 @@ String getSeperator() {
 
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
+  if (Platform.isAndroid) {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
   }
+
   String toDownload = "";
   await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
@@ -75,10 +78,13 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
 
 // used for downloading singular file from the album, used in track view.
 Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async {
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
+  if (Platform.isAndroid) {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
   }
+
   String toDownload = "";
   await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
