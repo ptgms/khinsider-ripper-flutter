@@ -65,7 +65,7 @@ class _TrackViewState extends State<TrackView> {
     audioPlayer.setReleaseMode(ReleaseMode.STOP);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: SizedBox(
         height: 300.0,
         width: 300.0,

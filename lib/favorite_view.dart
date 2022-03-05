@@ -7,6 +7,7 @@ import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 SizedBox noFavs() {
   // if no favs saved return placeholder
@@ -220,22 +221,45 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         builder: (_, __, ___) {
           if (favorites.isEmpty && favoriteHome) return noFavs();
           return GridView.builder(
-            itemCount: favorites.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: count,
-              childAspectRatio: (widthCard / heightCard),
-            ),
-            itemBuilder: (context, index) => Card(
-                child: InkWell(
-                    mouseCursor: MouseCursor.uncontrolled,
-                    onTap: () async {
-                      debugPrint("Tapped on favorite " + favorites[index].albumName);
-                      if (!busy) {
-                        await goToAlbum(context, index);
-                      }
-                    },
-                    child: getTitleText(index))),
-          );
+              itemCount: favorites.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: count,
+                childAspectRatio: (widthCard / heightCard),
+              ),
+              itemBuilder: (context, index) => ContextMenuArea(
+                    builder: (context) => [
+                      ListTile(
+                        title: const Text("Remove"),
+                        leading: const Icon(Icons.star_half_rounded),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          favorites.removeAt(index);
+                          setState(() {
+                            _favorites = favorites;
+                            saveFavs();
+                          });
+                        },
+                      ),
+                      ListTile(
+                        title: const Text("Open in Browser"),
+                        leading: const Icon(Icons.open_in_browser_rounded),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          launch(baseUrl + favorites[index].albumLink);
+                        },
+                      ),
+                    ],
+                    child: Card(
+                        child: InkWell(
+                            mouseCursor: MouseCursor.uncontrolled,
+                            onTap: () async {
+                              debugPrint("Tapped on favorite " + favorites[index].albumName);
+                              if (!busy) {
+                                await goToAlbum(context, index);
+                              }
+                            },
+                            child: getTitleText(index))),
+                  ));
         },
       ),
       /*GridView.builder(

@@ -113,12 +113,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () async {
-                              if (Platform.isAndroid) {
-                                var status = await Permission.storage.status;
-                                if (!status.isGranted) {
-                                  await Permission.storage.request();
-                                }
-                              }
                               setState(() {
                                 pathToSaveIn = "";
                                 saveLocation();
@@ -136,6 +130,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: Card(
                       child: OutlinedButton(
                         onPressed: () async {
+                          if (Platform.isAndroid) {
+                            var status = await Permission.storage.status;
+                            if (!status.isGranted) {
+                              await Permission.storage.request();
+                            }
+                          }
                           String? path = await FilesystemPicker.open(
                             rootName: "Home folder",
                             title: 'Use folder',
