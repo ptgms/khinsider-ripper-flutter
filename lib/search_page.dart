@@ -230,6 +230,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     });
 
     Uri searchURL = Uri.parse(baseUrl + baseSearchUrl + Uri.encodeFull(term));
+    debugPrint(searchURL.toString());
 
     http.Request req = http.Request("Get", searchURL)..followRedirects = false;
     http.Client baseClient = http.Client();
@@ -244,6 +245,14 @@ class _SearchWidgetState extends State<SearchWidget> {
       }
 
       searchResults.add(AlbumStruct(resultName, redirectUri.toString()));
+
+      setState(() {
+        searching = false;
+        for (var search in searchResults) {
+          debugPrint(search.albumName);
+        }
+        _searchResults = searchResults;
+      });
     } else {
       http.read(searchURL).then((contents) {
         //debugPrint(contents);
