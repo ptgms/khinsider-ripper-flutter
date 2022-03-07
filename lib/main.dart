@@ -30,6 +30,7 @@ Future<void> main() async {
   appTheme = prefs.getInt("app_theme") ?? 0;
   trackListBehavior = prefs.getInt("track_behavior") ?? 0;
   popupStyle = prefs.getInt("popup_style") ?? 0;
+  maxDownloads = prefs.getInt("max_downloads") ?? 1;
   // ------
 
   // convert favorites in string list format to albumstruct list

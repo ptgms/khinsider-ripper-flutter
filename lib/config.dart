@@ -26,6 +26,8 @@ var trackListBehavior = 0;
 var popupStyle = 0;
 //Notifies app if theme changes
 ValueNotifier<int> notifier = ValueNotifier(0);
+//Downloads allowed at the same time
+var maxDownloads = 1;
 
 // Welcome to janky-hut, may I take your order?
 ValueNotifier<int> favUpdater = ValueNotifier(0);

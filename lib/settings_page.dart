@@ -77,6 +77,13 @@ class _SettingsPageState extends State<SettingsPage> {
     var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
 
     var trackListSelect = trackListBehavior;
+    var colorDownloadButton = Theme.of(context).hintColor;
+
+    if ((Platform.isAndroid || Platform.isIOS) && maxDownloads == 1) {
+      colorDownloadButton = Colors.green;
+    } else if (maxDownloads >= 6) {
+      colorDownloadButton = Colors.red;
+    }
 
     if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
       trackListSelect = 1;
@@ -333,6 +340,53 @@ class _SettingsPageState extends State<SettingsPage> {
                         value: "Bottom",
                       )
                     ]),
+              ))),
+              SizedBox(
+                  child: Card(
+                      child: ListTile(
+                title: const Text("Concurrent Downloads"),
+                subtitle: const Text("The maximum amount of concurrent downloads that occur."),
+                //subtitle: const Text("If none selected, System will be used."),
+                trailing: OutlinedButton(
+                  child: Text(maxDownloads.toString(), style: TextStyle(color: colorDownloadButton)),
+                  onPressed: () {
+                    showDialog(
+                            builder: (BuildContext context) {
+                              return StatefulBuilder(builder: (context, setStateAlert) {
+                                return Dialog(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                    child: SizedBox(
+                                        width: (MediaQuery.of(context).size.width / 4) * 3,
+                                        height: 150,
+                                        child: Column(
+                                          children: [
+                                            const ListTile(
+                                              contentPadding: EdgeInsets.all(10),
+                                              title: Text("Concurrent Downloads"),
+                                              subtitle: Text(
+                                                  "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices."),
+                                            ),
+                                            Slider(
+                                                min: 1,
+                                                max: 10,
+                                                label: maxDownloads.toString(),
+                                                divisions: 9,
+                                                value: maxDownloads.toDouble(),
+                                                onChanged: (value) {
+                                                  setStateAlert(() {
+                                                    maxDownloads = value.toInt();
+                                                  });
+                                                })
+                                          ],
+                                        )));
+                              });
+                            },
+                            context: context)
+                        .then((value) => setState(
+                              () {},
+                            ));
+                  },
+                ),
               ))),
             ],
           ),
