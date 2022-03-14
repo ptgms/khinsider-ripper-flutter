@@ -31,6 +31,7 @@ Future<void> main() async {
   trackListBehavior = prefs.getInt("track_behavior") ?? 0;
   popupStyle = prefs.getInt("popup_style") ?? 0;
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
+  md3 = prefs.getBool("material_3") ?? false;
   // ------
 
   // convert favorites in string list format to albumstruct list
@@ -45,6 +46,16 @@ Future<void> main() async {
 
 var dark = true;
 
+ThemeData amoledTheme = ThemeData(
+    brightness: Brightness.dark,
+    backgroundColor: Colors.black,
+    appBarTheme: const AppBarTheme(color: Colors.black),
+    cardColor: Colors.black,
+    scaffoldBackgroundColor: Colors.black,
+    shadowColor: Colors.grey,
+    bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black),
+    dialogBackgroundColor: Colors.grey);
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -52,7 +63,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //final ValueNotifier<int> _notifier = ValueNotifier(appTheme);
-
     return ValueListenableBuilder<int>(
         valueListenable: notifier,
         builder: (_, mode, __) {
@@ -67,25 +77,20 @@ class MyApp extends StatelessWidget {
             case 2:
               theme = ThemeMode.dark;
               break;
+            case 3:
+              theme = ThemeMode.dark;
+              break;
             default:
           }
           return MaterialApp(
             title: 'Khinsider Ripper',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData.light().copyWith(useMaterial3: true),
-            darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
+            theme: ThemeData.light().copyWith(useMaterial3: md3),
+            darkTheme: (appTheme == 3) ? amoledTheme : ThemeData.dark().copyWith(useMaterial3: md3),
             themeMode: theme,
             home: favoriteHome ? const FavoriteHome(title: 'Khinsider Ripper') : const SearchWidget(),
           );
         });
-    /*return MaterialApp(
-      title: 'Khinsider Ripper',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(useMaterial3: true),
-      darkTheme: ThemeData.dark().copyWith(useMaterial3: true),
-      themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Khinsider Ripper'),
-    );*/
   }
 }
 
@@ -100,6 +105,11 @@ class FavoriteHome extends StatefulWidget {
 
 class _FavoriteHomeState extends State<FavoriteHome> {
   var bodyToPush = const FavoriteWidget();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

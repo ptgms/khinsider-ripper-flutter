@@ -70,7 +70,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.15.0"
+    version: "1.16.0"
   context_menus:
     dependency: "direct main"
     description:
@@ -365,7 +365,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "3.0.0"
   share_plus_linux:
     dependency: transitive
     description:

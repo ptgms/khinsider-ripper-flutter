@@ -17,6 +17,15 @@ String getSeperator() {
   }
 }
 
+Future<List<String>> getDirects(AlbumTags tags, String type) async {
+  List<String> directLinks = [];
+  Future.wait([getDirectLink(tags, 0, type)]);
+
+  return directLinks;
+}
+
+Future<void> getDirectLink(AlbumTags tags, int index, String type) async {}
+
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   if (Platform.isAndroid) {

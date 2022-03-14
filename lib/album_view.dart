@@ -34,42 +34,43 @@ Widget albumView(AlbumTags tags) {
   }
 
   return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
       child: Row(children: [
-    Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-            color: const Color.fromRGBO(71, 71, 71, 0.2),
-            image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
-    Expanded(
-      child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-          child: SizedBox(
+        Container(
+            width: 100,
             height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
-                Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.bottomRight,
-                    child: Text("Available Formats: " + availableAddon,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  ),
-                )
-              ],
-            ),
-          )),
-      flex: 2,
-    ),
-    IconButton(
-        onPressed: () async {
-          await launch(tags.albumLink);
-        },
-        icon: const Icon(Icons.open_in_browser))
-  ]));
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+                color: const Color.fromRGBO(71, 71, 71, 0.2),
+                image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
+        Expanded(
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+              child: SizedBox(
+                height: 100,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
+                    Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: Text("Available Formats: " + availableAddon,
+                            style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      ),
+                    )
+                  ],
+                ),
+              )),
+          flex: 2,
+        ),
+        IconButton(
+            onPressed: () async {
+              await launch(tags.albumLink);
+            },
+            icon: const Icon(Icons.open_in_browser))
+      ]));
 }
 
 class _AlbumViewState extends State<AlbumView> {
@@ -77,18 +78,22 @@ class _AlbumViewState extends State<AlbumView> {
 
   bool isExpanded = false;
 
+  ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
+
   _AlbumViewState({required this.tags});
 
   void showDownloadModal(bool isPopUp) {
     if (!isPopUp) {
       showModalBottomSheet<String>(
+        shape: cardShape,
         builder: (BuildContext context) {
           return Wrap(children: [
             Card(
+                shape: cardShape,
                 child: ListTile(
-              title: const Text("Download Album"),
-              subtitle: Text(downloadText),
-            )),
+                  title: const Text("Download Album"),
+                  subtitle: Text(downloadText),
+                )),
             Container(height: 30, color: Colors.transparent),
             Container(
               height: 20,
@@ -101,7 +106,9 @@ class _AlbumViewState extends State<AlbumView> {
             ),
             if (tags.mp3)
               Card(
+                  shape: cardShape,
                   child: InkWell(
+                      customBorder: cardShape,
                       onTap: () => Navigator.pop(context, 'mp3'),
                       child: const ListTile(
                         leading: Icon(Icons.download_rounded),
@@ -109,7 +116,9 @@ class _AlbumViewState extends State<AlbumView> {
                       ))),
             if (tags.flac)
               Card(
+                  shape: cardShape,
                   child: InkWell(
+                      customBorder: cardShape,
                       onTap: () => Navigator.pop(context, 'flac'),
                       child: const ListTile(
                         leading: Icon(Icons.download_rounded),
@@ -117,20 +126,24 @@ class _AlbumViewState extends State<AlbumView> {
                       ))),
             if (tags.ogg)
               Card(
+                  shape: cardShape,
                   child: InkWell(
+                      customBorder: cardShape,
                       onTap: () => Navigator.pop(context, 'ogg'),
                       child: const ListTile(
                         leading: Icon(Icons.download_rounded),
                         title: Text("Download in OGG"),
                       ))),
             Card(
+                shape: cardShape,
                 child: InkWell(
-              child: const ListTile(
-                leading: Icon(Icons.cancel_outlined),
-                title: Text("Cancel"),
-              ),
-              onTap: () => Navigator.pop(context, null),
-            )),
+                  customBorder: cardShape,
+                  child: const ListTile(
+                    leading: Icon(Icons.cancel_outlined),
+                    title: Text("Cancel"),
+                  ),
+                  onTap: () => Navigator.pop(context, null),
+                )),
           ]);
         },
         context: context,
@@ -163,13 +176,16 @@ class _AlbumViewState extends State<AlbumView> {
   }
 
   Widget favCell(AlbumTags tags) {
+    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     // the add/remove from favorites cell/button.
     if (foundInFavorites(
         // if album being viewed is in favorites, show remove button
         AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")))) {
       return SizedBox(
           child: Card(
+              shape: cardShape,
               child: InkWell(
+                  customBorder: cardShape,
                   onTap: (() {
                     favorites.removeAt(
                         locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""))));
@@ -187,7 +203,9 @@ class _AlbumViewState extends State<AlbumView> {
       // if not, show the add button
       return SizedBox(
           child: Card(
+              shape: cardShape,
               child: InkWell(
+                  customBorder: cardShape,
                   onTap: (() {
                     favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")));
                     setState(() {
@@ -232,6 +250,7 @@ class _AlbumViewState extends State<AlbumView> {
 
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags, bool isPopUp) {
     downloadText = tags.albumName;
+    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       downloadText = "Warning: No saving path specified! Using the programs' directory.\n" + tags.albumName;
     }
@@ -253,7 +272,9 @@ class _AlbumViewState extends State<AlbumView> {
         SizedBox(
             // download album button
             child: Card(
+                shape: cardShape,
                 child: InkWell(
+                    customBorder: cardShape,
                     onTap: () {
                       showDownloadModal(isPopUp);
                     },
@@ -276,8 +297,10 @@ class _AlbumViewState extends State<AlbumView> {
         Container(
             padding: EdgeInsets.zero,
             child: Card(
+                shape: cardShape,
                 // view all tracks button
                 child: InkWell(
+                    customBorder: cardShape,
                     mouseCursor: MouseCursor.uncontrolled,
                     onTap: () {
                       Navigator.push(

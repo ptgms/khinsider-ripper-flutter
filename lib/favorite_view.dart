@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:contextmenu/contextmenu.dart';
 import 'package:flutter/material.dart';
@@ -199,6 +201,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     //List<Widget> TitleTextColumn = getTitleText();
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
@@ -213,75 +216,119 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
     widthCard = width ~/ count;
 
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: ValueListenableBuilder<int>(
-        valueListenable: favUpdater,
-        builder: (_, __, ___) {
-          if (favorites.isEmpty && favoriteHome) return noFavs();
-          return GridView.builder(
-              itemCount: favorites.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: count,
-                childAspectRatio: (widthCard / heightCard),
-              ),
-              itemBuilder: (context, index) => ContextMenuArea(
-                    builder: (context) => [
-                      ListTile(
-                        title: const Text("Remove"),
-                        leading: const Icon(Icons.star_half_rounded),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          favorites.removeAt(index);
-                          setState(() {
-                            _favorites = favorites;
-                            saveFavs();
-                          });
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: ValueListenableBuilder<int>(
+          valueListenable: favUpdater,
+          builder: (_, __, ___) {
+            if (favorites.isEmpty && favoriteHome) return noFavs();
+            return GridView.builder(
+                itemCount: favorites.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: count,
+                  childAspectRatio: (widthCard / heightCard),
+                ),
+                itemBuilder: (context, index) => ContextMenuArea(
+                      builder: (context) => [
+                        ListTile(
+                          title: const Text("Remove"),
+                          leading: const Icon(Icons.star_half_rounded),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            favorites.removeAt(index);
+                            setState(() {
+                              _favorites = favorites;
+                              saveFavs();
+                            });
+                          },
+                        ),
+                        ListTile(
+                          title: const Text("Open in Browser"),
+                          leading: const Icon(Icons.open_in_browser_rounded),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            launch(baseUrl + favorites[index].albumLink);
+                          },
+                        ),
+                      ],
+                      child: Card(
+                          shape: cardShape,
+                          child: InkWell(
+                              customBorder: cardShape,
+                              mouseCursor: MouseCursor.uncontrolled,
+                              onTap: () async {
+                                debugPrint("Tapped on favorite " + favorites[index].albumName);
+                                if (!busy) {
+                                  await goToAlbum(context, index);
+                                }
+                              },
+                              child: getTitleText(index))),
+                    ));
+          },
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: ValueListenableBuilder<int>(
+          valueListenable: favUpdater,
+          builder: (_, __, ___) {
+            if (favorites.isEmpty && favoriteHome) return noFavs();
+            return GridView.builder(
+                itemCount: favorites.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: count,
+                  childAspectRatio: (widthCard / heightCard),
+                ),
+                itemBuilder: (context, index) => Card(
+                    child: InkWell(
+                        mouseCursor: MouseCursor.uncontrolled,
+                        onLongPress: () {
+                          showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                  title: Text(favorites[index].albumName),
+                                  content: SizedBox(
+                                    height: 112,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          title: const Text("Remove"),
+                                          leading: const Icon(Icons.star_half_rounded),
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            favorites.removeAt(index);
+                                            setState(() {
+                                              _favorites = favorites;
+                                              saveFavs();
+                                            });
+                                          },
+                                        ),
+                                        ListTile(
+                                          title: const Text("Open in Browser"),
+                                          leading: const Icon(Icons.open_in_browser_rounded),
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            launch(baseUrl + favorites[index].albumLink);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  )));
                         },
-                      ),
-                      ListTile(
-                        title: const Text("Open in Browser"),
-                        leading: const Icon(Icons.open_in_browser_rounded),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          launch(baseUrl + favorites[index].albumLink);
+                        onTap: () async {
+                          debugPrint("Tapped on favorite " + favorites[index].albumName);
+                          if (!busy) {
+                            await goToAlbum(context, index);
+                          }
                         },
-                      ),
-                    ],
-                    child: Card(
-                        child: InkWell(
-                            mouseCursor: MouseCursor.uncontrolled,
-                            onTap: () async {
-                              debugPrint("Tapped on favorite " + favorites[index].albumName);
-                              if (!busy) {
-                                await goToAlbum(context, index);
-                              }
-                            },
-                            child: getTitleText(index))),
-                  ));
-        },
-      ),
-      /*GridView.builder(
-          itemCount: favorites.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: count,
-            childAspectRatio: (widthCard / heightCard),
-          ),
-          itemBuilder: (context, index) => Card(
-              child: InkWell(
-                  mouseCursor: MouseCursor.uncontrolled,
-                  onTap: () async {
-                    debugPrint(
-                        "Tapped on favorite " + favorites[index].albumName);
-                    if (!busy) {
-                      await goToAlbum(context, index);
-                    }
-                  },
-                  child: Column(
-                    children: getTitleText(),
-                  ))),
-        )*/
-    );
+                        child: getTitleText(index))));
+          },
+        ),
+      );
+    }
   }
 }

@@ -28,6 +28,8 @@ var popupStyle = 0;
 ValueNotifier<int> notifier = ValueNotifier(0);
 //Downloads allowed at the same time
 var maxDownloads = 1;
+// Material Design 3 enabled
+var md3 = false;
 
 // Welcome to janky-hut, may I take your order?
 ValueNotifier<int> favUpdater = ValueNotifier(0);
@@ -36,6 +38,14 @@ Future<String> get localPath async {
   final directory = await getApplicationDocumentsDirectory();
 
   return directory.path;
+}
+
+double getRoundedValue() {
+  if (md3) {
+    return 16;
+  } else {
+    return 5;
+  }
 }
 
 bool foundInFavorites(AlbumStruct element) {

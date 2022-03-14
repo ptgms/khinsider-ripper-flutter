@@ -156,6 +156,8 @@ class _TrackViewState extends State<TrackView> {
 
   @override
   Widget build(BuildContext context) {
+    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
+
     String downloadText = "";
     if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
@@ -174,13 +176,15 @@ class _TrackViewState extends State<TrackView> {
     void showDownloadPopup(int index) {
       if (!isPopup) {
         showModalBottomSheet<String>(
+          shape: cardShape,
           builder: (BuildContext context) {
             return Wrap(children: [
               Card(
+                  shape: cardShape,
                   child: ListTile(
-                title: const Text("Download song"),
-                subtitle: Text(downloadText + tags.tracks[index]),
-              )),
+                    title: const Text("Download song"),
+                    subtitle: Text(downloadText + tags.tracks[index]),
+                  )),
               Container(height: 30, color: Colors.transparent),
               Container(
                 height: 20,
@@ -193,6 +197,7 @@ class _TrackViewState extends State<TrackView> {
               ),
               if (tags.mp3)
                 Card(
+                    shape: cardShape,
                     child: InkWell(
                         onTap: () => Navigator.pop(context, 'mp3'),
                         child: ListTile(
@@ -202,6 +207,7 @@ class _TrackViewState extends State<TrackView> {
                         ))),
               if (tags.flac)
                 Card(
+                    shape: cardShape,
                     child: InkWell(
                         onTap: () => Navigator.pop(context, 'flac'),
                         child: ListTile(
@@ -211,6 +217,7 @@ class _TrackViewState extends State<TrackView> {
                         ))),
               if (tags.ogg)
                 Card(
+                    shape: cardShape,
                     child: InkWell(
                         onTap: () => Navigator.pop(context, 'ogg'),
                         child: ListTile(
@@ -219,13 +226,14 @@ class _TrackViewState extends State<TrackView> {
                           subtitle: Text(tags.trackSizeOGG[index]),
                         ))),
               Card(
+                  shape: cardShape,
                   child: InkWell(
-                child: const ListTile(
-                  leading: Icon(Icons.cancel_outlined),
-                  title: Text("Cancel"),
-                ),
-                onTap: () => Navigator.pop(context, null),
-              )),
+                    child: const ListTile(
+                      leading: Icon(Icons.cancel_outlined),
+                      title: Text("Cancel"),
+                    ),
+                    onTap: () => Navigator.pop(context, null),
+                  )),
             ]);
           },
           context: context,
@@ -247,150 +255,216 @@ class _TrackViewState extends State<TrackView> {
       }
     }
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Tracks"),
-        ),
-        body: ListView.builder(
-            itemCount: tags.tracks.length,
-            itemBuilder: ((context, index) {
-              return SizedBox(
-                  height: 55,
-                  child: Card(
-                      child: ContextMenuArea(
-                          builder: (context) => [
-                                if (Platform.isAndroid || Platform.isIOS)
+    Widget trackItem(int index) {
+      return InkWell(
+          customBorder: cardShape,
+          onLongPress: () {
+            if (!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+              showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                      title: Text(tags.tracks[index]),
+                      content: SizedBox(
+                        height: 224,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.ios_share_rounded),
+                              title: const Text('Share Track'),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Share.share("Check out this Song '" +
+                                    tags.tracks[index] +
+                                    "' on Khinsider!\n" +
+                                    baseUrl +
+                                    tags.trackURL[index]);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.download_rounded),
+                              title: const Text('Download Track'),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                showDownloadPopup(index);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.open_in_browser_rounded),
+                              title: const Text('Open in Browser'),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                launch(baseUrl + tags.trackURL[index]);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.copy_rounded),
+                              title: const Text("Copy URL"),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  dismissDirection: DismissDirection.none,
+                                  duration: Duration(seconds: 1),
+                                  content: Text("Copied URL to clipboard!"),
+                                  behavior: SnackBarBehavior.floating,
+                                ));
+                              },
+                            )
+                          ],
+                        ),
+                      )));
+            }
+          },
+          onTap: () async {
+            if (trackListBehavior == 0 && (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
+              if (!busy) {
+                busy = true;
+                Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
+
+                await http.read(completedUrl).then((contents) {
+                  BeautifulSoup bs = BeautifulSoup(contents);
+
+                  var element = bs.find('', id: 'EchoTopic')!;
+
+                  for (var link in element.findAll('a')) {
+                    if (link.attributes['href'] != null) {
+                      if (link.attributes['href']!.endsWith(".mp3")) {
+                        playingURL = link.attributes['href']!;
+                      } else if (link.attributes['href']!.endsWith(".ogg")) {
+                        playingURL = link.attributes['href']!;
+                      }
+                    }
+                  }
+                });
+
+                await showDialog(context: context, builder: (BuildContext context) => previewDialog(tags, index));
+                debugPrint("dismissed");
+                audioPlayer.stop();
+                playingURL = "";
+                busy = false;
+              }
+            } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
+              Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
+
+              await http.read(completedUrl).then((contents) {
+                BeautifulSoup bs = BeautifulSoup(contents);
+
+                var element = bs.find('', id: 'EchoTopic')!;
+
+                for (var link in element.findAll('a')) {
+                  if (link.attributes['href'] != null) {
+                    if (link.attributes['href']!.endsWith(".mp3")) {
+                      playingURL = link.attributes['href']!;
+                    } else if (link.attributes['href']!.endsWith(".ogg")) {
+                      playingURL = link.attributes['href']!;
+                    }
+                  }
+                }
+              });
+              await launch(playingURL);
+              playingURL = "";
+            } else if (trackListBehavior == 2) {
+              showDownloadPopup(index);
+            }
+          },
+          child: Row(
+            children: [
+              Container(width: 55, height: 55, alignment: Alignment.center, child: Text((index + 1).toString())),
+              Expanded(
+                child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Marquee(child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
+                        Marquee(
+                            child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
+                      ],
+                    )),
+                flex: 2,
+              ),
+              if (trackListBehavior != 2)
+                IconButton(
+                    onPressed: () async {
+                      showDownloadPopup(index);
+                    },
+                    icon: const Icon(Icons.download_rounded))
+            ],
+          ));
+    }
+
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text("Tracks"),
+          ),
+          body: ListView.builder(
+              itemCount: tags.tracks.length,
+              itemBuilder: ((context, index) {
+                return SizedBox(
+                    height: 55,
+                    child: Card(
+                        shape: cardShape,
+                        child: ContextMenuArea(
+                            builder: (context) => [
+                                  if (Platform.isAndroid || Platform.isIOS)
+                                    ListTile(
+                                      leading: const Icon(Icons.ios_share_rounded),
+                                      title: const Text('Share Track'),
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                        Share.share("Check out this Song '" +
+                                            tags.tracks[index] +
+                                            "' on Khinsider!\n" +
+                                            baseUrl +
+                                            tags.trackURL[index]);
+                                      },
+                                    ),
                                   ListTile(
-                                    leading: const Icon(Icons.ios_share_rounded),
-                                    title: const Text('Share Track'),
+                                    leading: const Icon(Icons.download_rounded),
+                                    title: const Text('Download Track'),
                                     onTap: () {
                                       Navigator.of(context).pop();
-                                      Share.share("Check out this Song '" +
-                                          tags.tracks[index] +
-                                          "' on Khinsider!\n" +
-                                          baseUrl +
-                                          tags.trackURL[index]);
+                                      showDownloadPopup(index);
                                     },
                                   ),
-                                ListTile(
-                                  leading: const Icon(Icons.download_rounded),
-                                  title: const Text('Download Track'),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    showDownloadPopup(index);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.open_in_browser_rounded),
-                                  title: const Text('Open in Browser'),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    launch(baseUrl + tags.trackURL[index]);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.copy_rounded),
-                                  title: const Text("Copy URL"),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                      dismissDirection: DismissDirection.none,
-                                      duration: Duration(seconds: 1),
-                                      content: Text("Copied URL to clipboard!"),
-                                      behavior: SnackBarBehavior.floating,
-                                    ));
-                                  },
-                                )
-                              ],
-                          child: InkWell(
-                              onTap: () async {
-                                if (trackListBehavior == 0 &&
-                                    (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
-                                  if (!busy) {
-                                    busy = true;
-                                    Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
-
-                                    await http.read(completedUrl).then((contents) {
-                                      BeautifulSoup bs = BeautifulSoup(contents);
-
-                                      var element = bs.find('', id: 'EchoTopic')!;
-
-                                      for (var link in element.findAll('a')) {
-                                        if (link.attributes['href'] != null) {
-                                          if (link.attributes['href']!.endsWith(".mp3")) {
-                                            playingURL = link.attributes['href']!;
-                                          } else if (link.attributes['href']!.endsWith(".ogg")) {
-                                            playingURL = link.attributes['href']!;
-                                          }
-                                        }
-                                      }
-                                    });
-
-                                    await showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) => previewDialog(tags, index));
-                                    debugPrint("dismissed");
-                                    audioPlayer.stop();
-                                    playingURL = "";
-                                    busy = false;
-                                  }
-                                } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
-                                  Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
-
-                                  await http.read(completedUrl).then((contents) {
-                                    BeautifulSoup bs = BeautifulSoup(contents);
-
-                                    var element = bs.find('', id: 'EchoTopic')!;
-
-                                    for (var link in element.findAll('a')) {
-                                      if (link.attributes['href'] != null) {
-                                        if (link.attributes['href']!.endsWith(".mp3")) {
-                                          playingURL = link.attributes['href']!;
-                                        } else if (link.attributes['href']!.endsWith(".ogg")) {
-                                          playingURL = link.attributes['href']!;
-                                        }
-                                      }
-                                    }
-                                  });
-                                  await launch(playingURL);
-                                  playingURL = "";
-                                } else if (trackListBehavior == 2) {
-                                  showDownloadPopup(index);
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  Container(
-                                      width: 55,
-                                      height: 55,
-                                      alignment: Alignment.center,
-                                      child: Text((index + 1).toString())),
-                                  Expanded(
-                                    child: Container(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        alignment: Alignment.topLeft,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Marquee(
-                                                child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
-                                            Marquee(
-                                                child: Text(tags.trackURL[index],
-                                                    style: const TextStyle(fontSize: 12, color: Colors.grey)))
-                                          ],
-                                        )),
-                                    flex: 2,
+                                  ListTile(
+                                    leading: const Icon(Icons.open_in_browser_rounded),
+                                    title: const Text('Open in Browser'),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      launch(baseUrl + tags.trackURL[index]);
+                                    },
                                   ),
-                                  if (trackListBehavior != 2)
-                                    IconButton(
-                                        onPressed: () async {
-                                          showDownloadPopup(index);
-                                        },
-                                        icon: const Icon(Icons.download_rounded))
+                                  ListTile(
+                                    leading: const Icon(Icons.copy_rounded),
+                                    title: const Text("Copy URL"),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                        dismissDirection: DismissDirection.none,
+                                        duration: Duration(seconds: 1),
+                                        content: Text("Copied URL to clipboard!"),
+                                        behavior: SnackBarBehavior.floating,
+                                      ));
+                                    },
+                                  )
                                 ],
-                              )))));
-            })));
+                            child: trackItem(index))));
+              })));
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text("Tracks"),
+          ),
+          body: ListView.builder(
+              itemCount: tags.tracks.length,
+              itemBuilder: ((context, index) {
+                return SizedBox(height: 55, child: Card(shape: cardShape, child: trackItem(index)));
+              })));
+    }
   }
 }
