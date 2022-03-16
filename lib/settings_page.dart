@@ -79,12 +79,16 @@ class _SettingsPageState extends State<SettingsPage> {
       sectionColor = Colors.white10;
     }
 
-    var themes = ["System", "Light", "Dark", "AMOLED"];
+    var themes = ["System", "Light", "Dark", "Black"];
     var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
     var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
 
     var trackListSelect = trackListBehavior;
     var colorDownloadButton = Theme.of(context).hintColor;
+
+    GlobalKey _dropdownTheme = GlobalKey();
+    GlobalKey _dropdownTracklist = GlobalKey();
+    GlobalKey _dropdownPopUp = GlobalKey();
 
     if ((Platform.isAndroid || Platform.isIOS) && maxDownloads == 1) {
       colorDownloadButton = Colors.green;
@@ -95,6 +99,21 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
       trackListSelect = 1;
     }
+
+    void openDropdown(GlobalKey toOpen) {
+      toOpen.currentContext?.visitChildElements((element) {
+        if (element.widget is Semantics) {
+          element.visitChildElements((element) {
+            if (element.widget != null && element.widget is Actions) {
+              element.visitChildElements((element) {
+                Actions.invoke(element, const ActivateIntent());
+              });
+            }
+          });
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
           title: const Text("Settings"),
@@ -188,6 +207,8 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               SettingsTile.navigation(
                 trailing: DropdownButton<String>(
+                    alignment: AlignmentDirectional.centerEnd,
+                    key: _dropdownTheme,
                     icon: const Icon(Icons.chevron_right_outlined),
                     underline: Container(),
                     //iconSize: 0.0,
@@ -212,7 +233,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             notifier.value = 2;
                           });
                           break;
-                        case "AMOLED":
+                        case "Black":
                           setState(() {
                             appTheme = 3;
                             notifier.value = 3;
@@ -224,20 +245,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                     items: const [
                       DropdownMenuItem(
-                        child: Text("System"),
+                        child: Text("System", textAlign: TextAlign.center),
                         value: "System",
                       ),
                       DropdownMenuItem(
-                        child: Text("Light"),
+                        child: Text("Light", textAlign: TextAlign.center),
                         value: "Light",
                       ),
                       DropdownMenuItem(
                         child: Text("Dark"),
                         value: "Dark",
                       ),
-                      DropdownMenuItem(child: Text("AMOLED"), value: "AMOLED"),
+                      DropdownMenuItem(child: Text("Black"), value: "Black"),
                     ]),
-                title: Text('App Theme'),
+                title: const Text('App Theme'),
+                onPressed: (context) {
+                  openDropdown(_dropdownTheme);
+                },
               ),
               SettingsTile.switchTile(
                   initialValue: md3,
@@ -268,6 +292,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: const Text("Track-list tap behavior"),
                 description: const Text("The action that occurs when tapped on item in the track-list."),
                 trailing: DropdownButton<String>(
+                    key: _dropdownTracklist,
+                    alignment: AlignmentDirectional.centerEnd,
                     icon: const Icon(Icons.chevron_right_outlined),
                     underline: Container(),
                     value: trackListBehaviorStrings[trackListSelect],
@@ -309,11 +335,16 @@ class _SettingsPageState extends State<SettingsPage> {
                         value: "Download",
                       )
                     ]),
+                onPressed: (context) {
+                  openDropdown(_dropdownTracklist);
+                },
               ),
               SettingsTile.navigation(
                 title: const Text("Pop-Ups"),
                 description: const Text("The pop-up displayed when downloading an song/album."),
                 trailing: DropdownButton<String>(
+                    key: _dropdownPopUp,
+                    alignment: AlignmentDirectional.centerEnd,
                     icon: const Icon(Icons.chevron_right_outlined),
                     underline: Container(),
                     value: popupBehaviorStrings[popupStyle],
@@ -354,10 +385,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         value: "Bottom",
                       )
                     ]),
+                onPressed: (context) {
+                  openDropdown(_dropdownPopUp);
+                },
               ),
               SettingsTile.navigation(
                 title: const Text("Concurrent Downloads"),
-                value: Text(maxDownloads.toString()),
+                value: Text(maxDownloads.toString(), style: TextStyle(color: colorDownloadButton)),
                 onPressed: (context) {
                   showDialog(
                           builder: (BuildContext context) {
