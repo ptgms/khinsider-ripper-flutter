@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';

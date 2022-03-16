@@ -127,13 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
-  filesystem_picker:
+  file_picker:
     dependency: "direct main"
     description:
-      name: filesystem_picker
+      name: file_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "4.5.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -153,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter

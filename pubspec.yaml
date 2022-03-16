@@ -46,7 +46,6 @@ dependencies:
   http: ^0.13.4
   url_launcher: ^6.0.20
   audioplayers: ^0.20.1
-  filesystem_picker: ^2.0.0
   flutter_phoenix: ^1.0.0
   path_provider: ^2.0.9
   permission_handler: ^9.2.0
@@ -55,6 +54,7 @@ dependencies:
   contextmenu: ^3.0.0
   share_plus: 3.0.0 #^4.0.1
   settings_ui: ^2.0.0
+  file_picker: ^4.5.1
 
 
 dev_dependencies:
