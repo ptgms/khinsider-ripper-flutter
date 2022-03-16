@@ -278,12 +278,14 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
           builder: (_, __, ___) {
             if (favorites.isEmpty && favoriteHome) return noFavs();
             return GridView.builder(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 itemCount: favorites.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: count,
                   childAspectRatio: (widthCard / heightCard),
                 ),
                 itemBuilder: (context, index) => Card(
+                    shape: cardShape,
                     child: InkWell(
                         mouseCursor: MouseCursor.uncontrolled,
                         onLongPress: () {

@@ -37,7 +37,8 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  # cupertino_icons: ^1.0.2
+  # 
+  cupertino_icons: ^1.0.2
   beautiful_soup_dart: ^0.2.0
   marquee_widget: ^1.2.0
   provider: ^6.0.2
@@ -52,7 +53,8 @@ dependencies:
   context_menus: ^0.1.0+6
   native_context_menu: ^0.2.1+4
   contextmenu: ^3.0.0
-  share_plus: 3.0.0
+  share_plus: 3.0.0 #^4.0.1
+  settings_ui: ^2.0.0
 
 
 dev_dependencies:

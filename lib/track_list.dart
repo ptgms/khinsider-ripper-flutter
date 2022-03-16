@@ -401,6 +401,7 @@ class _TrackViewState extends State<TrackView> {
             title: const Text("Tracks"),
           ),
           body: ListView.builder(
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               itemCount: tags.tracks.length,
               itemBuilder: ((context, index) {
                 return SizedBox(

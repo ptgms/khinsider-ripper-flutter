@@ -289,6 +289,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     Widget bodyDisplay;
 
     double width = MediaQuery.of(context).size.width;
@@ -312,6 +313,7 @@ class _SearchWidgetState extends State<SearchWidget> {
       bodyDisplay = emptySearch();
     } else {
       bodyDisplay = GridView.builder(
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           itemCount: _searchResults.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count,
@@ -321,40 +323,41 @@ class _SearchWidgetState extends State<SearchWidget> {
               valueListenable: favUpdater,
               builder: (_, __, ___) {
                 return Card(
+                    shape: cardShape,
                     child: InkWell(
-                  splashColor: Colors.accents.first,
-                  mouseCursor: MouseCursor.uncontrolled,
-                  onTap: () {
-                    debugPrint("Tapped " + _searchResults[index].albumName);
-                    goToAlbum(context, index);
-                  },
-                  child: Column(
-                    children: [
-                      ListTile(
-                        trailing: IconButton(
-                          icon: foundInFavorites(searchResults[index])
-                              ? const Icon(Icons.star)
-                              : const Icon(Icons.star_border),
-                          onPressed: () {
-                            if (favorites.contains(searchResults[index])) {
-                              favorites.removeAt(locateInFavorites(searchResults[index]));
-                            } else {
-                              favorites.add(searchResults[index]);
-                            }
-                            setState(() {
-                              saveFavs();
-                              favUpdater.value += 1;
-                            });
-                          },
-                        ),
-                        title: Marquee(child: Text(_searchResults[index].albumName)),
-                        subtitle: Marquee(
-                          child: Text(_searchResults[index].albumLink),
-                        ),
+                      splashColor: Colors.accents.first,
+                      mouseCursor: MouseCursor.uncontrolled,
+                      onTap: () {
+                        debugPrint("Tapped " + _searchResults[index].albumName);
+                        goToAlbum(context, index);
+                      },
+                      child: Column(
+                        children: [
+                          ListTile(
+                            trailing: IconButton(
+                              icon: foundInFavorites(searchResults[index])
+                                  ? const Icon(Icons.star)
+                                  : const Icon(Icons.star_border),
+                              onPressed: () {
+                                if (favorites.contains(searchResults[index])) {
+                                  favorites.removeAt(locateInFavorites(searchResults[index]));
+                                } else {
+                                  favorites.add(searchResults[index]);
+                                }
+                                setState(() {
+                                  saveFavs();
+                                  favUpdater.value += 1;
+                                });
+                              },
+                            ),
+                            title: Marquee(child: Text(_searchResults[index].albumName)),
+                            subtitle: Marquee(
+                              child: Text(_searchResults[index].albumLink),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ));
+                    ));
               }) /**/
           );
     }

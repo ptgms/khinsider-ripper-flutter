@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
-import 'package:marquee_widget/marquee_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -74,6 +74,11 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     }
 
+    var sectionColor = Colors.white10; //Theme.of(context).cardColor;
+    if (appTheme == 3) {
+      sectionColor = Colors.white10;
+    }
+
     var themes = ["System", "Light", "Dark", "AMOLED"];
     var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
     var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
@@ -91,16 +96,311 @@ class _SettingsPageState extends State<SettingsPage> {
       trackListSelect = 1;
     }
     return Scaffold(
-        appBar: AppBar(
-            title: const Text("Settings"),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                Navigator.pop(context);
-              },
-            )),
-        body: Padding(
+      appBar: AppBar(
+          title: const Text("Settings"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              Navigator.pop(context);
+            },
+          )),
+      body: SettingsList(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        darkTheme: SettingsThemeData(
+            settingsListBackground: Theme.of(context).cardColor,
+            settingsSectionBackground: sectionColor,
+            titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+        //platform: DevicePlatform.android,
+        sections: [
+          if (!Platform.isIOS)
+            SettingsSection(
+              title: const Text('Saving Path'),
+              tiles: <SettingsTile>[
+                SettingsTile.navigation(
+                  title: const Text('Path'),
+                  value: Text(folderToSave),
+                  onPressed: (context) async {
+                    if (Platform.isAndroid) {
+                      var status = await Permission.storage.status;
+                      if (!status.isGranted) {
+                        await Permission.storage.request();
+                      }
+                    }
+                    String? path = await FilesystemPicker.open(
+                      rootName: "Home folder",
+                      title: 'Use folder',
+                      context: context,
+                      rootDirectory: Directory(homeDirectory()),
+                      fsType: FilesystemType.folder,
+                      pickText: 'Use this folder for Downloads',
+                      folderIconColor: Colors.teal,
+                    );
+
+                    if (path != null) {
+                      setState(() {
+                        pathToSaveIn = path;
+                        saveLocation();
+                        folderToSave = path;
+                      });
+                    }
+                  },
+                ),
+                if (!Platform.isIOS && pathToSaveIn != "")
+                  SettingsTile.navigation(
+                    trailing: Container(),
+                    title: const Text("Reset path"),
+                    onPressed: (context) {
+                      setState(() {
+                        pathToSaveIn = "";
+                        saveLocation();
+                        folderToSave = defaultText;
+                      });
+                    },
+                  )
+              ],
+            ),
+          SettingsSection(
+            title: const Text('Appearance'),
+            tiles: <SettingsTile>[
+              SettingsTile.switchTile(
+                title: const Text('Favorites is home-page'),
+                description: const Text('If off, search will be home-page. Requires restart.'),
+                initialValue: favoriteHome,
+                onToggle: (value) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  //debugPrint(value.toString());
+                  setState(() {
+                    favoriteHome = value;
+                    saveSettings();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    content: const Text('Restart the app?'),
+                    action: SnackBarAction(
+                        //textColor: Colors.white,
+                        label: 'Restart',
+                        onPressed: () {
+                          Phoenix.rebirth(context);
+                        }),
+                  ));
+                },
+              ),
+              SettingsTile.navigation(
+                trailing: DropdownButton<String>(
+                    icon: const Icon(Icons.chevron_right_outlined),
+                    underline: Container(),
+                    //iconSize: 0.0,
+                    value: themes[appTheme],
+                    onChanged: (value) {
+                      switch (value) {
+                        case "System":
+                          setState(() {
+                            appTheme = 0;
+                            notifier.value = 0;
+                          });
+                          break;
+                        case "Light":
+                          setState(() {
+                            appTheme = 1;
+                            notifier.value = 1;
+                          });
+                          break;
+                        case "Dark":
+                          setState(() {
+                            appTheme = 2;
+                            notifier.value = 2;
+                          });
+                          break;
+                        case "AMOLED":
+                          setState(() {
+                            appTheme = 3;
+                            notifier.value = 3;
+                          });
+                          break;
+                        default:
+                      }
+                      saveSettings();
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text("System"),
+                        value: "System",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Light"),
+                        value: "Light",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Dark"),
+                        value: "Dark",
+                      ),
+                      DropdownMenuItem(child: Text("AMOLED"), value: "AMOLED"),
+                    ]),
+                title: Text('App Theme'),
+              ),
+              SettingsTile.switchTile(
+                  initialValue: md3,
+                  onToggle: (value) {
+                    setState(() {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      md3 = value;
+                      saveSettings();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: const Text('Restart the app?'),
+                      action: SnackBarAction(
+                          //textColor: Colors.white,
+                          label: 'Restart',
+                          onPressed: () {
+                            Phoenix.rebirth(context);
+                          }),
+                    ));
+                  },
+                  title: const Text("Material Design 3"))
+            ],
+          ),
+          SettingsSection(
+            title: const Text("Behavior"),
+            tiles: [
+              SettingsTile.navigation(
+                title: const Text("Track-list tap behavior"),
+                description: const Text("The action that occurs when tapped on item in the track-list."),
+                trailing: DropdownButton<String>(
+                    icon: const Icon(Icons.chevron_right_outlined),
+                    underline: Container(),
+                    value: trackListBehaviorStrings[trackListSelect],
+                    onChanged: (value) {
+                      debugPrint(value);
+                      switch (value) {
+                        case "Preview":
+                          setState(() {
+                            trackListBehavior = 0;
+                          });
+                          break;
+                        case "Browser":
+                          setState(() {
+                            trackListBehavior = 1;
+                          });
+                          break;
+                        case "Download":
+                          setState(() {
+                            trackListBehavior = 2;
+                          });
+                          break;
+                        default:
+                          return;
+                      }
+                      saveSettings();
+                    },
+                    items: [
+                      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
+                        const DropdownMenuItem(
+                          child: Text("Preview song"),
+                          value: "Preview",
+                        ),
+                      const DropdownMenuItem(
+                        child: Text("Open in Browser"),
+                        value: "Browser",
+                      ),
+                      const DropdownMenuItem(
+                        child: Text("Download song"),
+                        value: "Download",
+                      )
+                    ]),
+              ),
+              SettingsTile.navigation(
+                title: const Text("Pop-Ups"),
+                description: const Text("The pop-up displayed when downloading an song/album."),
+                trailing: DropdownButton<String>(
+                    icon: const Icon(Icons.chevron_right_outlined),
+                    underline: Container(),
+                    value: popupBehaviorStrings[popupStyle],
+                    onChanged: (value) {
+                      debugPrint(value);
+                      switch (value) {
+                        case "Auto":
+                          setState(() {
+                            popupStyle = 0;
+                          });
+                          break;
+                        case "Pop-up":
+                          setState(() {
+                            popupStyle = 1;
+                          });
+                          break;
+                        case "Bottom":
+                          setState(() {
+                            popupStyle = 2;
+                          });
+                          break;
+                        default:
+                          return;
+                      }
+                      saveSettings();
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text("Auto"),
+                        value: "Auto",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Pop-up"),
+                        value: "Pop-up",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Bottom"),
+                        value: "Bottom",
+                      )
+                    ]),
+              ),
+              SettingsTile.navigation(
+                title: const Text("Concurrent Downloads"),
+                value: Text(maxDownloads.toString()),
+                onPressed: (context) {
+                  showDialog(
+                          builder: (BuildContext context) {
+                            return StatefulBuilder(builder: (context, setStateAlert) {
+                              return Dialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                  child: SizedBox(
+                                      width: (MediaQuery.of(context).size.width / 4) * 3,
+                                      height: 163,
+                                      child: Column(
+                                        children: [
+                                          const ListTile(
+                                            contentPadding: EdgeInsets.all(10),
+                                            title: Text("Concurrent Downloads"),
+                                            subtitle: Text(
+                                                "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices."),
+                                          ),
+                                          Slider(
+                                              min: 1,
+                                              max: 10,
+                                              label: maxDownloads.toString(),
+                                              divisions: 9,
+                                              value: maxDownloads.toDouble(),
+                                              onChanged: (value) {
+                                                setStateAlert(() {
+                                                  maxDownloads = value.toInt();
+                                                });
+                                              })
+                                        ],
+                                      )));
+                            });
+                          },
+                          context: context)
+                      .then((value) => setState(
+                            () {},
+                          ));
+                },
+              )
+            ],
+          )
+        ],
+      ),
+      /*Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: ListView(
             children: [
@@ -434,6 +734,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ))),
             ],
           ),
-        ));
+        )*/
+    );
   }
 }
