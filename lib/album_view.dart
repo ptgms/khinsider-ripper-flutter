@@ -334,34 +334,46 @@ class _AlbumViewState extends State<AlbumView> {
       isPopup = false;
     }
 
+    String titleAppBar = "Album Details";
+    double? heightTitleBar = 40.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      titleAppBar = "";
+      heightTitleBar = 30.0;
+    }
+
     AppBar? albumViewAppBar = AppBar(
           title: const Text("Album Details"),
         );
-    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-      albumViewAppBar = null;
-    }
+    double? widthOfBorder;
+      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+        albumViewAppBar = null;
+      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+        widthOfBorder = 0.0;
+      }
     return Scaffold(
-        appBar: albumViewAppBar,
+        //appBar: albumViewAppBar,
         body: WindowBorder(
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
                         child: Row(
                           children: [ 
-                            IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
+                            if (windowBorder) IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
                               Navigator.pop(context);
                             }
                           ),
-                                Expanded(child: SizedBox(height: 40, child: MoveWindow(child: Padding(
+                                Expanded(child: SizedBox(height: heightTitleBar, child: MoveWindow(child: Padding(
                                   padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                  child: Text("Khinsider Ripper", style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
+                                  child: Text(titleAppBar, style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
                                 ),))),
                               const WindowButtons(),
                               ]
                         ))),
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && albumViewAppBar != null)
+                albumViewAppBar,
               Expanded(child: buildAlbumScreen(context, tags, isPopup))
             ])));
   } 

@@ -6,9 +6,9 @@ import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:window_size/window_size.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-
 import 'favorite_view.dart';
 import 'config.dart';
 
@@ -28,6 +28,7 @@ Future<void> main() async {
   popupStyle = prefs.getInt("popup_style") ?? 0;
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
   md3 = prefs.getBool("material_3") ?? false;
+  windowBorder = prefs.getBool("window_border") ?? true;
   // ------
 
   // convert favorites in string list format to albumstruct list
@@ -38,7 +39,7 @@ Future<void> main() async {
   }
   runApp(Phoenix(child: const MyApp()));
 
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  if ((Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     doWhenWindowReady(() {
       const initialSize = Size(550, 384);
       appWindow.minSize = initialSize;
@@ -47,8 +48,8 @@ Future<void> main() async {
       appWindow.title = "Khinsider Ripper";
       appWindow.show();
     });
+    //runApp();
   }
-  //runApp();
 }
 
 class WindowButtons extends StatelessWidget {
@@ -153,9 +154,14 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
   @override
   Widget build(BuildContext context) {
+    double splashRadius = 35.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
+    }
     List<Widget> actions = [
       if (favoriteHome)
         IconButton(
+          splashRadius: splashRadius,
           onPressed: () async {
             final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
             setState(() {
@@ -166,56 +172,68 @@ class _FavoriteHomeState extends State<FavoriteHome> {
         ),
       if (favoriteHome)
         IconButton(
+          splashRadius: splashRadius,
           onPressed: (() {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
-      if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) const SizedBox(height: 40, child: WindowButtons())
     ];
-
+    String titleAppBar = widget.title;
+    double? heightTitleBar = 40.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      titleAppBar = "";
+      heightTitleBar = 30.0;
+    }
     AppBar? mainAppBar = AppBar(
       centerTitle: false,
       title: Text(widget.title),
       actions: actions,
     );
 
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    double? widthOfBorder;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       mainAppBar = null;
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      widthOfBorder = 0.0;
     }
+
     return Scaffold(
-        appBar: mainAppBar,
+        //appBar: mainAppBar,
         body: WindowBorder(
+            width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
-                        child: Row(
-                          children: [
-                                if (!favoriteHome)
-                                  IconButton(
-                                    icon: const Icon(Icons.navigate_before),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                Expanded(
-                                    child: SizedBox(
-                                        height: 40,
-                                        child: MoveWindow(
-                                            child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                          child: Text(
-                                            widget.title,
-                                            style: Theme.of(context).textTheme.headline6,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ))))
-                              ] +
-                              actions,
-                        ))),
+                        child: Row(children: [
+                          if (!favoriteHome)
+                            IconButton(
+                              splashRadius: splashRadius,
+                              icon: const Icon(Icons.navigate_before),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          Expanded(
+                              child: SizedBox(
+                                  height: heightTitleBar,
+                                  child: MoveWindow(
+                                      child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                    child: Text(
+                                      titleAppBar,
+                                      style: Theme.of(context).textTheme.headline6,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )))),
+                          if (windowBorder) Row(children: actions),
+                          const SizedBox(child: WindowButtons())
+                        ]))),
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null)
+                mainAppBar,
               Expanded(child: bodyToPush)
             ])));
   }

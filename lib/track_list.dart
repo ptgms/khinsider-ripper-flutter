@@ -397,37 +397,46 @@ class _TrackViewState extends State<TrackView> {
             ],
           ));
     }
-
+    String titleAppBar = "Tracks";
+    double? heightTitleBar = 40.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      titleAppBar = "";
+      heightTitleBar = 30.0;
+    }
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       AppBar? trackListAppBar = AppBar(
         title: const Text("Tracks"),
       );
-      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      double? widthOfBorder;
+      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
         trackListAppBar = null;
+      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+        widthOfBorder = 0.0;
       }
       return Scaffold(
-          appBar: trackListAppBar,
+          //appBar: trackListAppBar,
           body: WindowBorder(
+            width: widthOfBorder,
               color: Theme.of(context).backgroundColor,
               child: Column(children: [
-                if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
                   SizedBox(
                       child: Container(
                           color: Theme.of(context).cardColor,
                           child: Row(children: [
-                            IconButton(
+                            if (windowBorder) IconButton(
                                 icon: const Icon(Icons.navigate_before),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 }),
                             Expanded(
                                 child: SizedBox(
-                                    height: 40,
+                                    height: heightTitleBar,
                                     child: MoveWindow(
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                                         child: Text(
-                                          "Khinsider Ripper",
+                                          titleAppBar,
                                           style: Theme.of(context).textTheme.headline6,
                                           textAlign: TextAlign.center,
                                         ),
@@ -435,6 +444,8 @@ class _TrackViewState extends State<TrackView> {
                                     ))),
                             const WindowButtons(),
                           ]))),
+                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && trackListAppBar != null)
+                trackListAppBar,
                 Expanded(
                     child: ListView.builder(
                         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),

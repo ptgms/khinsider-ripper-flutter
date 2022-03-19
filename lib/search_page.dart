@@ -384,9 +384,15 @@ class _SearchWidgetState extends State<SearchWidget> {
     fieldText.text = searchTermBefore;
     debugPrint(searchTermBefore);
 
+    double splashRadius = 35.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
+    }
+
     List<Widget> actions = [
             if (!favoriteHome)
               IconButton(
+                splashRadius: splashRadius,
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -398,12 +404,13 @@ class _SearchWidgetState extends State<SearchWidget> {
                   icon: const Icon(Icons.star_rounded)),
             if (!favoriteHome)
               IconButton(
+                splashRadius: splashRadius,
                 onPressed: (() {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
                 }),
                 icon: const Icon(Icons.settings_rounded),
               ),
-              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) const WindowButtons()
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) const WindowButtons()
           ];
 
     Widget searchBox = Container(
@@ -419,6 +426,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
+                      splashRadius: splashRadius,
                       icon: const Icon(Icons.clear, size: 17.0,),
                       onPressed: () {
                         fieldText.clear();
@@ -436,20 +444,20 @@ class _SearchWidgetState extends State<SearchWidget> {
           actions: actions
         );
 
-    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) { searchAppBar = null; }
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) { searchAppBar = null; }
 
     return Scaffold(
         appBar: searchAppBar,
         body: WindowBorder(
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder)
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
                         child: Row(
                           children: [ 
-                            if (favoriteHome) IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
+                            if (favoriteHome) IconButton(splashRadius: splashRadius, icon: const Icon(Icons.navigate_before), onPressed: () {
                               Navigator.pop(context);
                             }
                           ),

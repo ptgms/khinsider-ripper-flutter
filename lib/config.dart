@@ -30,6 +30,8 @@ ValueNotifier<int> notifier = ValueNotifier(0);
 var maxDownloads = 1;
 // Material Design 3 enabled
 var md3 = false;
+// Custom Window Border (Desktop only)
+var windowBorder = true;
 
 // Welcome to janky-hut, may I take your order?
 ValueNotifier<int> favUpdater = ValueNotifier(0);
