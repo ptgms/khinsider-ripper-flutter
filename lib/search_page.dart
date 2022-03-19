@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/config.dart';
@@ -381,33 +384,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     fieldText.text = searchTermBefore;
     debugPrint(searchTermBefore);
 
-    return Scaffold(
-        appBar: AppBar(
-          // The search area here
-          title: Container(
-            width: double.infinity,
-            height: 40,
-            decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
-            child: Center(
-              child: TextField(
-                onSubmitted: (term) async {
-                  searchPressed(term);
-                },
-                controller: fieldText,
-                decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        fieldText.clear();
-                      },
-                    ),
-                    hintText: 'Search for OSTs',
-                    border: InputBorder.none),
-              ),
-            ),
-          ),
-          actions: [
+    List<Widget> actions = [
             if (!favoriteHome)
               IconButton(
                   onPressed: () {
@@ -425,9 +402,66 @@ class _SearchWidgetState extends State<SearchWidget> {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
                 }),
                 icon: const Icon(Icons.settings_rounded),
-              )
-          ],
-        ),
-        body: bodyDisplay);
+              ),
+              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) const WindowButtons()
+          ];
+
+    Widget searchBox = Container(
+            width: double.infinity,
+            height: 40,
+            decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
+            child: Center(
+              child: TextField(
+                onSubmitted: (term) async {
+                  searchPressed(term);
+                },
+                controller: fieldText,
+                decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear, size: 17.0,),
+                      onPressed: () {
+                        fieldText.clear();
+                      },
+                    ),
+                    hintText: 'Search for OSTs',
+                    border: InputBorder.none),
+              ),
+            ),
+          );
+
+    AppBar? searchAppBar = AppBar(
+          // The search area here
+          title: searchBox
+          actions: actions
+        );
+
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) { searchAppBar = null; }
+
+    return Scaffold(
+        appBar: searchAppBar,
+        body: WindowBorder(
+            color: Theme.of(context).backgroundColor,
+            child: Column(children: [
+              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+                SizedBox(
+                    child: Container(
+                        color: Theme.of(context).cardColor,
+                        child: Row(
+                          children: [ 
+                            if (favoriteHome) IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
+                              Navigator.pop(context);
+                            }
+                          ),
+                                Expanded(child: SizedBox(height: 40, child: MoveWindow(child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                  child: Text("Khinsider Ripper", style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
+                                ),))),
+                                Expanded(child: searchBox)
+                              ] +
+                              actions,
+                        ))),
+              Expanded(child: bodyDisplay)
+            ])));
   }
 }

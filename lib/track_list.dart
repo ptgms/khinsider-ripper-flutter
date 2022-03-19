@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khinrip/config.dart';
@@ -12,6 +13,8 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:contextmenu/contextmenu.dart';
 import 'package:share_plus/share_plus.dart';
+
+import 'main.dart';
 
 class TrackView extends StatefulWidget {
   const TrackView({Key? key, required this.tags}) : super(key: key);
@@ -396,66 +399,100 @@ class _TrackViewState extends State<TrackView> {
     }
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      AppBar? trackListAppBar = AppBar(
+        title: const Text("Tracks"),
+      );
+      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+        trackListAppBar = null;
+      }
       return Scaffold(
-          appBar: AppBar(
-            title: const Text("Tracks"),
-          ),
-          body: ListView.builder(
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              itemCount: tags.tracks.length,
-              itemBuilder: ((context, index) {
-                return SizedBox(
-                    height: 55,
-                    child: Card(
-                        shape: cardShape,
-                        child: ContextMenuArea(
-                            builder: (context) => [
-                                  if (Platform.isAndroid || Platform.isIOS)
-                                    ListTile(
-                                      leading: const Icon(Icons.ios_share_rounded),
-                                      title: const Text('Share Track'),
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                        Share.share("Check out this Song '" +
-                                            tags.tracks[index] +
-                                            "' on Khinsider!\n" +
-                                            baseUrl +
-                                            tags.trackURL[index]);
-                                      },
-                                    ),
-                                  ListTile(
-                                    leading: const Icon(Icons.download_rounded),
-                                    title: const Text('Download Track'),
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      showDownloadPopup(index);
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(Icons.open_in_browser_rounded),
-                                    title: const Text('Open in Browser'),
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      launch(baseUrl + tags.trackURL[index]);
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(Icons.copy_rounded),
-                                    title: const Text("Copy URL"),
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                        dismissDirection: DismissDirection.none,
-                                        duration: Duration(seconds: 1),
-                                        content: Text("Copied URL to clipboard!"),
-                                        behavior: SnackBarBehavior.floating,
-                                      ));
-                                    },
-                                  )
-                                ],
-                            child: trackItem(index))));
-              })));
+          appBar: trackListAppBar,
+          body: WindowBorder(
+              color: Theme.of(context).backgroundColor,
+              child: Column(children: [
+                if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+                  SizedBox(
+                      child: Container(
+                          color: Theme.of(context).cardColor,
+                          child: Row(children: [
+                            IconButton(
+                                icon: const Icon(Icons.navigate_before),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                            Expanded(
+                                child: SizedBox(
+                                    height: 40,
+                                    child: MoveWindow(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                        child: Text(
+                                          "Khinsider Ripper",
+                                          style: Theme.of(context).textTheme.headline6,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ))),
+                            const WindowButtons(),
+                          ]))),
+                Expanded(
+                    child: ListView.builder(
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        itemCount: tags.tracks.length,
+                        itemBuilder: ((context, index) {
+                          return SizedBox(
+                              height: 55,
+                              child: Card(
+                                  shape: cardShape,
+                                  child: ContextMenuArea(
+                                      builder: (context) => [
+                                            if (Platform.isAndroid || Platform.isIOS)
+                                              ListTile(
+                                                leading: const Icon(Icons.ios_share_rounded),
+                                                title: const Text('Share Track'),
+                                                onTap: () {
+                                                  Navigator.of(context).pop();
+                                                  Share.share("Check out this Song '" +
+                                                      tags.tracks[index] +
+                                                      "' on Khinsider!\n" +
+                                                      baseUrl +
+                                                      tags.trackURL[index]);
+                                                },
+                                              ),
+                                            ListTile(
+                                              leading: const Icon(Icons.download_rounded),
+                                              title: const Text('Download Track'),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                showDownloadPopup(index);
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: const Icon(Icons.open_in_browser_rounded),
+                                              title: const Text('Open in Browser'),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                launch(baseUrl + tags.trackURL[index]);
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: const Icon(Icons.copy_rounded),
+                                              title: const Text("Copy URL"),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
+                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                  dismissDirection: DismissDirection.none,
+                                                  duration: Duration(seconds: 1),
+                                                  content: Text("Copied URL to clipboard!"),
+                                                  behavior: SnackBarBehavior.floating,
+                                                ));
+                                              },
+                                            )
+                                          ],
+                                      child: trackItem(index))));
+                        })))
+              ])));
     } else {
       return Scaffold(
           appBar: AppBar(

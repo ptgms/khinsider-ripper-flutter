@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/downloading_view.dart';
 import 'package:khinrip/favorite_view.dart';
+import 'package:khinrip/main.dart';
 import 'package:khinrip/track_list.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
@@ -331,10 +333,36 @@ class _AlbumViewState extends State<AlbumView> {
     } else if (popupStyle == 2) {
       isPopup = false;
     }
-    return Scaffold(
-        appBar: AppBar(
+
+    AppBar? albumViewAppBar = AppBar(
           title: const Text("Album Details"),
-        ),
-        body: buildAlbumScreen(context, tags, isPopup));
-  }
+        );
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      albumViewAppBar = null;
+    }
+    return Scaffold(
+        appBar: albumViewAppBar,
+        body: WindowBorder(
+            color: Theme.of(context).backgroundColor,
+            child: Column(children: [
+              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+                SizedBox(
+                    child: Container(
+                        color: Theme.of(context).cardColor,
+                        child: Row(
+                          children: [ 
+                            IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
+                              Navigator.pop(context);
+                            }
+                          ),
+                                Expanded(child: SizedBox(height: 40, child: MoveWindow(child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                  child: Text("Khinsider Ripper", style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
+                                ),))),
+                              const WindowButtons(),
+                              ]
+                        ))),
+              Expanded(child: buildAlbumScreen(context, tags, isPopup))
+            ])));
+  } 
 }

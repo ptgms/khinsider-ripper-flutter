@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
@@ -13,11 +14,6 @@ import 'config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // on desktops, the window title would be something random otherwise.
-    setWindowTitle('Khinsider Ripper');
-    setWindowMinSize(const Size(512, 384));
-  }
 
   // --- load preferences ---
   final prefs = await SharedPreferences.getInstance();
@@ -41,7 +37,51 @@ Future<void> main() async {
     }
   }
   runApp(Phoenix(child: const MyApp()));
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    doWhenWindowReady(() {
+      const initialSize = Size(550, 384);
+      appWindow.minSize = initialSize;
+      appWindow.size = initialSize;
+      appWindow.alignment = Alignment.center;
+      appWindow.title = "Khinsider Ripper";
+      appWindow.show();
+    });
+  }
   //runApp();
+}
+
+class WindowButtons extends StatelessWidget {
+  const WindowButtons({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final buttonColors = WindowButtonColors(
+        iconNormal: Theme.of(context).textTheme.bodyMedium!.color,
+        mouseOver: Colors.grey,
+        mouseDown: Colors.black54,
+        iconMouseOver: Theme.of(context).textTheme.bodyMedium!.color,
+        iconMouseDown: Theme.of(context).textTheme.bodyMedium!.color);
+
+    final closeButtonColors = WindowButtonColors(
+      mouseOver: Color(0xFFD32F2F),
+      mouseDown: Color(0xFFB71C1C),
+      iconNormal: Theme.of(context).textTheme.bodyMedium!.color,
+      iconMouseOver: Theme.of(context).textTheme.bodyMedium!.color,
+    );
+
+    return SizedBox(
+      child: Row(
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        //mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          MinimizeWindowButton(colors: buttonColors),
+          MaximizeWindowButton(colors: buttonColors),
+          CloseWindowButton(colors: closeButtonColors),
+        ],
+      ),
+    );
+  }
 }
 
 var dark = true;
@@ -113,30 +153,70 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: false,
-          title: Text(widget.title),
-          actions: [
-            if (favoriteHome)
-              IconButton(
-                onPressed: () async {
-                  final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
-                  setState(() {
-                    bodyToPush = const FavoriteWidget();
-                  });
-                },
-                icon: const Icon(Icons.search),
-              ),
-            if (favoriteHome)
-              IconButton(
-                onPressed: (() {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
-                }),
-                icon: const Icon(Icons.settings_rounded),
-              )
-          ],
+    List<Widget> actions = [
+      if (favoriteHome)
+        IconButton(
+          onPressed: () async {
+            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
+            setState(() {
+              bodyToPush = const FavoriteWidget();
+            });
+          },
+          icon: const Icon(Icons.search),
         ),
-        body: bodyToPush);
+      if (favoriteHome)
+        IconButton(
+          onPressed: (() {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+          }),
+          icon: const Icon(Icons.settings_rounded),
+        ),
+      if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) const SizedBox(height: 40, child: WindowButtons())
+    ];
+
+    AppBar? mainAppBar = AppBar(
+      centerTitle: false,
+      title: Text(widget.title),
+      actions: actions,
+    );
+
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      mainAppBar = null;
+    }
+    return Scaffold(
+        appBar: mainAppBar,
+        body: WindowBorder(
+            color: Theme.of(context).backgroundColor,
+            child: Column(children: [
+              if (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+                SizedBox(
+                    child: Container(
+                        color: Theme.of(context).cardColor,
+                        child: Row(
+                          children: [
+                                if (!favoriteHome)
+                                  IconButton(
+                                    icon: const Icon(Icons.navigate_before),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                Expanded(
+                                    child: SizedBox(
+                                        height: 40,
+                                        child: MoveWindow(
+                                            child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                          child: Text(
+                                            widget.title,
+                                            style: Theme.of(context).textTheme.headline6,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ))))
+                              ] +
+                              actions,
+                        ))),
+              Expanded(child: bodyToPush)
+            ])));
   }
 }

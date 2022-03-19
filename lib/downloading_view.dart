@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:khinrip/config.dart';
 import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
