@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
-import 'package:window_size/window_size.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'favorite_view.dart';
@@ -71,13 +69,19 @@ class WindowButtons extends StatelessWidget {
       iconMouseOver: Theme.of(context).textTheme.bodyMedium!.color,
     );
 
+    Widget resMaxButton = MaximizeWindowButton(colors: buttonColors);
+
+    if (appWindow.isMaximized) {
+      resMaxButton = RestoreWindowButton(colors: buttonColors);
+    }
+
     return SizedBox(
       child: Row(
         //crossAxisAlignment: CrossAxisAlignment.start,
         //mainAxisAlignment: MainAxisAlignment.start,
         children: [
           MinimizeWindowButton(colors: buttonColors),
-          MaximizeWindowButton(colors: buttonColors),
+          resMaxButton,
           CloseWindowButton(colors: closeButtonColors),
         ],
       ),

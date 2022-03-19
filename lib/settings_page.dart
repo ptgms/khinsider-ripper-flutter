@@ -157,7 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               }),
                           Expanded(
                               child: SizedBox(
-                                  height: 40,
+                                  height: heightTitleBar,
                                   child: MoveWindow(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),

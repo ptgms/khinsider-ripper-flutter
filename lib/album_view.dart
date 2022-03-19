@@ -341,6 +341,11 @@ class _AlbumViewState extends State<AlbumView> {
       heightTitleBar = 30.0;
     }
 
+    double splashRadius = 35.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
+    }
+
     AppBar? albumViewAppBar = AppBar(
           title: const Text("Album Details"),
         );
@@ -361,7 +366,7 @@ class _AlbumViewState extends State<AlbumView> {
                         color: Theme.of(context).cardColor,
                         child: Row(
                           children: [ 
-                            if (windowBorder) IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {
+                            if (windowBorder) IconButton(splashRadius: splashRadius, icon: const Icon(Icons.navigate_before), onPressed: () {
                               Navigator.pop(context);
                             }
                           ),
