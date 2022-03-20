@@ -347,14 +347,14 @@ class _AlbumViewState extends State<AlbumView> {
     }
 
     AppBar? albumViewAppBar = AppBar(
-          title: const Text("Album Details"),
-        );
+      title: const Text("Album Details"),
+    );
     double? widthOfBorder;
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
-        albumViewAppBar = null;
-      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-        widthOfBorder = 0.0;
-      }
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      albumViewAppBar = null;
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      widthOfBorder = 0.0;
+    }
     return Scaffold(
         //appBar: albumViewAppBar,
         body: WindowBorder(
@@ -364,22 +364,35 @@ class _AlbumViewState extends State<AlbumView> {
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
-                        child: Row(
-                          children: [ 
-                            if (windowBorder) IconButton(splashRadius: splashRadius, icon: const Icon(Icons.navigate_before), onPressed: () {
-                              Navigator.pop(context);
-                            }
-                          ),
-                                Expanded(child: SizedBox(height: heightTitleBar, child: MoveWindow(child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                  child: Text(titleAppBar, style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
-                                ),))),
-                              const WindowButtons(),
-                              ]
-                        ))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && albumViewAppBar != null)
+                        child: Row(children: [
+                          if (Platform.isMacOS) const SizedBox(width: 60),
+                          if (windowBorder)
+                            IconButton(
+                                splashRadius: splashRadius,
+                                icon: const Icon(Icons.navigate_before),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                          Expanded(
+                              child: SizedBox(
+                                  height: heightTitleBar,
+                                  child: MoveWindow(
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                      child: Text(
+                                        titleAppBar,
+                                        style: Theme.of(context).textTheme.headline6,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ))),
+                          const WindowButtons(),
+                        ]))),
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                  !windowBorder &&
+                  albumViewAppBar != null)
                 albumViewAppBar,
               Expanded(child: buildAlbumScreen(context, tags, isPopup))
             ])));
-  } 
+  }
 }

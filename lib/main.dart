@@ -213,6 +213,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                     child: Container(
                         color: Theme.of(context).cardColor,
                         child: Row(children: [
+                          if (Platform.isMacOS) const SizedBox(width: 60),
                           if (!favoriteHome)
                             IconButton(
                               splashRadius: splashRadius,

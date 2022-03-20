@@ -141,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
         //appBar: settingsAppBar,
         body: WindowBorder(
-          width: widthOfBorder,
+            width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
               if ((Platform.isLinux || Platform.isMacOS || Platform.isWindows))
@@ -149,12 +149,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: Container(
                         color: Theme.of(context).cardColor,
                         child: Row(children: [
-                          if (windowBorder) IconButton(
-                            splashRadius: splashRadius,
-                              icon: const Icon(Icons.navigate_before),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              }),
+                          if (Platform.isMacOS) const SizedBox(width: 60),
+                          if (windowBorder)
+                            IconButton(
+                                splashRadius: splashRadius,
+                                icon: const Icon(Icons.navigate_before),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
                           Expanded(
                               child: SizedBox(
                                   height: heightTitleBar,
@@ -170,7 +172,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ))),
                           const WindowButtons()
                         ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && settingsAppBar != null)
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                  !windowBorder &&
+                  settingsAppBar != null)
                 settingsAppBar,
               Expanded(
                 child: SettingsList(
@@ -225,28 +229,29 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsSection(
                       title: const Text('Appearance'),
                       tiles: <SettingsTile>[
-                        if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) SettingsTile.switchTile(
-                          title: const Text('Custom Window Border'),
-                          initialValue: windowBorder,
-                          onToggle: (value) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            //debugPrint(value.toString());
-                            setState(() {
-                              windowBorder = value;
-                              saveSettings();
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              content: const Text('Relaunch the App for the changes to take effect.'),
-                              action: SnackBarAction(
-                                  //textColor: Colors.white,
-                                  label: 'Exit',
-                                  onPressed: () {
-                                    exit(0);
-                                  }),
-                            ));
-                          },
-                        ),
+                        if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+                          SettingsTile.switchTile(
+                            title: const Text('Custom Window Border'),
+                            initialValue: windowBorder,
+                            onToggle: (value) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              //debugPrint(value.toString());
+                              setState(() {
+                                windowBorder = value;
+                                saveSettings();
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                content: const Text('Relaunch the App for the changes to take effect.'),
+                                action: SnackBarAction(
+                                    //textColor: Colors.white,
+                                    label: 'Exit',
+                                    onPressed: () {
+                                      exit(0);
+                                    }),
+                              ));
+                            },
+                          ),
                         SettingsTile.switchTile(
                           title: const Text('Favorites is home-page'),
                           description: const Text('If off, search will be home-page. Requires restart.'),

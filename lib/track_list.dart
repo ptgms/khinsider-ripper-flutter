@@ -397,6 +397,7 @@ class _TrackViewState extends State<TrackView> {
             ],
           ));
     }
+
     String titleAppBar = "Tracks";
     double? heightTitleBar = 40.0;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
@@ -416,7 +417,7 @@ class _TrackViewState extends State<TrackView> {
       return Scaffold(
           //appBar: trackListAppBar,
           body: WindowBorder(
-            width: widthOfBorder,
+              width: widthOfBorder,
               color: Theme.of(context).backgroundColor,
               child: Column(children: [
                 if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
@@ -424,11 +425,13 @@ class _TrackViewState extends State<TrackView> {
                       child: Container(
                           color: Theme.of(context).cardColor,
                           child: Row(children: [
-                            if (windowBorder) IconButton(
-                                icon: const Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                }),
+                            if (Platform.isMacOS) const SizedBox(width: 60),
+                            if (windowBorder)
+                              IconButton(
+                                  icon: const Icon(Icons.navigate_before),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }),
                             Expanded(
                                 child: SizedBox(
                                     height: heightTitleBar,
@@ -444,8 +447,10 @@ class _TrackViewState extends State<TrackView> {
                                     ))),
                             const WindowButtons(),
                           ]))),
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && trackListAppBar != null)
-                trackListAppBar,
+                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                    !windowBorder &&
+                    trackListAppBar != null)
+                  trackListAppBar,
                 Expanded(
                     child: ListView.builder(
                         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
