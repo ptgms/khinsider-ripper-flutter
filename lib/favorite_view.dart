@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
-import 'package:contextmenu/contextmenu.dart';
+import 'package:native_context_menu/native_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/album_view.dart';
 import 'package:khinrip/config.dart';
@@ -16,12 +16,14 @@ SizedBox noFavs() {
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
         Center(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child:
-                    Text("Welcome to Khinsider Ripper!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
+                child: Text("Welcome to Khinsider Ripper!",
+                    style: TextStyle(fontSize: 25),
+                    textAlign: TextAlign.center))),
         Center(
           child: Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -104,12 +106,25 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     List<String> trackSizeFLAC = [];
     List<String> trackSizeOGG = [];
 
-    Uri completedUrl = Uri.parse(baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
+    Uri completedUrl = Uri.parse(
+        baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false,
-        tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    AlbumTags toPush = AlbumTags(
+        tracks,
+        trackDuration,
+        "Null",
+        albumLink,
+        trackURL,
+        coverURL,
+        false,
+        false,
+        false,
+        tags,
+        trackSizeMP3,
+        trackSizeFLAC,
+        trackSizeOGG);
 
     http.read(completedUrl).then((contents) async {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -153,7 +168,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
             if (title.find('a') != null) {
               var titleurl = title.find('a')!.attributes['href'];
 
-              if ((titleurl != "" || titleurl != null) && !trackURL.contains(titleurl)) {
+              if ((titleurl != "" || titleurl != null) &&
+                  !trackURL.contains(titleurl)) {
                 trackURL.add(titleurl!);
               }
             }
@@ -176,8 +192,20 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         }
       }
 
-      toPush = AlbumTags(tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
-          trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+      toPush = AlbumTags(
+          tracks,
+          trackDuration,
+          albumName,
+          albumLink,
+          trackURL,
+          coverURL,
+          mp3,
+          flac,
+          ogg,
+          tags,
+          trackSizeMP3,
+          trackSizeFLAC,
+          trackSizeOGG);
 
       //debugPrint("Final: " + toPush.AlbumName);
       if (toPush.albumName != "Null") {
@@ -201,7 +229,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
+    ShapeBorder cardShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(getRoundedValue()));
     //List<Widget> TitleTextColumn = getTitleText();
     double width = MediaQuery.of(context).size.width;
     int widthCard = 400;
@@ -230,28 +259,22 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   crossAxisCount: count,
                   childAspectRatio: (widthCard / heightCard),
                 ),
-                itemBuilder: (context, index) => ContextMenuArea(
-                      builder: (context) => [
-                        ListTile(
-                          title: const Text("Remove"),
-                          leading: const Icon(Icons.star_half_rounded),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            favorites.removeAt(index);
-                            setState(() {
-                              _favorites = favorites;
-                              saveFavs();
-                            });
-                          },
-                        ),
-                        ListTile(
-                          title: const Text("Open in Browser"),
-                          leading: const Icon(Icons.open_in_browser_rounded),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            launch(baseUrl + favorites[index].albumLink);
-                          },
-                        ),
+                itemBuilder: (context, index) => ContextMenuRegion(
+                      menuItems: [
+                        MenuItem(
+                            title: 'Remove',
+                            onSelected: () {
+                              favorites.removeAt(index);
+                              setState(() {
+                                _favorites = favorites;
+                                saveFavs();
+                              });
+                            }),
+                        MenuItem(
+                            title: 'Open in Browser',
+                            onSelected: () {
+                              launch(baseUrl + favorites[index].albumLink);
+                            }),
                       ],
                       child: Card(
                           shape: cardShape,
@@ -259,7 +282,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                               customBorder: cardShape,
                               mouseCursor: MouseCursor.uncontrolled,
                               onTap: () async {
-                                debugPrint("Tapped on favorite " + favorites[index].albumName);
+                                debugPrint("Tapped on favorite " +
+                                    favorites[index].albumName);
                                 if (!busy) {
                                   await goToAlbum(context, index);
                                 }
@@ -278,7 +302,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
           builder: (_, __, ___) {
             if (favorites.isEmpty && favoriteHome) return noFavs();
             return GridView.builder(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
                 itemCount: favorites.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: count,
@@ -299,7 +324,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                       children: [
                                         ListTile(
                                           title: const Text("Remove"),
-                                          leading: const Icon(Icons.star_half_rounded),
+                                          leading: const Icon(
+                                              Icons.star_half_rounded),
                                           onTap: () {
                                             Navigator.of(context).pop();
                                             favorites.removeAt(index);
@@ -311,10 +337,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                         ),
                                         ListTile(
                                           title: const Text("Open in Browser"),
-                                          leading: const Icon(Icons.open_in_browser_rounded),
+                                          leading: const Icon(
+                                              Icons.open_in_browser_rounded),
                                           onTap: () {
                                             Navigator.of(context).pop();
-                                            launch(baseUrl + favorites[index].albumLink);
+                                            launch(baseUrl +
+                                                favorites[index].albumLink);
                                           },
                                         ),
                                       ],
@@ -322,7 +350,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                   )));
                         },
                         onTap: () async {
-                          debugPrint("Tapped on favorite " + favorites[index].albumName);
+                          debugPrint("Tapped on favorite " +
+                              favorites[index].albumName);
                           if (!busy) {
                             await goToAlbum(context, index);
                           }

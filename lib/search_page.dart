@@ -440,7 +440,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     AppBar? searchAppBar = AppBar(
           // The search area here
-          title: searchBox
+          title: searchBox,
           actions: actions
         );
     

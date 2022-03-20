@@ -462,7 +462,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         SettingsTile.navigation(
                           title: const Text("Concurrent Downloads"),
                           description: const Text("Currently unused."),
-                          value: Text(maxDownloads.toString(), style: TextStyle(color: colorDownloadButton)),
+                          value: Row(children: [Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)), Text("Unused", style: TextStyle(color: Theme.of(context).errorColor),)]),
                           onPressed: (context) {
                             showDialog(
                                     builder: (BuildContext context) {

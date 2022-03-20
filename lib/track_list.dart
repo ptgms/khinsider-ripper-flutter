@@ -11,7 +11,7 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:contextmenu/contextmenu.dart';
+import 'package:native_context_menu/native_context_menu.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'main.dart';
@@ -130,7 +130,8 @@ class _TrackViewState extends State<TrackView> {
 
   String getSnackBarContent(String pathToSaveIn) {
     if (Platform.isAndroid) {
-      if (pathToSaveIn != "" && pathToSaveIn != "/storage/emulated/0/Download") {
+      if (pathToSaveIn != "" &&
+          pathToSaveIn != "/storage/emulated/0/Download") {
         return "Saved to $pathToSaveIn!";
       }
       return "Saved to Downloads!";
@@ -159,11 +160,15 @@ class _TrackViewState extends State<TrackView> {
 
   @override
   Widget build(BuildContext context) {
-    ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
+    ShapeBorder cardShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(getRoundedValue()));
 
     String downloadText = "";
-    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
+    if (pathToSaveIn == "" && Platform.isWindows ||
+        Platform.isMacOS ||
+        Platform.isLinux) {
+      downloadText =
+          "Warning: No saving path specified! Using the programs' directory.\n";
     }
 
     bool isPopup = true;
@@ -249,7 +254,9 @@ class _TrackViewState extends State<TrackView> {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-              title: const Text('Download song'), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
+              title: const Text('Download song'),
+              content: Text(tags.tracks[index]),
+              actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
             downloadSong(index, value);
@@ -292,7 +299,8 @@ class _TrackViewState extends State<TrackView> {
                               },
                             ),
                             ListTile(
-                              leading: const Icon(Icons.open_in_browser_rounded),
+                              leading:
+                                  const Icon(Icons.open_in_browser_rounded),
                               title: const Text('Open in Browser'),
                               onTap: () {
                                 Navigator.of(context).pop();
@@ -304,8 +312,10 @@ class _TrackViewState extends State<TrackView> {
                               title: const Text("Copy URL"),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                Clipboard.setData(ClipboardData(
+                                    text: baseUrl + tags.trackURL[index]));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
                                   dismissDirection: DismissDirection.none,
                                   duration: Duration(seconds: 1),
                                   content: Text("Copied URL to clipboard!"),
@@ -319,7 +329,8 @@ class _TrackViewState extends State<TrackView> {
             }
           },
           onTap: () async {
-            if (trackListBehavior == 0 && (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
+            if (trackListBehavior == 0 &&
+                (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
               if (!busy) {
                 busy = true;
                 Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
@@ -340,13 +351,17 @@ class _TrackViewState extends State<TrackView> {
                   }
                 });
 
-                await showDialog(context: context, builder: (BuildContext context) => previewDialog(tags, index));
+                await showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        previewDialog(tags, index));
                 debugPrint("dismissed");
                 audioPlayer.stop();
                 playingURL = "";
                 busy = false;
               }
-            } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
+            } else if ((Platform.isWindows && trackListBehavior == 0) ||
+                trackListBehavior == 1) {
               Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
               await http.read(completedUrl).then((contents) {
@@ -372,7 +387,11 @@ class _TrackViewState extends State<TrackView> {
           },
           child: Row(
             children: [
-              Container(width: 55, height: 55, alignment: Alignment.center, child: Text((index + 1).toString())),
+              Container(
+                  width: 55,
+                  height: 55,
+                  alignment: Alignment.center,
+                  child: Text((index + 1).toString())),
               Expanded(
                 child: Container(
                     width: double.infinity,
@@ -381,9 +400,13 @@ class _TrackViewState extends State<TrackView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Marquee(child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
                         Marquee(
-                            child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
+                            child: Text(tags.tracks[index],
+                                style: const TextStyle(fontSize: 16))),
+                        Marquee(
+                            child: Text(tags.trackURL[index],
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey)))
                       ],
                     )),
                 flex: 2,
@@ -400,7 +423,8 @@ class _TrackViewState extends State<TrackView> {
 
     String titleAppBar = "Tracks";
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -409,9 +433,11 @@ class _TrackViewState extends State<TrackView> {
         title: const Text("Tracks"),
       );
       double? widthOfBorder;
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+          windowBorder) {
         trackListAppBar = null;
-      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+          !windowBorder) {
         widthOfBorder = 0.0;
       }
       return Scaffold(
@@ -420,7 +446,9 @@ class _TrackViewState extends State<TrackView> {
               width: widthOfBorder,
               color: Theme.of(context).backgroundColor,
               child: Column(children: [
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+                if ((Platform.isWindows ||
+                    Platform.isMacOS ||
+                    Platform.isLinux))
                   SizedBox(
                       child: Container(
                           color: Theme.of(context).cardColor,
@@ -437,76 +465,64 @@ class _TrackViewState extends State<TrackView> {
                                     height: heightTitleBar,
                                     child: MoveWindow(
                                       child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 5, 0, 0),
                                         child: Text(
                                           titleAppBar,
-                                          style: Theme.of(context).textTheme.headline6,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ))),
                             const WindowButtons(),
                           ]))),
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                if ((Platform.isWindows ||
+                        Platform.isMacOS ||
+                        Platform.isLinux) &&
                     !windowBorder &&
                     trackListAppBar != null)
                   trackListAppBar,
                 Expanded(
                     child: ListView.builder(
-                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        physics: const BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics()),
                         itemCount: tags.tracks.length,
                         itemBuilder: ((context, index) {
                           return SizedBox(
                               height: 55,
                               child: Card(
                                   shape: cardShape,
-                                  child: ContextMenuArea(
-                                      builder: (context) => [
-                                            if (Platform.isAndroid || Platform.isIOS)
-                                              ListTile(
-                                                leading: const Icon(Icons.ios_share_rounded),
-                                                title: const Text('Share Track'),
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                  Share.share("Check out this Song '" +
-                                                      tags.tracks[index] +
-                                                      "' on Khinsider!\n" +
-                                                      baseUrl +
-                                                      tags.trackURL[index]);
-                                                },
-                                              ),
-                                            ListTile(
-                                              leading: const Icon(Icons.download_rounded),
-                                              title: const Text('Download Track'),
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                                showDownloadPopup(index);
-                                              },
-                                            ),
-                                            ListTile(
-                                              leading: const Icon(Icons.open_in_browser_rounded),
-                                              title: const Text('Open in Browser'),
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                                launch(baseUrl + tags.trackURL[index]);
-                                              },
-                                            ),
-                                            ListTile(
-                                              leading: const Icon(Icons.copy_rounded),
-                                              title: const Text("Copy URL"),
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                                Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
-                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                                  dismissDirection: DismissDirection.none,
-                                                  duration: Duration(seconds: 1),
-                                                  content: Text("Copied URL to clipboard!"),
-                                                  behavior: SnackBarBehavior.floating,
-                                                ));
-                                              },
-                                            )
-                                          ],
-                                      child: trackItem(index))));
+                                  child: ContextMenuRegion(menuItems: [
+                                    MenuItem(
+                                        title: "Download Track",
+                                        onSelected: () {
+                                          showDownloadPopup(index);
+                                        }),
+                                    MenuItem(
+                                        title: "Open in Browser",
+                                        onSelected: () {
+                                          launch(
+                                              baseUrl + tags.trackURL[index]);
+                                        }),
+                                    MenuItem(
+                                        title: "Copy URL",
+                                        onSelected: () {
+                                          Clipboard.setData(ClipboardData(
+                                              text: baseUrl +
+                                                  tags.trackURL[index]));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                            dismissDirection:
+                                                DismissDirection.none,
+                                            duration: Duration(seconds: 1),
+                                            content: Text(
+                                                "Copied URL to clipboard!"),
+                                            behavior: SnackBarBehavior.floating,
+                                          ));
+                                        }),
+                                  ], child: trackItem(index))));
                         })))
               ])));
     } else {
@@ -517,7 +533,9 @@ class _TrackViewState extends State<TrackView> {
           body: ListView.builder(
               itemCount: tags.tracks.length,
               itemBuilder: ((context, index) {
-                return SizedBox(height: 55, child: Card(shape: cardShape, child: trackItem(index)));
+                return SizedBox(
+                    height: 55,
+                    child: Card(shape: cardShape, child: trackItem(index)));
               })));
     }
   }
