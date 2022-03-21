@@ -50,6 +50,9 @@ dependencies:
   bitsdojo_window:
     path: bitsdojo_window/bitsdojo_window/
   native_context_menu: ^0.2.1+4
+  firebase_core: ^1.13.1
+  firebase_crashlytics: ^2.5.3
+  firebase_analytics: ^9.1.2
 
 
 dev_dependencies:
@@ -62,6 +65,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  dart_code_metrics: ^4.13.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

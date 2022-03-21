@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
@@ -29,7 +30,6 @@ String homeDirectory() {
     case 'ios':
       return "";
     case 'fuchsia':
-      // I have no idea.
       return "/";
     default:
       return "/";
@@ -45,6 +45,7 @@ Future<void> saveSettings() async {
   prefs.setInt("popup_style", popupStyle);
   prefs.setBool("material_3", md3);
   prefs.setBool("window_border", windowBorder);
+  prefs.setBool("analytics", analytics);
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -131,6 +132,11 @@ class _SettingsPageState extends State<SettingsPage> {
             Navigator.pop(context);
           },
         ));
+    AppBar? display = settingsAppBar;
+
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      display = null;
+    }
     double? widthOfBorder;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
@@ -139,7 +145,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     return Scaffold(
-        //appBar: settingsAppBar,
+        appBar: display,
         body: WindowBorder(
             width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
@@ -358,6 +364,51 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsSection(
                       title: const Text("Behavior"),
                       tiles: [
+                        if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
+                          SettingsTile.switchTile(
+                              initialValue: analytics,
+                              onToggle: (value) {
+                                setState(() {
+                                  ScaffoldMessenger.of(context).clearSnackBars();
+                                  analytics = value;
+                                  saveSettings();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  content: const Text('You have to relaunch the App for the changes to take effect.'),
+                                  action: SnackBarAction(
+                                      //textColor: Colors.white,
+                                      label: 'Exit',
+                                      onPressed: () {
+                                        exit(0);
+                                      }),
+                                ));
+                              },
+                              title: const Text("Analytics"),
+                              description: TextButton(
+                                  onPressed: () {
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) => AlertDialog(
+                                        title: const Text('Analytics'),
+                                        content: const Text("Analytics collects ONLY the following data:\n"
+                                            "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
+                                            "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
+                                            "You can fully opt out. By unchecking, the Analytic component does not even get initialised."),
+                                        actions: [
+                                          TextButton(
+                                              style: TextButton.styleFrom(padding: EdgeInsets.zero,),
+                                              onPressed: () => Navigator.pop(context, null), child: const Text("OK")),
+                                          if (analytics)
+                                            TextButton(
+                                              onPressed: (() => FirebaseCrashlytics.instance.crash()),
+                                              child: const Text("Crash App"),
+                                            )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("Learn more"))),
                         SettingsTile.navigation(
                           title: const Text("Track-list tap behavior"),
                           description: const Text("The action that occurs when tapped on item in the track-list."),
@@ -462,7 +513,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         SettingsTile.navigation(
                           title: const Text("Concurrent Downloads"),
                           description: const Text("Currently unused."),
-                          value: Row(children: [Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)), Text("Unused", style: TextStyle(color: Theme.of(context).errorColor),)]),
+                          value: Row(children: [
+                            Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
+                            Text(
+                              "Unused",
+                              style: TextStyle(color: Theme.of(context).errorColor),
+                            )
+                          ]),
                           onPressed: (context) {
                             showDialog(
                                     builder: (BuildContext context) {

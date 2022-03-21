@@ -164,9 +164,9 @@ class _TrackViewState extends State<TrackView> {
         borderRadius: BorderRadius.circular(getRoundedValue()));
 
     String downloadText = "";
-    if (pathToSaveIn == "" && Platform.isWindows ||
+    if (pathToSaveIn == "" && (Platform.isWindows ||
         Platform.isMacOS ||
-        Platform.isLinux) {
+        Platform.isLinux)) {
       downloadText =
           "Warning: No saving path specified! Using the programs' directory.\n";
     }
@@ -428,10 +428,21 @@ class _TrackViewState extends State<TrackView> {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
+    double splashRadius = 35.0;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
+    }
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       AppBar? trackListAppBar = AppBar(
         title: const Text("Tracks"),
       );
+
+      AppBar? display = trackListAppBar;
+
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      display = null;
+    }
+
       double? widthOfBorder;
       if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
           windowBorder) {
@@ -441,7 +452,7 @@ class _TrackViewState extends State<TrackView> {
         widthOfBorder = 0.0;
       }
       return Scaffold(
-          //appBar: trackListAppBar,
+          appBar: display,
           body: WindowBorder(
               width: widthOfBorder,
               color: Theme.of(context).backgroundColor,
@@ -456,6 +467,7 @@ class _TrackViewState extends State<TrackView> {
                             if (Platform.isMacOS) const SizedBox(width: 60),
                             if (windowBorder)
                               IconButton(
+                                splashRadius: splashRadius,
                                   icon: const Icon(Icons.navigate_before),
                                   onPressed: () {
                                     Navigator.pop(context);

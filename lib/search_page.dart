@@ -328,7 +328,6 @@ class _SearchWidgetState extends State<SearchWidget> {
                 return Card(
                     shape: cardShape,
                     child: InkWell(
-                      splashColor: Colors.accents.first,
                       mouseCursor: MouseCursor.uncontrolled,
                       onTap: () {
                         debugPrint("Tapped " + _searchResults[index].albumName);
@@ -451,6 +450,12 @@ class _SearchWidgetState extends State<SearchWidget> {
       heightTitleBar = 30.0;
     }
 
+    AppBar? display = searchAppBar;
+
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      display = null;
+    }
+
     double? widthOfBorder;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       searchAppBar = null;
@@ -459,7 +464,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     }
 
     return Scaffold(
-        //appBar: searchAppBar,
+        appBar: display,
         body: WindowBorder(
           width: widthOfBorder,
             color: Theme.of(context).backgroundColor,

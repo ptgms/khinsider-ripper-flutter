@@ -32,6 +32,8 @@ var maxDownloads = 1;
 var md3 = false;
 // Custom Window Border (Desktop only)
 var windowBorder = true;
+// Analytics (Android, iOS, macOS only)
+var analytics = true;
 
 // Welcome to janky-hut, may I take your order?
 ValueNotifier<int> favUpdater = ValueNotifier(0);

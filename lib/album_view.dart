@@ -253,9 +253,10 @@ class _AlbumViewState extends State<AlbumView> {
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags, bool isPopUp) {
     downloadText = tags.albumName;
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
-    if (pathToSaveIn == "" && Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       downloadText = "Warning: No saving path specified! Using the programs' directory.\n" + tags.albumName;
     }
+    debugPrint(pathToSaveIn);
     return ListView(
       padding: const EdgeInsets.all(8),
       children: <Widget>[
@@ -349,6 +350,13 @@ class _AlbumViewState extends State<AlbumView> {
     AppBar? albumViewAppBar = AppBar(
       title: const Text("Album Details"),
     );
+
+    AppBar? display = albumViewAppBar;
+
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      display = null;
+    }
+
     double? widthOfBorder;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       albumViewAppBar = null;
@@ -356,8 +364,9 @@ class _AlbumViewState extends State<AlbumView> {
       widthOfBorder = 0.0;
     }
     return Scaffold(
-        //appBar: albumViewAppBar,
+        appBar: display,
         body: WindowBorder(
+          width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
               if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
