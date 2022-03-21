@@ -134,7 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ));
     AppBar? display = settingsAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       display = null;
     }
     double? widthOfBorder;
