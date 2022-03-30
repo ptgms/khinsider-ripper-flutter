@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
@@ -397,13 +396,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                             "You can fully opt out. By unchecking, the Analytic component does not even get initialised."),
                                         actions: [
                                           TextButton(
-                                              style: TextButton.styleFrom(padding: EdgeInsets.zero,),
-                                              onPressed: () => Navigator.pop(context, null), child: const Text("OK")),
-                                          if (analytics)
-                                            TextButton(
-                                              onPressed: (() => FirebaseCrashlytics.instance.crash()),
-                                              child: const Text("Crash App"),
-                                            )
+                                              style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                              ),
+                                              onPressed: () => Navigator.pop(context, null),
+                                              child: const Text("OK")),
                                         ],
                                       ),
                                     );

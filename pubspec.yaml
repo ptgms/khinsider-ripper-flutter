@@ -50,9 +50,6 @@ dependencies:
   bitsdojo_window:
     path: bitsdojo_window/bitsdojo_window/
   native_context_menu: ^0.2.1+4
-  firebase_core: ^1.13.1
-  firebase_crashlytics: ^2.5.3
-  firebase_analytics: ^9.1.2
 
 
 dev_dependencies:

@@ -9,8 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'favorite_view.dart';
 import 'config.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +30,11 @@ Future<void> main() async {
   analytics = prefs.getBool("analytics") ?? true;
   // ------
 
-  if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
+  /*if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-  }
+  }*/
 
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {

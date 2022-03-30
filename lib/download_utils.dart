@@ -8,7 +8,6 @@ import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 String getSeperator() {
   if (Platform.isWindows) {
@@ -17,8 +16,6 @@ String getSeperator() {
     return "/";
   }
 }
-
-FirebaseAnalytics analytic = FirebaseAnalytics.instance;
 
 Future<List<String>> getDirects(AlbumTags tags, String type) async {
   List<String> directLinks = [];
@@ -31,11 +28,11 @@ Future<void> getDirectLink(AlbumTags tags, int index, String type) async {}
 
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
-  if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
+  /*if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
     await FirebaseAnalytics.instance.logEvent(
       name: 'downloadTrackAlbum',
     );
-  }
+  }*/
   if (Platform.isAndroid) {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
@@ -95,11 +92,11 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
 
 // used for downloading singular file from the album, used in track view.
 Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async {
-  if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
+  /*if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
     await FirebaseAnalytics.instance.logEvent(
       name: 'downloadTrack',
     );
-  }
+  }*/
   if (Platform.isAndroid) {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
