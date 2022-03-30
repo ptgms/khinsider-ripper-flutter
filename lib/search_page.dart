@@ -454,7 +454,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     AppBar? display = searchAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       display = null;
     }
 

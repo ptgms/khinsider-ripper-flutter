@@ -353,7 +353,7 @@ class _AlbumViewState extends State<AlbumView> {
 
     AppBar? display = albumViewAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       display = null;
     }
 
