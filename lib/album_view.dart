@@ -353,7 +353,7 @@ class _AlbumViewState extends State<AlbumView> {
 
     AppBar? display = albumViewAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       display = null;
     }
 
@@ -366,7 +366,7 @@ class _AlbumViewState extends State<AlbumView> {
     return Scaffold(
         appBar: display,
         body: WindowBorder(
-          width: widthOfBorder,
+            width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
               if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))

@@ -205,7 +205,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
     AppBar? display = mainAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       display = null;
     }
 

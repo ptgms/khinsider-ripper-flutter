@@ -389,60 +389,62 @@ class _SearchWidgetState extends State<SearchWidget> {
     }
 
     List<Widget> actions = [
-            if (!favoriteHome)
-              IconButton(
-                splashRadius: splashRadius,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const FavoriteHome(
-                                  title: 'Favorites',
-                                )));
-                  },
-                  icon: const Icon(Icons.star_rounded)),
-            if (!favoriteHome)
-              IconButton(
-                splashRadius: splashRadius,
-                onPressed: (() {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
-                }),
-                icon: const Icon(Icons.settings_rounded),
-              ),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) const WindowButtons()
-          ];
+      if (!favoriteHome)
+        IconButton(
+            splashRadius: splashRadius,
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const FavoriteHome(
+                            title: 'Favorites',
+                          )));
+            },
+            icon: const Icon(Icons.star_rounded)),
+      if (!favoriteHome)
+        IconButton(
+          splashRadius: splashRadius,
+          onPressed: (() {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+          }),
+          icon: const Icon(Icons.settings_rounded),
+        ),
+      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) const WindowButtons()
+    ];
 
     Widget searchBox = Container(
-            width: double.infinity,
-            height: 40,
-            decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
-            child: Center(
-              child: TextField(
-                onSubmitted: (term) async {
-                  searchPressed(term);
+      width: double.infinity,
+      height: 40,
+      decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
+      child: Center(
+        child: TextField(
+          onSubmitted: (term) async {
+            searchPressed(term);
+          },
+          controller: fieldText,
+          decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                splashRadius: splashRadius,
+                icon: const Icon(
+                  Icons.clear,
+                  size: 17.0,
+                ),
+                onPressed: () {
+                  fieldText.clear();
                 },
-                controller: fieldText,
-                decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      splashRadius: splashRadius,
-                      icon: const Icon(Icons.clear, size: 17.0,),
-                      onPressed: () {
-                        fieldText.clear();
-                      },
-                    ),
-                    hintText: 'Search for OSTs',
-                    border: InputBorder.none),
               ),
-            ),
-          );
+              hintText: 'Search for OSTs',
+              border: InputBorder.none),
+        ),
+      ),
+    );
 
     AppBar? searchAppBar = AppBar(
-          // The search area here
-          title: searchBox,
-          actions: actions
-        );
-    
+        // The search area here
+        title: searchBox,
+        actions: actions);
+
     String titleAppBar = "Search";
     double? heightTitleBar = 40.0;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
@@ -452,7 +454,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     AppBar? display = searchAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       display = null;
     }
 
@@ -466,27 +468,37 @@ class _SearchWidgetState extends State<SearchWidget> {
     return Scaffold(
         appBar: display,
         body: WindowBorder(
-          width: widthOfBorder,
+            width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
               if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
-                        child: Row(
-                          children: [ 
-                            if (Platform.isMacOS) const SizedBox(width: 60),
-                            if (favoriteHome && windowBorder) IconButton(splashRadius: splashRadius, icon: const Icon(Icons.navigate_before), onPressed: () {
-                              Navigator.pop(context);
-                            }
-                          ),
-                                Expanded(child: SizedBox(height: heightTitleBar, child: MoveWindow(child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                  child: Text(titleAppBar, style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.center,),
-                                ),))),
-                                if (windowBorder) Expanded(child: searchBox)
-                              ]
-                        ))),
+                        child: Row(children: [
+                          if (Platform.isMacOS) const SizedBox(width: 60),
+                          if (favoriteHome && windowBorder)
+                            IconButton(
+                                splashRadius: splashRadius,
+                                icon: const Icon(Icons.navigate_before),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                          Expanded(
+                              child: SizedBox(
+                                  height: heightTitleBar,
+                                  child: MoveWindow(
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                      child: Text(
+                                        titleAppBar,
+                                        style: Theme.of(context).textTheme.headline6,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ))),
+                          if (windowBorder) Expanded(child: searchBox)
+                        ]))),
               if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && searchAppBar != null)
                 searchAppBar,
               Expanded(child: bodyDisplay)

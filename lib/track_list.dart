@@ -415,7 +415,7 @@ class _TrackViewState extends State<TrackView> {
 
       AppBar? display = trackListAppBar;
 
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
         display = null;
       }
 
