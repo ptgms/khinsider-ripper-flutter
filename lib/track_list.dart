@@ -11,7 +11,7 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:native_context_menu/native_context_menu.dart';
+// import 'package:native_context_menu/native_context_menu.dart' as ctxmenu;
 import 'package:share_plus/share_plus.dart';
 
 import 'main.dart';
@@ -472,7 +472,7 @@ class _TrackViewState extends State<TrackView> {
                               height: 55,
                               child: Card(
                                   shape: cardShape,
-                                  child: ContextMenuRegion(
+                                  child: trackItem(index)/*ctxmenu.ContextMenuRegion(
                                       onItemSelected: ((item) {
                                         switch (item.title) {
                                           case "Download Track":
@@ -495,11 +495,11 @@ class _TrackViewState extends State<TrackView> {
                                         }
                                       }),
                                       menuItems: [
-                                        MenuItem(title: "Download Track"),
-                                        MenuItem(title: "Open in Browser"),
-                                        MenuItem(title: "Copy URL"),
+                                        ctxmenu.MenuItem(title: "Download Track"),
+                                        ctxmenu.MenuItem(title: "Open in Browser"),
+                                        ctxmenu.MenuItem(title: "Copy URL"),
                                       ],
-                                      child: trackItem(index))));
+                                      child: trackItem(index))*/));
                         })))
               ])));
     } else {

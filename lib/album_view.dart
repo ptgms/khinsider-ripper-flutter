@@ -44,7 +44,7 @@ Widget albumView(AlbumTags tags) {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
                 color: const Color.fromRGBO(71, 71, 71, 0.2),
-                image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])))),
+                image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[0])))),
         Expanded(
           child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
@@ -182,7 +182,7 @@ class _AlbumViewState extends State<AlbumView> {
     // the add/remove from favorites cell/button.
     if (foundInFavorites(
         // if album being viewed is in favorites, show remove button
-        AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")))) {
+        AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), ""))) {
       return SizedBox(
           child: Card(
               shape: cardShape,
@@ -190,7 +190,7 @@ class _AlbumViewState extends State<AlbumView> {
                   customBorder: cardShape,
                   onTap: (() {
                     favorites.removeAt(
-                        locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""))));
+                        locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), "")));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -209,7 +209,7 @@ class _AlbumViewState extends State<AlbumView> {
               child: InkWell(
                   customBorder: cardShape,
                   onTap: (() {
-                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, "")));
+                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), tags.coverURL[0]));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;

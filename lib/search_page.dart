@@ -112,15 +112,13 @@ class _SearchWidgetState extends State<SearchWidget> {
     http.read(completedUrl).then((contents) {
       BeautifulSoup bs = BeautifulSoup(contents);
 
-      for (var element in bs.findAll('img')) {
-        var imgurl = element['src'];
+      for (var element in bs.findAll('', class_: 'albumImage')) {
+        var imgurl = element.find('a')!['href'];
         //debugPrint(imgurl);
-        if (imgurl!.startsWith("/album_views.php")) {
-          coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png");
-        } else {
-          coverURL.add(element['src']!);
-        }
+        coverURL.add(imgurl!);
       }
+
+      if (coverURL.isEmpty) { coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png"); }
 
       var link = bs.find('', id: 'songlist');
 
@@ -243,11 +241,11 @@ class _SearchWidgetState extends State<SearchWidget> {
     if (redirectUri.toString().contains("game-soundtracks/album")) {
       String resultName = redirectUri.toString().replaceAll(baseUrl + baseAlbumUrl, "");
 
-      if (searchResults.contains(AlbumStruct(resultName, redirectUri.toString()))) {
+      if (searchResults.contains(AlbumStruct(resultName, redirectUri.toString(), ""))) {
         return;
       }
 
-      searchResults.add(AlbumStruct(resultName, redirectUri.toString()));
+      searchResults.add(AlbumStruct(resultName, redirectUri.toString(), ""));
 
       setState(() {
         searching = false;
@@ -260,10 +258,14 @@ class _SearchWidgetState extends State<SearchWidget> {
       http.read(searchURL).then((contents) {
         //debugPrint(contents);
         BeautifulSoup bs = BeautifulSoup(contents);
-        var link = bs.find('', id: 'EchoTopic');
+        var link = bs.find('table', class_: 'albumList');
 
-        for (var row in link!.findAll('p')) {
-          for (var col in row.findAll('a')) {
+        for (var row in link!.findAll('tr')) {
+          String albumNameTemp = "";
+          String albumLinkTemp = "";
+          String albumCoverTemp = "https://i.ibb.co/cgRJ97N/unknown.png";
+
+          /*for (var col in row.findAll('tr')) {
             if (col['href']!.contains("game-soundtracks/browse/") || col['href']!.contains("/forums/")) {
               continue;
             }
@@ -275,7 +277,16 @@ class _SearchWidgetState extends State<SearchWidget> {
             String colHref = col['href']!;
 
             searchResults.add(AlbumStruct(colContent, colHref));
+          }*/
+          if (row.children[0].innerHtml == "") {
+            continue;
           }
+          if (row.children[0].find('img') != null) {
+            albumCoverTemp = row.children[0].find('img')!['src']!;
+          }
+          albumNameTemp = row.children[1].find('a')!.innerHtml;
+          albumLinkTemp = row.children[1].find('a')!['href']!;
+          searchResults.add(AlbumStruct(albumNameTemp, albumLinkTemp, albumCoverTemp));
         }
 
         setState(() {
@@ -336,6 +347,14 @@ class _SearchWidgetState extends State<SearchWidget> {
                       child: Column(
                         children: [
                           ListTile(
+                            leading: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+                                    color: const Color.fromRGBO(71, 71, 71, 0.2),
+                                    image: DecorationImage(
+                                        fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)))),
                             trailing: IconButton(
                               icon: foundInFavorites(searchResults[index])
                                   ? const Icon(Icons.star)
@@ -409,7 +428,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) const WindowButtons()
+      if (!favoriteHome && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) const WindowButtons()
     ];
 
     Widget searchBox = Container(
@@ -475,32 +494,39 @@ class _SearchWidgetState extends State<SearchWidget> {
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
-                        child: Row(children: [
-                          if (Platform.isMacOS) const SizedBox(width: 60),
-                          if (favoriteHome && windowBorder)
-                            IconButton(
-                                splashRadius: splashRadius,
-                                icon: const Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                }),
-                          Expanded(
-                              child: SizedBox(
-                                  height: heightTitleBar,
-                                  child: MoveWindow(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                      child: Text(
-                                        titleAppBar,
-                                        style: Theme.of(context).textTheme.headline6,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ))),
-                          if (windowBorder) Expanded(child: searchBox)
-                        ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && searchAppBar != null)
-                searchAppBar,
+                        child: Row(
+                            children: [
+                                  if (Platform.isMacOS) const SizedBox(width: 60),
+                                  if (favoriteHome && windowBorder)
+                                    IconButton(
+                                        splashRadius: splashRadius,
+                                        icon: const Icon(Icons.navigate_before),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        }),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: heightTitleBar,
+                                          child: MoveWindow(
+                                            child: Padding(
+                                              padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                              child: Text(
+                                                titleAppBar,
+                                                style: Theme.of(context).textTheme.headline6,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ))),
+                                  if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder)
+                                    const WindowButtons(),
+                                  if (windowBorder) Expanded(child: searchBox)
+                                ] +
+                                actions))),
+              if (favoriteHome)
+                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                    !windowBorder &&
+                    searchAppBar != null)
+                  searchAppBar,
               Expanded(child: bodyDisplay)
             ])));
   }

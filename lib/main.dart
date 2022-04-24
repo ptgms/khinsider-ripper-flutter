@@ -27,7 +27,7 @@ Future<void> main() async {
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
-  analytics = prefs.getBool("analytics") ?? true;
+  // analytics = prefs.getBool("analytics") ?? true;
   // ------
 
   /*if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
@@ -39,7 +39,7 @@ Future<void> main() async {
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
-      favorites.add(AlbumStruct(favNames[i], favLink[i]));
+      favorites.add(AlbumStruct(favNames[i], favLink[i], ""));
     }
   }
   runApp(Phoenix(child: const MyApp()));

@@ -44,7 +44,7 @@ Future<void> saveSettings() async {
   prefs.setInt("popup_style", popupStyle);
   prefs.setBool("material_3", md3);
   prefs.setBool("window_border", windowBorder);
-  prefs.setBool("analytics", analytics);
+  // prefs.setBool("analytics", analytics);
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -363,7 +363,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsSection(
                       title: const Text("Behavior"),
                       tiles: [
-                        if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
+                        /*if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
                           SettingsTile.switchTile(
                               initialValue: analytics,
                               onToggle: (value) {
@@ -405,7 +405,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       ),
                                     );
                                   },
-                                  child: const Text("Learn more"))),
+                                  child: const Text("Learn more"))),*/
                         SettingsTile.navigation(
                           title: const Text("Track-list tap behavior"),
                           description: const Text("The action that occurs when tapped on item in the track-list."),

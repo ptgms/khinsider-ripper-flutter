@@ -1,7 +1,8 @@
 class AlbumStruct {
   final String albumName;
   final String albumLink;
-  const AlbumStruct(this.albumName, this.albumLink);
+  final String albumCover;
+  const AlbumStruct(this.albumName, this.albumLink, this.albumCover);
 }
 
 class AlbumTags {

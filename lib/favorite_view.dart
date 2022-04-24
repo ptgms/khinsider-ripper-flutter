@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
-import 'package:native_context_menu/native_context_menu.dart';
+//import 'package:native_context_menu/native_context_menu.dart' as ctxmenu;
 import 'package:flutter/material.dart';
 import 'package:khinrip/album_view.dart';
 import 'package:khinrip/config.dart';
@@ -60,8 +60,21 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   Widget getTitleText(int index) {
     // gets the cell text for a particular favorite
+    String favoriteImage = favorites[index].albumCover;
+    if (favoriteImage == "") {
+      favoriteImage = "https://i.ibb.co/cgRJ97N/unknown.png";
+    }
+
+    debugPrint(favoriteImage);
+
     return ListTile(
-      leading: const Icon(Icons.star),
+      leading: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+              color: const Color.fromRGBO(71, 71, 71, 0.2),
+              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(favoriteImage)))),
       trailing: IconButton(
         icon: const Icon(Icons.remove_circle_outline),
         onPressed: () {
@@ -230,9 +243,21 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   crossAxisCount: count,
                   childAspectRatio: (widthCard / heightCard),
                 ),
-                itemBuilder: (context, index) => ContextMenuRegion(
-                      onItemSelected: (item) {
-                        switch (item.title) {
+                itemBuilder: (context, index) => Card(
+                    shape: cardShape,
+                    child: InkWell(
+                        customBorder: cardShape,
+                        mouseCursor: MouseCursor.uncontrolled,
+                        onTap: () async {
+                          debugPrint("Tapped on favorite " + favorites[index].albumName);
+                          if (!busy) {
+                            await goToAlbum(context, index);
+                          }
+                        },
+                        child: getTitleText(
+                            index))) /*ctxmenu.ContextMenuRegion(
+                      onItemSelected: (itemSel) {
+                        switch (itemSel.title) {
                           case "Remove":
                             favorites.removeAt(index);
                             setState(() {
@@ -247,7 +272,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                             break;
                         }
                       },
-                      menuItems: [MenuItem(title: 'Remove'), MenuItem(title: 'Open in Browser')],
+                      menuItems: [ctxmenu.MenuItem(title: 'Remove'), ctxmenu.MenuItem(title: 'Open in Browser')],
                       child: Card(
                           shape: cardShape,
                           child: InkWell(
@@ -260,7 +285,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                 }
                               },
                               child: getTitleText(index))),
-                    ));
+                    )*/
+                );
           },
         ),
       );
