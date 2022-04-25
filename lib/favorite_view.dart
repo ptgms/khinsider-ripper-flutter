@@ -60,21 +60,22 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   Widget getTitleText(int index) {
     // gets the cell text for a particular favorite
-    String favoriteImage = favorites[index].albumCover;
-    if (favoriteImage == "") {
-      favoriteImage = "https://i.ibb.co/cgRJ97N/unknown.png";
+    Widget noPicFound = const Icon(Icons.album);
+    Decoration favoriteImage = const BoxDecoration();
+    if (favorites[index].albumCover != "none" && favorites[index].albumCover != "") {
+      noPicFound = Container();
+      favoriteImage = BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+              color: const Color.fromRGBO(71, 71, 71, 0.2),
+              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(favorites[index].albumCover)));
     }
-
-    debugPrint(favoriteImage);
 
     return ListTile(
       leading: Container(
           width: 50,
           height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-              color: const Color.fromRGBO(71, 71, 71, 0.2),
-              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(favoriteImage)))),
+          decoration: favoriteImage,
+          child: noPicFound),
       trailing: IconButton(
         icon: const Icon(Icons.remove_circle_outline),
         onPressed: () {

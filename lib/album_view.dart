@@ -35,16 +35,24 @@ Widget albumView(AlbumTags tags) {
     availableAddon += "OGG ";
   }
 
+  Widget noPicFound = const Icon(Icons.album);
+    Decoration albumImage = const BoxDecoration();
+    if (tags.coverURL[0] != "none" && tags.coverURL[0] != "") {
+      noPicFound = Container();
+      albumImage = BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+              color: const Color.fromRGBO(71, 71, 71, 0.2),
+              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])));
+    }
+
   return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
       child: Row(children: [
         Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-                color: const Color.fromRGBO(71, 71, 71, 0.2),
-                image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[0])))),
+            decoration: albumImage,
+            child: noPicFound),
         Expanded(
           child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),

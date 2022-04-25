@@ -118,7 +118,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         coverURL.add(imgurl!);
       }
 
-      if (coverURL.isEmpty) { coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png"); }
+      if (coverURL.isEmpty) { coverURL.add("none"); }
 
       var link = bs.find('', id: 'songlist');
 
@@ -263,7 +263,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         for (var row in link!.findAll('tr')) {
           String albumNameTemp = "";
           String albumLinkTemp = "";
-          String albumCoverTemp = "https://i.ibb.co/cgRJ97N/unknown.png";
+          String albumCoverTemp = "none";
 
           /*for (var col in row.findAll('tr')) {
             if (col['href']!.contains("game-soundtracks/browse/") || col['href']!.contains("/forums/")) {
@@ -336,6 +336,15 @@ class _SearchWidgetState extends State<SearchWidget> {
           itemBuilder: (context, index) => ValueListenableBuilder<int>(
               valueListenable: favUpdater,
               builder: (_, __, ___) {
+                Widget noPicFound = const Icon(Icons.album);
+    Decoration searchImage = const BoxDecoration();
+    if (_searchResults[index].albumCover != "none" && _searchResults[index].albumCover != "") {
+      noPicFound = Container();
+      searchImage = BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+              color: const Color.fromRGBO(71, 71, 71, 0.2),
+              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)));
+    }
                 return Card(
                     shape: cardShape,
                     child: InkWell(
@@ -350,11 +359,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                             leading: Container(
                                 width: 50,
                                 height: 50,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-                                    color: const Color.fromRGBO(71, 71, 71, 0.2),
-                                    image: DecorationImage(
-                                        fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)))),
+                                decoration: searchImage,
+                                child: noPicFound),
                             trailing: IconButton(
                               icon: foundInFavorites(searchResults[index])
                                   ? const Icon(Icons.star)
