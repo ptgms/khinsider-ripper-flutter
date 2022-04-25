@@ -26,6 +26,19 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
+dependency_overrides:
+  bitsdojo_window_linux:
+    git:
+      url: https://github.com/CorvusYe/bitsdojo_window
+      path: bitsdojo_window_linux
+      ref: master
+  bitsdojo_window_windows:
+    git:
+      url: https://github.com/CorvusYe/bitsdojo_window
+      path: bitsdojo_window_windows
+      ref: master
+
 dependencies:
   flutter:
     sdk: flutter
@@ -44,11 +57,16 @@ dependencies:
   flutter_phoenix: ^1.0.0
   path_provider: ^2.0.9
   permission_handler: ^9.2.0
-  share_plus: 3.0.0 #^4.0.1
+  share_plus: ^4.0.1
   settings_ui: ^2.0.0
   file_picker: ^4.5.1
+  #bitsdojo_window:
+  #  path: bitsdojo_window/bitsdojo_window/
   bitsdojo_window:
-    path: bitsdojo_window/bitsdojo_window/
+    git:
+      url: https://github.com/CorvusYe/bitsdojo_window
+      path: bitsdojo_window
+      ref: master
   native_context_menu: ^0.2.1+4
 
 
