@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ignore: must_be_immutable
 class DownloadingView extends StatefulWidget {
@@ -51,7 +52,8 @@ class _DownloadingViewState extends State<DownloadingView> {
   }
 
   // download progress
-  SizedBox downloadingRightNow() {
+  SizedBox downloadingRightNow(context) {
+    var t = AppLocalizations.of(context)!;
     return SizedBox(
         width: double.infinity,
         height: double.infinity,
@@ -60,7 +62,7 @@ class _DownloadingViewState extends State<DownloadingView> {
               child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: Marquee(
-                      child: Text("Downloading " + tags.albumName + "...",
+                      child: Text(t.downloadingAlbum(tags.albumName),
                           style: const TextStyle(fontSize: 25), textAlign: TextAlign.center)))),
           Center(
             child: Padding(
@@ -82,6 +84,7 @@ class _DownloadingViewState extends State<DownloadingView> {
   _DownloadingViewState({required this.tags, required this.type});
   @override
   Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
     downloadAlbum(tags, type);
     return Scaffold(
         appBar: AppBar(
@@ -95,8 +98,8 @@ class _DownloadingViewState extends State<DownloadingView> {
               //dispose();
             },
           ),
-          title: const Text("Downloading..."),
+          title: Text(t.downloadingAlbum("Album")),
         ),
-        body: downloadingRightNow());
+        body: downloadingRightNow(context));
   }
 }

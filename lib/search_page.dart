@@ -10,6 +10,7 @@ import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'album_view.dart';
 
@@ -30,19 +31,20 @@ SizedBox noResults() {
       ]));
 }
 
-SizedBox emptySearch() {
+SizedBox emptySearch(context) {
+  var t = AppLocalizations.of(context)!;
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
             child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Text("Start a search!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Text(t.startSearch, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text("Start searching to show results!", textAlign: TextAlign.center)),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Text(t.startSearchDescription, textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -303,6 +305,7 @@ class _SearchWidgetState extends State<SearchWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     Widget bodyDisplay;
 
@@ -324,7 +327,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     } else if (searched && _searchResults.isEmpty) {
       bodyDisplay = noResults();
     } else if (!searched) {
-      bodyDisplay = emptySearch();
+      bodyDisplay = emptySearch(context);
     } else {
       bodyDisplay = GridView.builder(
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -348,14 +351,13 @@ class _SearchWidgetState extends State<SearchWidget> {
                 return Card(
                     shape: cardShape,
                     child: InkWell(
+                      customBorder: cardShape,
                       mouseCursor: MouseCursor.uncontrolled,
                       onTap: () {
                         debugPrint("Tapped " + _searchResults[index].albumName);
                         goToAlbum(context, index);
                       },
-                      child: Column(
-                        children: [
-                          ListTile(
+                      child: ListTile(
                             leading: Container(
                                 width: 50,
                                 height: 50,
@@ -382,8 +384,6 @@ class _SearchWidgetState extends State<SearchWidget> {
                               child: Text(_searchResults[index].albumLink),
                             ),
                           ),
-                        ],
-                      ),
                     ));
               }) /**/
           );
@@ -421,8 +421,8 @@ class _SearchWidgetState extends State<SearchWidget> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const FavoriteHome(
-                            title: 'Favorites',
+                      builder: (_) => FavoriteHome(
+                            title: t.favorites,
                           )));
             },
             icon: const Icon(Icons.star_rounded)),
@@ -459,7 +459,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                   fieldText.clear();
                 },
               ),
-              hintText: 'Search for OSTs',
+              hintText: t.searchForOSTs,
               border: InputBorder.none),
         ),
       ),
@@ -470,7 +470,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         title: searchBox,
         actions: actions);
 
-    String titleAppBar = "Search";
+    String titleAppBar = t.search;
     double? heightTitleBar = 40.0;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";

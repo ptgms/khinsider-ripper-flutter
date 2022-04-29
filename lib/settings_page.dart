@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -6,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/main.dart';
+import 'package:khinrip/settings_language.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -58,13 +61,17 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var defaultText = "Default: Path of executable";
+    var t = AppLocalizations.of(context)!;
+    var defaultText = t
+        .defaultLocation("Path of executable"); //"Default: Path of executable";
+    folderToSave = defaultText;
 
     if (pathToSaveIn == "") {
       folderToSave = defaultText;
     } else {
-      if (Platform.isAndroid && pathToSaveIn == "/storage/emulated/0/Download") {
-        folderToSave = "Default: Downloads folder";
+      if (Platform.isAndroid &&
+          pathToSaveIn == "/storage/emulated/0/Download") {
+        folderToSave = t.defaultLocation("Downloads");
       } else {
         folderToSave = pathToSaveIn;
       }
@@ -76,8 +83,16 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     var themes = ["System", "Light", "Dark", "Black"];
-    var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
-    var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
+    var trackListBehaviorStrings = [
+      "Preview",
+      "Browser",
+      "Download"
+    ];
+    var popupBehaviorStrings = [
+      "Auto",
+      "Pop-up",
+      "Bottom"
+    ];
 
     var trackListSelect = trackListBehavior;
     var colorDownloadButton = Theme.of(context).hintColor;
@@ -92,7 +107,8 @@ class _SettingsPageState extends State<SettingsPage> {
       colorDownloadButton = Colors.red;
     }
 
-    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
+    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) &&
+        trackListSelect == 0) {
       trackListSelect = 1;
     }
 
@@ -111,19 +127,21 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        windowBorder) {
       splashRadius = 1.0;
     }
 
-    String titleAppBar = "Settings";
+    String titleAppBar = t.settingsView;
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
 
     AppBar? settingsAppBar = AppBar(
-        title: const Text("Settings"),
+        title: Text(t.settingsView),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -137,11 +155,19 @@ class _SettingsPageState extends State<SettingsPage> {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        !windowBorder) {
       widthOfBorder = 0.0;
     }
+
+    var config = File('assets/languages.json');
+    var str = config.readAsStringSync();
+    var data = json.decode(str);
+
+    var langaugeCurrent = data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
 
     return Scaffold(
         appBar: display,
@@ -167,35 +193,42 @@ class _SettingsPageState extends State<SettingsPage> {
                                   height: heightTitleBar,
                                   child: MoveWindow(
                                     child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 5, 0, 0),
                                       child: Text(
                                         titleAppBar,
-                                        style: Theme.of(context).textTheme.headline6,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6,
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ))),
                           const WindowButtons()
                         ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+              if ((Platform.isWindows ||
+                      Platform.isMacOS ||
+                      Platform.isLinux) &&
                   !windowBorder &&
                   settingsAppBar != null)
                 settingsAppBar,
               Expanded(
                 child: SettingsList(
-                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   darkTheme: SettingsThemeData(
                       settingsListBackground: Theme.of(context).cardColor,
                       settingsSectionBackground: sectionColor,
-                      titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+                      titleTextColor:
+                          Theme.of(context).textTheme.bodyText1!.color!),
                   //platform: DevicePlatform.android,
                   sections: [
                     if (!Platform.isIOS)
                       SettingsSection(
-                        title: const Text('Saving Path'),
+                        title: Text(t.savingPath),
                         tiles: <SettingsTile>[
                           SettingsTile.navigation(
-                            title: const Text('Path'),
+                            title: Text(t.path),
                             value: Text(folderToSave),
                             onPressed: (context) async {
                               if (Platform.isAndroid) {
@@ -204,9 +237,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                   await Permission.storage.request();
                                 }
                               }
-                              String? path = await FilePicker.platform.getDirectoryPath(
-                                  dialogTitle: "Choose Download Folder",
-                                  initialDirectory: Directory(homeDirectory()).path);
+                              String? path = await FilePicker.platform
+                                  .getDirectoryPath(
+                                      dialogTitle: t.filePickerChoose,
+                                      initialDirectory:
+                                          Directory(homeDirectory()).path);
 
                               if (path != null) {
                                 setState(() {
@@ -220,7 +255,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (!Platform.isIOS && pathToSaveIn != "")
                             SettingsTile.navigation(
                               trailing: Container(),
-                              title: const Text("Reset path"),
+                              title: Text(t.resetPath),
                               onPressed: (context) {
                                 setState(() {
                                   pathToSaveIn = "";
@@ -232,11 +267,23 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     SettingsSection(
-                      title: const Text('Appearance'),
+                      title: Text(t.appearance),
                       tiles: <SettingsTile>[
-                        if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+                        SettingsTile.navigation(
+                          title: Text(t.languageOption),
+                          trailing: Text(langaugeCurrent),
+                          onPressed: (context) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const LanguageSettings()));
+                          },
+                        ),
+                        if (Platform.isWindows ||
+                            Platform.isMacOS ||
+                            Platform.isLinux)
                           SettingsTile.switchTile(
-                            title: const Text('Custom Window Border'),
+                            title: Text(t.customWindow),
                             initialValue: windowBorder,
                             onToggle: (value) {
                               ScaffoldMessenger.of(context).clearSnackBars();
@@ -245,12 +292,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 windowBorder = value;
                                 saveSettings();
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
                                 behavior: SnackBarBehavior.floating,
-                                content: const Text('Relaunch the App for the changes to take effect.'),
+                                content: Text(t.relaunchNotice),
                                 action: SnackBarAction(
                                     //textColor: Colors.white,
-                                    label: 'Exit',
+                                    label: t.exit,
                                     onPressed: () {
                                       exit(0);
                                     }),
@@ -258,8 +306,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             },
                           ),
                         SettingsTile.switchTile(
-                          title: const Text('Favorites is home-page'),
-                          description: const Text('If off, search will be home-page. Requires restart.'),
+                          title: Text(t.favHomePage),
+                          description: Text(t.favHomePageDescription),
                           initialValue: favoriteHome,
                           onToggle: (value) {
                             ScaffoldMessenger.of(context).clearSnackBars();
@@ -270,10 +318,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             });
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               behavior: SnackBarBehavior.floating,
-                              content: const Text('Restart the app?'),
+                              content: Text(t.relaunchNotice),
                               action: SnackBarAction(
                                   //textColor: Colors.white,
-                                  label: 'Restart',
+                                  label: t.restart,
                                   onPressed: () {
                                     Phoenix.rebirth(context);
                                   }),
@@ -318,22 +366,25 @@ class _SettingsPageState extends State<SettingsPage> {
                                 }
                                 saveSettings();
                               },
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
-                                  child: Text("System", textAlign: TextAlign.center),
+                                  child: Text(t.themeSystem,
+                                      textAlign: TextAlign.center),
                                   value: "System",
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Light", textAlign: TextAlign.center),
+                                  child: Text(t.themeLight,
+                                      textAlign: TextAlign.center),
                                   value: "Light",
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Dark"),
+                                  child: Text(t.themeDark),
                                   value: "Dark",
                                 ),
-                                DropdownMenuItem(child: Text("Black"), value: "Black"),
+                                DropdownMenuItem(
+                                    child: Text(t.themeBlack), value: "Black"),
                               ]),
-                          title: const Text('App Theme'),
+                          title: Text(t.appTheme),
                           onPressed: (context) {
                             openDropdown(_dropdownTheme);
                           },
@@ -346,12 +397,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 md3 = value;
                                 saveSettings();
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
                                 behavior: SnackBarBehavior.floating,
-                                content: const Text('Restart the app?'),
+                                content: Text(t.relaunchNotice),
                                 action: SnackBarAction(
                                     //textColor: Colors.white,
-                                    label: 'Restart',
+                                    label: t.restart,
                                     onPressed: () {
                                       Phoenix.rebirth(context);
                                     }),
@@ -361,7 +413,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                     ),
                     SettingsSection(
-                      title: const Text("Behavior"),
+                      title: Text(t.behavior),
                       tiles: [
                         /*if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
                           SettingsTile.switchTile(
@@ -407,8 +459,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                   },
                                   child: const Text("Learn more"))),*/
                         SettingsTile.navigation(
-                          title: const Text("Track-list tap behavior"),
-                          description: const Text("The action that occurs when tapped on item in the track-list."),
+                          title: Text(t.trackListTapBehavior),
+                          description: Text(t.trackListTapBehaviorDescription),
                           trailing: DropdownButton<String>(
                               key: _dropdownTracklist,
                               alignment: AlignmentDirectional.centerEnd,
@@ -439,17 +491,19 @@ class _SettingsPageState extends State<SettingsPage> {
                                 saveSettings();
                               },
                               items: [
-                                if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
-                                  const DropdownMenuItem(
-                                    child: Text("Preview song"),
+                                if (Platform.isIOS ||
+                                    Platform.isMacOS ||
+                                    Platform.isAndroid)
+                                  DropdownMenuItem(
+                                    child: Text(t.trackListPreview),
                                     value: "Preview",
                                   ),
-                                const DropdownMenuItem(
-                                  child: Text("Open in Browser"),
+                                DropdownMenuItem(
+                                  child: Text(t.trackListBrowser),
                                   value: "Browser",
                                 ),
-                                const DropdownMenuItem(
-                                  child: Text("Download song"),
+                                DropdownMenuItem(
+                                  child: Text(t.trackListDownload),
                                   value: "Download",
                                 )
                               ]),
@@ -458,8 +512,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                         ),
                         SettingsTile.navigation(
-                          title: const Text("Pop-Ups"),
-                          description: const Text("The pop-up displayed when downloading an song/album."),
+                          title: Text(t.popUps),
+                          description: Text(t.popUpsDescription),
                           trailing: DropdownButton<String>(
                               key: _dropdownPopUp,
                               alignment: AlignmentDirectional.centerEnd,
@@ -489,17 +543,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                 }
                                 saveSettings();
                               },
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
-                                  child: Text("Auto"),
+                                  child: Text(t.popupBehaviorAuto),
                                   value: "Auto",
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Pop-up"),
+                                  child: Text(t.popupBehaviorPopup),
                                   value: "Pop-up",
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Bottom"),
+                                  child: Text(t.popupBehaviorBottom),
                                   value: "Bottom",
                                 )
                               ]),
@@ -508,41 +562,57 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                         ),
                         SettingsTile.navigation(
-                          title: const Text("Concurrent Downloads"),
-                          description: const Text("Currently unused."),
+                          title: Text(t.concurrentDownloads),
+                          description: Text(t.currentlyUnused),
                           value: Row(children: [
-                            Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
+                            Text(maxDownloads.toString() + " - ",
+                                style: TextStyle(color: colorDownloadButton)),
                             Text(
                               "Unused",
-                              style: TextStyle(color: Theme.of(context).errorColor),
+                              style: TextStyle(
+                                  color: Theme.of(context).errorColor),
                             )
                           ]),
                           onPressed: (context) {
                             showDialog(
                                     builder: (BuildContext context) {
-                                      return StatefulBuilder(builder: (context, setStateAlert) {
+                                      return StatefulBuilder(
+                                          builder: (context, setStateAlert) {
                                         return Dialog(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        12.0)),
                                             child: SizedBox(
-                                                width: (MediaQuery.of(context).size.width / 4) * 3,
+                                                width: (MediaQuery.of(context)
+                                                            .size
+                                                            .width /
+                                                        4) *
+                                                    3,
                                                 height: 163,
                                                 child: Column(
                                                   children: [
-                                                    const ListTile(
-                                                      contentPadding: EdgeInsets.all(10),
-                                                      title: Text("Concurrent Downloads"),
-                                                      subtitle: Text(
-                                                          "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices."),
+                                                    ListTile(
+                                                      contentPadding:
+                                                          const EdgeInsets.all(
+                                                              10),
+                                                      title: Text(t
+                                                          .concurrentDownloads),
+                                                      subtitle: Text(t
+                                                          .concurrentDownloadsDescription),
                                                     ),
                                                     Slider(
                                                         min: 1,
                                                         max: 10,
-                                                        label: maxDownloads.toString(),
+                                                        label: maxDownloads
+                                                            .toString(),
                                                         divisions: 9,
-                                                        value: maxDownloads.toDouble(),
+                                                        value: maxDownloads
+                                                            .toDouble(),
                                                         onChanged: (value) {
                                                           setStateAlert(() {
-                                                            maxDownloads = value.toInt();
+                                                            maxDownloads =
+                                                                value.toInt();
                                                           });
                                                         })
                                                   ],
