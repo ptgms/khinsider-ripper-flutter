@@ -296,7 +296,7 @@ class _TrackViewState extends State<TrackView> {
                               title: Text(t.openInBrowser),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                launchUrl(Uri(path: baseUrl + tags.trackURL[index]));
+                                launchUrl(Uri.parse(baseUrl + tags.trackURL[index]));
                               },
                             ),
                             ListTile(
@@ -354,9 +354,11 @@ class _TrackViewState extends State<TrackView> {
 
               //TODO: Null error? idk why
               await http.read(completedUrl).then((contents) {
+
+                debugPrint(contents);
                 BeautifulSoup bs = BeautifulSoup(contents);
 
-                var element = bs.find('', id: 'EchoTopic')!;
+                var element = bs.find('', id: 'pageContent')!;
 
                 for (var link in element.findAll('a')) {
                   if (link.attributes['href'] != null) {
@@ -368,7 +370,7 @@ class _TrackViewState extends State<TrackView> {
                   }
                 }
               });
-              await launchUrl(Uri(path: playingURL));
+              await launchUrl(Uri.parse(playingURL));
               playingURL = "";
             } else if (trackListBehavior == 2) {
               showDownloadPopup(index);

@@ -344,7 +344,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                           leading: const Icon(Icons.open_in_browser_rounded),
                                           onTap: () {
                                             Navigator.of(context).pop();
-                                            launchUrl(Uri(path: baseUrl + favorites[index].albumLink));
+                                            launchUrl(Uri.parse(baseUrl + favorites[index].albumLink));
                                           },
                                         ),
                                       ],

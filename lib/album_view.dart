@@ -79,7 +79,7 @@ Widget albumView(AlbumTags tags, context) {
         ),
         IconButton(
             onPressed: () async {
-              await launchUrl(Uri(path: tags.albumLink));
+              await launchUrl(Uri.parse(tags.albumLink));
             },
             icon: const Icon(Icons.open_in_browser))
       ]));
