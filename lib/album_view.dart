@@ -23,7 +23,8 @@ class AlbumView extends StatefulWidget {
 }
 
 // The small cell at the top containing the album information
-Widget albumView(AlbumTags tags) {
+Widget albumView(AlbumTags tags, context) {
+  var t = AppLocalizations.of(context)!;
   String availableAddon = ""; // Building the String for "Available formats"
 
   if (tags.mp3) {
@@ -67,7 +68,7 @@ Widget albumView(AlbumTags tags) {
                     Expanded(
                       child: Container(
                         alignment: Alignment.bottomRight,
-                        child: Text("Available Formats: " + availableAddon,
+                        child: Text(t.availableFormats(availableAddon),
                             style: const TextStyle(fontSize: 12, color: Colors.grey)),
                       ),
                     )
@@ -273,7 +274,7 @@ class _AlbumViewState extends State<AlbumView> {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: <Widget>[
-        albumView(tags),
+        albumView(tags, context),
         Container(height: 30, color: Colors.transparent),
         Container(
           height: 20,

@@ -28,15 +28,13 @@ class _LanguageSettingsState extends State<LanguageSettings> {
   Widget build(BuildContext context) {
     var t = AppLocalizations.of(context)!;
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
 
     String titleAppBar = t.languageOption;
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -56,11 +54,9 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -69,15 +65,45 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       sectionColor = Colors.white10;
     }
 
-    var languages =
-        context.findAncestorWidgetOfExactType<MaterialApp>()?.supportedLocales;
+    var languages = context.findAncestorWidgetOfExactType<MaterialApp>()?.supportedLocales;
     List<SettingsTile> sectionsLanguages = [];
+    Widget selectedMark = Container();
+    String defaultLocale = Platform.localeName.split("_")[0];
+    if (setLanguage == "system") {
+      selectedMark = const Icon(Icons.check);
+    }
+
+    if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
+      defaultLocale = "en";
+    }
+
+    var config = File('assets/languages.json');
+    var str = config.readAsStringSync();
+    var data = json.decode(str);
+
+    var systemLanguage = SettingsTile.navigation(
+        title: Text(t.themeSystem),
+        leading: Text(data[defaultLocale + "_flag"]),
+        trailing: selectedMark,
+        onPressed: (value) {
+          setState(() {
+            setLanguage = "system";
+            saveSettings();
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text(t.relaunchNotice),
+            action: SnackBarAction(
+                //textColor: Colors.white,
+                label: t.restart,
+                onPressed: () {
+                  Phoenix.rebirth(context);
+                }),
+          ));
+        });
     for (var item in languages!) {
-      var selected =
-          item.languageCode == setLanguage;
-      var config = File('assets/languages.json');
-      var str = config.readAsStringSync();
-      var data = json.decode(str);
+      var selected = item.languageCode == setLanguage;
       Widget selectedMark = Container();
       if (selected) {
         selectedMark = const Icon(Icons.check);
@@ -134,37 +160,32 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                                   height: heightTitleBar,
                                   child: MoveWindow(
                                     child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 5, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                                       child: Text(
                                         titleAppBar,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6,
+                                        style: Theme.of(context).textTheme.headline6,
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ))),
                           const WindowButtons()
                         ]))),
-              if ((Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) &&
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
                   !windowBorder &&
                   settingsAppBar != null)
                 settingsAppBar,
               Expanded(
                   child: SettingsList(
-                    platform: devicePlat,
-                      physics: const BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics()),
+                      platform: devicePlat,
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       darkTheme: SettingsThemeData(
                           settingsListBackground: Theme.of(context).cardColor,
                           settingsSectionBackground: sectionColor,
-                          titleTextColor:
-                              Theme.of(context).textTheme.bodyText1!.color!),
+                          titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
                       //platform: DevicePlatform.android,
-                      sections: [SettingsSection(tiles: sectionsLanguages)]))
+                      sections: [
+                        if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
+                        SettingsSection(tiles: sectionsLanguages)]))
             ])));
   }
 }

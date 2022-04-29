@@ -167,7 +167,7 @@ class _SettingsPageState extends State<SettingsPage> {
     var str = config.readAsStringSync();
     var data = json.decode(str);
 
-    var langaugeCurrent = data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+    var langaugeCurrent = setLanguage == "system"? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     var devicePlat = DevicePlatform.iOS;
     if (Platform.isAndroid) {
       devicePlat = DevicePlatform.android;

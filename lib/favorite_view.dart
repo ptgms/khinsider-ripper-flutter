@@ -39,16 +39,19 @@ Future<void> saveFavs() async {
   // save favorites in preferences
   List<String> favNames = [];
   List<String> favLinks = [];
+  List<String> favCover = [];
 
   for (var favItem in favorites) {
     favNames.add(favItem.albumName);
     favLinks.add(favItem.albumLink);
+    favCover.add(favItem.albumCover);
   }
 
   final prefs = await SharedPreferences.getInstance();
 
   await prefs.setStringList("favs_name", favNames);
   await prefs.setStringList("favs_link", favLinks);
+  await prefs.setStringList("favs_cover", favCover);
 }
 
 class FavoriteWidget extends StatefulWidget {

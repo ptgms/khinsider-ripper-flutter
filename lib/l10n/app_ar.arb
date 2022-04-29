@@ -1,0 +1,160 @@
+{
+    "khinsiderRipper": "Khinsider Ripper",
+    "albumView": "Album Details",
+    "settingsView": "Settings",
+    "settingsLanguageView": "Language",
+    "trackListView": "Tracks",
+    "favorites": "Favorites",
+    "search": "Search",
+
+    "startSearch": "Start a search!",
+    "startSearchDescription": "Start searching to show results!",
+    "searchForOSTs": "Search for OSTs",
+
+    "shareTrack": "Share Track",
+    "openInBrowser": "Open in Browser",
+    "copyURL": "Copy URL",
+    "copiedURL": "Copied URL to clipboard!",
+    "downloadSong": "Download song",
+    "formats": "Formats",
+    "downloading": "Please wait, downloading...",
+    "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
+
+    "cancel": "Cancel",
+
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeBlack": "Black",
+
+    "trackListPreview": "Preview",
+    "trackListBrowser": "Browser",
+    "trackListDownload": "Download",
+
+    "popupBehaviorAuto": "Auto",
+    "popupBehaviorPopup": "Pop-Up",
+    "popupBehaviorBottom": "Bottom",
+
+    "savingPath": "Saving Path",
+    "path": "Path",
+
+    "filePickerChoose": "Choose Download Folder",
+    "resetPath": "Reset path",
+
+    "appearance": "Appearance",
+    "languageOption": "Language",
+
+    "customWindow": "Custom Window Border",
+    "relaunchNotice": "Relaunch the App for the changes to take effect.",
+    "exit": "Exit",
+
+    "appTheme": "App Theme",
+
+    "favHomePage": "Favorites is home-page",
+    "favHomePageDescription": "If off, search will be home-page. Requires restart.",
+    "restart": "Restart",
+
+    "behavior": "Behavior",
+    "trackListTapBehavior": "Track-list tap behavior",
+    "trackListTapBehaviorDescription": "The action that occurs when tapped on item in the track-list.",
+    "previewSong": "Preview song",
+
+    "popUps": "Pop-Ups",
+    "popUpsDescription": "The pop-up displayed when downloading an song/album.",
+
+    "concurrentDownloads": "Concurrent Downloads",
+    "concurrentDownloadsDescription": "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices.",
+
+    "currentlyUnused": "Currently unused.",
+
+    "noResults": "No results!",
+    "adjustTerm": "Try adjusting your search term.",
+
+    "welcome": "Welcome to Khinsider Ripper!",
+    "welcomeDescription": "Welcome to Khinsider Ripper! Start searching for albums at the top. Future favorites will be displayed here.",
+
+    "removeFavorite": "Remove",
+
+    "downloadAlbum": "Download Album",
+
+    "removeFromFavs": "Remove from Favorites",
+    "addToFavs": "Add to Favorites",
+
+    "viewAllTracks": "View all Tracks",
+    "downloadAllTracks": "Download all Tracks",
+    "options": "Options",
+
+    "availableFormats": "Available Formats: {formats}",
+    "@availableFormats": {
+        "description": "Displayed under album details",
+        "placeholders": {
+            "formats": {
+                "type": "String",
+                "example": "MP3"
+            }
+        }
+    },
+
+    "shareText": "Check out this {type} {name} on Khinsider!\n{url}",
+    "@shareText": {
+        "description": "The template for when the User pressed share on a track/album",
+        "placeholders": {
+            "type": {
+                "type": "String",
+                "example": "Track"
+            },
+            "name": {
+                "type": "String",
+                "example": "Never gonna give you up"
+            },
+            "url": {
+                "type": "String",
+                "example": "https://never.gonna.let.you.down/"
+            }
+        }
+    },
+
+    "downloadingAlbum": "Downloading {name}...",
+    "@downloadingAlbum": {
+        "description": "Text displayed when Album download intiated..",
+        "placeholders": {
+            "location": {
+                "type": "String",
+                "example": "Never gonna give you up"
+            }
+        }
+    },
+
+    "defaultLocation": "Default: {location}",
+    "@defaultLocation": {
+        "description": "The text displayed if no custom saving path was declared.",
+        "placeholders": {
+            "location": {
+                "type": "String",
+                "example": "Downloads"
+            }
+        }
+    },
+
+    "savedTo": "Saved to {location}!",
+    "@savedTo": {
+        "description": "Prompt User where File was saved.",
+        "placeholders": {
+            "location": {
+                "type": "String",
+                "example": "Downloads"
+            }
+        }
+    },
+    
+    "downloadIn": "Download in {format}",
+    "@downloadIn": {
+        "description": "Ask User what Format to save in",
+        "placeholders": {
+            "format": {
+                "type": "String",
+                "example": "MP3"
+            }
+        }
+    }
+}

@@ -20,6 +20,10 @@ Future<void> main() async {
 
   var favNames = prefs.getStringList("favs_name");
   var favLink = prefs.getStringList("favs_link");
+  var favCover = prefs.getStringList("favs_cover");
+
+  var defaultLang = "system";
+  if (Platform.isIOS || Platform.isMacOS) defaultLang = "en";
 
   pathToSaveIn = prefs.getString("location") ?? "";
   favoriteHome = prefs.getBool("fav_home") ?? true;
@@ -29,7 +33,7 @@ Future<void> main() async {
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
-  setLanguage = prefs.getString("language") ?? "en";
+  setLanguage = prefs.getString("language") ?? defaultLang;
   // analytics = prefs.getBool("analytics") ?? true;
   // ------
 
@@ -42,7 +46,7 @@ Future<void> main() async {
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
-      favorites.add(AlbumStruct(favNames[i], favLink[i], ""));
+      favorites.add(AlbumStruct(favNames[i], favLink[i], favCover?[i] ?? ""));
     }
   }
   runApp(Phoenix(child: const MyApp()));
@@ -118,6 +122,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //final ValueNotifier<int> _notifier = ValueNotifier(appTheme);
+    var language = "";
+    if (setLanguage == "system") {
+      String defaultLocale = Platform.localeName.split("_")[0];
+
+      if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
+        defaultLocale = "en";
+      }
+
+      language = defaultLocale;
+    } else {
+      language = setLanguage;
+    }
+
     return ValueListenableBuilder<int>(
         valueListenable: notifier,
         builder: (_, mode, __) {
@@ -144,21 +161,13 @@ class MyApp extends StatelessWidget {
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('en', ''), 
-              Locale('de', ''),
-              Locale('nl', ''),
-              Locale('pl', '')],
+            supportedLocales: const [Locale('en', ''), Locale('de', ''), Locale('nl', ''), Locale('pl', ''), Locale('ar', '')],
             debugShowCheckedModeBanner: false,
-            locale: Locale(setLanguage, ''),
+            locale: Locale(language, ''),
             theme: ThemeData.light().copyWith(useMaterial3: md3),
-            darkTheme: (appTheme == 3)
-                ? amoledTheme
-                : ThemeData.dark().copyWith(useMaterial3: md3),
+            darkTheme: (appTheme == 3) ? amoledTheme : ThemeData.dark().copyWith(useMaterial3: md3),
             themeMode: theme,
-            home: favoriteHome
-                ? const FavoriteHome(title: "Khinsider Ripper")
-                : const SearchWidget(),
+            home: favoriteHome ? const FavoriteHome(title: "Khinsider Ripper") : const SearchWidget(),
           );
         });
   }
@@ -184,8 +193,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
   @override
   Widget build(BuildContext context) {
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
     List<Widget> actions = [
@@ -193,8 +201,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
         IconButton(
           splashRadius: splashRadius,
           onPressed: () async {
-            final _ = await Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const SearchWidget()));
+            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
             //FirebaseCrashlytics.instance.crash();
             setState(() {
               bodyToPush = const FavoriteWidget();
@@ -206,16 +213,14 @@ class _FavoriteHomeState extends State<FavoriteHome> {
         IconButton(
           splashRadius: splashRadius,
           onPressed: (() {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const SettingsPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
     ];
     String titleAppBar = widget.title;
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -232,11 +237,9 @@ class _FavoriteHomeState extends State<FavoriteHome> {
     }
 
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       mainAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -265,23 +268,17 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                                   height: heightTitleBar,
                                   child: MoveWindow(
                                       child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                    padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                                     child: Text(
                                       titleAppBar,
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
+                                      style: Theme.of(context).textTheme.headline6,
                                       textAlign: TextAlign.center,
                                     ),
                                   )))),
                           if (windowBorder) Row(children: actions),
                           const SizedBox(child: WindowButtons())
                         ]))),
-              if ((Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) &&
-                  !windowBorder &&
-                  mainAppBar != null)
+              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null)
                 mainAppBar,
               Expanded(child: bodyToPush)
             ])));
