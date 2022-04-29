@@ -105,6 +105,11 @@ class _LanguageSettingsState extends State<LanguageSettings> {
           }));
     }
 
+    var devicePlat = DevicePlatform.iOS;
+    if (Platform.isAndroid) {
+      devicePlat = DevicePlatform.android;
+    }
+
     return Scaffold(
         appBar: display,
         body: WindowBorder(
@@ -150,6 +155,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                 settingsAppBar,
               Expanded(
                   child: SettingsList(
+                    platform: devicePlat,
                       physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics()),
                       darkTheme: SettingsThemeData(

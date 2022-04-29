@@ -168,6 +168,10 @@ class _SettingsPageState extends State<SettingsPage> {
     var data = json.decode(str);
 
     var langaugeCurrent = data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+    var devicePlat = DevicePlatform.iOS;
+    if (Platform.isAndroid) {
+      devicePlat = DevicePlatform.android;
+    }
 
     return Scaffold(
         appBar: display,
@@ -214,6 +218,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 settingsAppBar,
               Expanded(
                 child: SettingsList(
+                  platform: devicePlat,
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
                   darkTheme: SettingsThemeData(
