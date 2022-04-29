@@ -409,7 +409,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     debugPrint(searchTermBefore);
 
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
 
@@ -434,7 +434,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
-      if (!favoriteHome && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) const WindowButtons()
+      if (!favoriteHome && (Platform.isMacOS || Platform.isLinux)) const WindowButtons()
     ];
 
     Widget searchBox = Container(
@@ -472,21 +472,25 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     String titleAppBar = "Search";
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
 
     AppBar? display = searchAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux)) {
       display = null;
     }
 
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       searchAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      widthOfBorder = 0.0;
+    }
+
+    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
       widthOfBorder = 0.0;
     }
 
@@ -496,7 +500,7 @@ class _SearchWidgetState extends State<SearchWidget> {
             width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+              if ((Platform.isMacOS || Platform.isLinux))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
@@ -523,13 +527,13 @@ class _SearchWidgetState extends State<SearchWidget> {
                                               ),
                                             ),
                                           ))),
-                                  if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder)
+                                  if ((Platform.isMacOS || Platform.isLinux) && !windowBorder)
                                     const WindowButtons(),
                                   if (windowBorder) Expanded(child: searchBox)
                                 ] +
                                 actions))),
               if (favoriteHome)
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                if ((Platform.isMacOS || Platform.isLinux) &&
                     !windowBorder &&
                     searchAppBar != null)
                   searchAppBar,

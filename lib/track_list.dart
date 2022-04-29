@@ -162,7 +162,7 @@ class _TrackViewState extends State<TrackView> {
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
 
     String downloadText = "";
-    if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+    if (pathToSaveIn == "" && (Platform.isMacOS || Platform.isLinux)) {
       downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
     }
 
@@ -262,7 +262,7 @@ class _TrackViewState extends State<TrackView> {
       return InkWell(
           customBorder: cardShape,
           onLongPress: () {
-            if (!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+            if (!(Platform.isMacOS || Platform.isLinux)) {
               showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -349,6 +349,10 @@ class _TrackViewState extends State<TrackView> {
             } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
               Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
+              debugPrint("yoooo " + completedUrl.toString());
+
+
+              //TODO: Null error? idk why
               await http.read(completedUrl).then((contents) {
                 BeautifulSoup bs = BeautifulSoup(contents);
 
@@ -400,38 +404,43 @@ class _TrackViewState extends State<TrackView> {
 
     String titleAppBar = "Tracks";
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    if (Platform.isMacOS || Platform.isLinux) {
       AppBar? trackListAppBar = AppBar(
         title: const Text("Tracks"),
       );
 
       AppBar? display = trackListAppBar;
 
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+      if ((Platform.isMacOS || Platform.isLinux)) {
         display = null;
       }
 
       double? widthOfBorder;
-      if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
         trackListAppBar = null;
-      } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
         widthOfBorder = 0.0;
       }
+
+      if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
+        widthOfBorder = 0.0;
+      }
+
       return Scaffold(
           appBar: display,
           body: WindowBorder(
               width: widthOfBorder,
               color: Theme.of(context).backgroundColor,
               child: Column(children: [
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+                if ((Platform.isMacOS || Platform.isLinux))
                   SizedBox(
                       child: Container(
                           color: Theme.of(context).cardColor,
@@ -459,7 +468,7 @@ class _TrackViewState extends State<TrackView> {
                                     ))),
                             const WindowButtons(),
                           ]))),
-                if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+                if ((Platform.isMacOS || Platform.isLinux) &&
                     !windowBorder &&
                     trackListAppBar != null)
                   trackListAppBar,

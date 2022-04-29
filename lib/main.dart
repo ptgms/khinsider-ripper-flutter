@@ -44,7 +44,7 @@ Future<void> main() async {
   }
   runApp(Phoenix(child: const MyApp()));
 
-  if ((Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+  if ((Platform.isLinux || Platform.isMacOS)) {
     doWhenWindowReady(() {
       const initialSize = Size(550, 384);
       appWindow.minSize = initialSize;
@@ -166,7 +166,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
   @override
   Widget build(BuildContext context) {
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
     List<Widget> actions = [
@@ -193,7 +193,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
     ];
     String titleAppBar = widget.title;
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -205,14 +205,18 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
     AppBar? display = mainAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux)) {
       display = null;
     }
 
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       mainAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      widthOfBorder = 0.0;
+    }
+
+    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
       widthOfBorder = 0.0;
     }
 
@@ -222,7 +226,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
             width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux))
+              if ((Platform.isMacOS || Platform.isLinux))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
@@ -251,7 +255,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                           if (windowBorder) Row(children: actions),
                           const SizedBox(child: WindowButtons())
                         ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null)
+              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null)
                 mainAppBar,
               Expanded(child: bodyToPush)
             ])));

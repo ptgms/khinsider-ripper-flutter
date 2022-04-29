@@ -230,7 +230,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
     widthCard = width ~/ count;
 
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    if (Platform.isLinux || Platform.isMacOS) {
       return SizedBox(
         width: double.infinity,
         height: double.infinity,

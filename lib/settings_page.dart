@@ -111,13 +111,13 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
     }
 
     String titleAppBar = "Settings";
     double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -133,13 +133,17 @@ class _SettingsPageState extends State<SettingsPage> {
         ));
     AppBar? display = settingsAppBar;
 
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux)) {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      widthOfBorder = 0.0;
+    }
+
+    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
       widthOfBorder = 0.0;
     }
 
@@ -149,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
             width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isLinux || Platform.isMacOS || Platform.isWindows))
+              if ((Platform.isLinux || Platform.isMacOS))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
@@ -177,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ))),
                           const WindowButtons()
                         ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+              if ((Platform.isMacOS || Platform.isLinux) &&
                   !windowBorder &&
                   settingsAppBar != null)
                 settingsAppBar,
@@ -234,7 +238,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsSection(
                       title: const Text('Appearance'),
                       tiles: <SettingsTile>[
-                        if (Platform.isWindows || Platform.isMacOS || Platform.isLinux)
+                        if (Platform.isMacOS || Platform.isLinux)
                           SettingsTile.switchTile(
                             title: const Text('Custom Window Border'),
                             initialValue: windowBorder,
