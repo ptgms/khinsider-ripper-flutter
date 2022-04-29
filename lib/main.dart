@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl_standalone.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
   setLanguage = prefs.getString("language") ?? defaultLang;
+  
   // analytics = prefs.getBool("analytics") ?? true;
   // ------
 
@@ -49,6 +51,9 @@ Future<void> main() async {
       favorites.add(AlbumStruct(favNames[i], favLink[i], favCover?[i] ?? ""));
     }
   }
+
+  await findSystemLocale();
+  
   runApp(Phoenix(child: const MyApp()));
 
   if ((Platform.isLinux || Platform.isMacOS)) {

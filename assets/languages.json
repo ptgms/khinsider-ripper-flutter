@@ -9,5 +9,11 @@
     "de_flag": "🇩🇪",
     "nl_flag": "🇳🇱",
     "pl_flag": "🇵🇱",
-    "ar_flag": "🇸🇦"
+    "ar_flag": "🇸🇦",
+
+    "en_credit": ["ptgms Industries"],
+    "de_credit": ["ptgms Industries"],
+    "nl_credit": ["ModderOwls"],
+    "pl_credit": ["MattRoot"],
+    "ar_credit": ["TMDR"]
 }

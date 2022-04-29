@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/main.dart';
@@ -57,6 +58,21 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
 
     prefs.setString("location", pathToSaveIn);
+  }
+  String langaugeCurrent = "";
+
+  void _loadData() async {
+    final _loadedData = await rootBundle.loadString('assets/languages.json');
+    var data = json.decode(_loadedData);
+    setState(() {
+      langaugeCurrent = setLanguage == "system"? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
   @override
@@ -127,23 +143,14 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     double splashRadius = 35.0;
-<<<<<<< HEAD
+
     if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
-=======
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
       splashRadius = 1.0;
     }
 
     String titleAppBar = t.settingsView;
     double? heightTitleBar = 40.0;
-<<<<<<< HEAD
     if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-=======
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -163,33 +170,22 @@ class _SettingsPageState extends State<SettingsPage> {
       display = null;
     }
     double? widthOfBorder;
-<<<<<<< HEAD
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
-      settingsAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-      widthOfBorder = 0.0;
-    }
-
-    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
-=======
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
         windowBorder) {
       settingsAppBar = null;
     } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
         !windowBorder) {
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
       widthOfBorder = 0.0;
     }
 
-    var config = File('assets/languages.json');
-    var str = config.readAsStringSync();
-    var data = json.decode(str);
+    //var config = File('assets/languages.json');
 
-    var langaugeCurrent = setLanguage == "system"? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
-    var devicePlat = DevicePlatform.iOS;
-    if (Platform.isAndroid) {
+    //var str = config.readAsStringSync();
+    
+    //var devicePlat = null;
+    /*if (Platform.isAndroid) {
       devicePlat = DevicePlatform.android;
-    }
+    }*/
 
     return Scaffold(
         appBar: display,
@@ -228,19 +224,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ))),
                           const WindowButtons()
                         ]))),
-<<<<<<< HEAD
               if ((Platform.isMacOS || Platform.isLinux) &&
-=======
-              if ((Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) &&
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
                   !windowBorder &&
                   settingsAppBar != null)
                 settingsAppBar,
               Expanded(
                 child: SettingsList(
-                  platform: devicePlat,
+                  //platform: devicePlat,
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
                   darkTheme: SettingsThemeData(
@@ -296,9 +286,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     SettingsSection(
                       title: Text(t.appearance),
                       tiles: <SettingsTile>[
-<<<<<<< HEAD
-                        if (Platform.isMacOS || Platform.isLinux)
-=======
                         SettingsTile.navigation(
                           title: Text(t.languageOption),
                           trailing: Text(langaugeCurrent),
@@ -309,10 +296,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     builder: (_) => const LanguageSettings()));
                           },
                         ),
-                        if (Platform.isWindows ||
-                            Platform.isMacOS ||
+                        if (Platform.isMacOS ||
                             Platform.isLinux)
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
                           SettingsTile.switchTile(
                             title: Text(t.customWindow),
                             initialValue: windowBorder,

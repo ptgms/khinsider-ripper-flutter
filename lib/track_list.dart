@@ -166,13 +166,8 @@ class _TrackViewState extends State<TrackView> {
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
 
     String downloadText = "";
-<<<<<<< HEAD
-    if (pathToSaveIn == "" && (Platform.isMacOS || Platform.isLinux)) {
-      downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
-=======
     if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       downloadText = t.noDefaultPath;
->>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
     }
 
     bool isPopup = true;

@@ -37,6 +37,9 @@ var setLanguage = "en";
 // Analytics (Android, iOS, macOS only) -- Removed, may be added back. Someday.
 // var analytics = true;
 
+// We load in the languages.json at start, as it requires an "await", making it not beneficial to load in later.
+String languageJson = "";
+
 // Welcome to janky-hut, may I take your order?
 ValueNotifier<int> favUpdater = ValueNotifier(0);
 

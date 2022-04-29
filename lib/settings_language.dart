@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/main.dart';
@@ -24,47 +25,10 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     prefs.setString("language", setLanguage);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var t = AppLocalizations.of(context)!;
-    double splashRadius = 35.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
-      splashRadius = 1.0;
-    }
+  List<AbstractSettingsSection> sectionsSettings = [];
 
-    String titleAppBar = t.languageOption;
-    double? heightTitleBar = 40.0;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-      titleAppBar = "";
-      heightTitleBar = 30.0;
-    }
-
-    AppBar? settingsAppBar = AppBar(
-        title: Text(t.languageOption),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            Navigator.pop(context);
-          },
-        ));
-    AppBar? display = settingsAppBar;
-
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
-      display = null;
-    }
-    double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
-      settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-      widthOfBorder = 0.0;
-    }
-
-    var sectionColor = Colors.white10; //Theme.of(context).cardColor;
-    if (appTheme == 3) {
-      sectionColor = Colors.white10;
-    }
-
+  void _loadData() async {
+    final _loadedData = await rootBundle.loadString('assets/languages.json');
     var languages = context.findAncestorWidgetOfExactType<MaterialApp>()?.supportedLocales;
     List<SettingsTile> sectionsLanguages = [];
     Widget selectedMark = Container();
@@ -76,12 +40,10 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
       defaultLocale = "en";
     }
-
-    var config = File('assets/languages.json');
-    var str = config.readAsStringSync();
-    var data = json.decode(str);
-
-    var systemLanguage = SettingsTile.navigation(
+    Future.delayed(Duration.zero,() {
+      var t = AppLocalizations.of(context)!;
+      var data = json.decode(_loadedData);
+      var systemLanguage = SettingsTile.navigation(
         title: Text(t.themeSystem),
         leading: Text(data[defaultLocale + "_flag"]),
         trailing: selectedMark,
@@ -108,8 +70,10 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       if (selected) {
         selectedMark = const Icon(Icons.check);
       }
+      debugPrint(data[item.languageCode + "_flag"]);
       sectionsLanguages.add(SettingsTile.navigation(
           title: Text(data[item.languageCode]),
+          description: Text(t.translatedBy(data[item.languageCode + "_credit"].join(", "))),
           leading: Text(data[item.languageCode + "_flag"]),
           trailing: selectedMark,
           onPressed: (value) {
@@ -130,11 +94,76 @@ class _LanguageSettingsState extends State<LanguageSettings> {
             ));
           }));
     }
+    setState(() {
+      sectionsSettings = [
+                          if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
+                          SettingsSection(tiles: sectionsLanguages)];
+    });
+    });
+  }
 
-    var devicePlat = DevicePlatform.iOS;
-    if (Platform.isAndroid) {
-      devicePlat = DevicePlatform.android;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
+    double splashRadius = 35.0;
+
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
     }
+
+    String titleAppBar = t.languageOption;
+    double? heightTitleBar = 40.0;
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      titleAppBar = "";
+      heightTitleBar = 30.0;
+    }
+
+    AppBar? settingsAppBar = AppBar(
+        title: Text(t.languageOption),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            Navigator.pop(context);
+          },
+        ));
+    AppBar? display = settingsAppBar;
+
+    if ((Platform.isMacOS || Platform.isLinux)) {
+      display = null;
+    }
+    double? widthOfBorder;
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        windowBorder) {
+      settingsAppBar = null;
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
+        !windowBorder) {
+      widthOfBorder = 0.0;
+    }
+
+    var sectionColor = Colors.white10; //Theme.of(context).cardColor;
+    if (appTheme == 3) {
+      sectionColor = Colors.white10;
+    }
+
+    
+
+     // [
+                          //if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
+                          //SettingsSection(tiles: sectionsLanguages)]
+
+
+
+    //var devicePlat = null;
+    /*if (Platform.isAndroid) {
+      devicePlat = DevicePlatform.android;
+    }*/
 
     return Scaffold(
         appBar: display,
@@ -142,7 +171,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
             width: widthOfBorder,
             color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isLinux || Platform.isMacOS || Platform.isWindows))
+              if ((Platform.isLinux || Platform.isMacOS))
                 SizedBox(
                     child: Container(
                         color: Theme.of(context).cardColor,
@@ -176,16 +205,14 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                 settingsAppBar,
               Expanded(
                   child: SettingsList(
-                      platform: devicePlat,
+                      //platform: devicePlat,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       darkTheme: SettingsThemeData(
                           settingsListBackground: Theme.of(context).cardColor,
                           settingsSectionBackground: sectionColor,
                           titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
                       //platform: DevicePlatform.android,
-                      sections: [
-                        if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
-                        SettingsSection(tiles: sectionsLanguages)]))
+                      sections: sectionsSettings))
             ])));
   }
 }

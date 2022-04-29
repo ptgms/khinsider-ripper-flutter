@@ -156,5 +156,16 @@
                 "example": "MP3"
             }
         }
+    },
+
+    "translatedBy": "Translated by {name}",
+    "@translatedBy": {
+        "description": "Thank you for translating this app, I appreciate it <3",
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "You"
+            }
+        }
     }
 }

@@ -1,31 +1,31 @@
 {
     "khinsiderRipper": "Khinsider Ripper",
     "albumView": "Album Details",
-    "settingsView": "Settings",
-    "settingsLanguageView": "Language",
-    "trackListView": "Tracks",
-    "favorites": "Favorites",
-    "search": "Search",
+    "settingsView": "Instellingen",
+    "settingsLanguageView": "Taal",
+    "trackListView": "Nummer",
+    "favorites": "Favorieten",
+    "search": "Opzoeken",
 
-    "startSearch": "Start a search!",
-    "startSearchDescription": "Start searching to show results!",
-    "searchForOSTs": "Search for OSTs",
+    "startSearch": "Begin met opzoeken!",
+    "startSearchDescription": "Zoek iets op om resultaten te laten zien!",
+    "searchForOSTs": "Zoek voor een OST",
 
-    "shareTrack": "Share Track",
+    "shareTrack": "Deel een nummer",
     "openInBrowser": "Open in Browser",
-    "copyURL": "Copy URL",
-    "copiedURL": "Copied URL to clipboard!",
-    "downloadSong": "Download song",
-    "formats": "Formats",
-    "downloading": "Please wait, downloading...",
-    "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
+    "copyURL": "Kopieer URL",
+    "copiedURL": "URL gekopieerd naar clipboard!",
+    "downloadSong": "Download nummer",
+    "formats": "Formaten",
+    "downloading": "Wacht even, bezig met downloaden...",
+    "noDefaultPath": "Waarschuwing: Geen opslaan pad gekozen! Gebruik de map van het programma zelf. \n",
 
-    "cancel": "Cancel",
+    "cancel": "Annuleren",
 
-    "themeSystem": "System",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeBlack": "Black",
+    "themeSystem": "Systeem",
+    "themeLight": "Licht",
+    "themeDark": "Donker",
+    "themeBlack": "Zwart",
 
     "trackListPreview": "Preview",
     "trackListBrowser": "Browser",
@@ -35,56 +35,56 @@
     "popupBehaviorPopup": "Pop-Up",
     "popupBehaviorBottom": "Bottom",
 
-    "savingPath": "Saving Path",
-    "path": "Path",
+    "savingPath": "Opslaan pad",
+    "path": "Pad",
 
-    "filePickerChoose": "Choose Download Folder",
-    "resetPath": "Reset path",
+    "filePickerChoose": "Kies Download Folder",
+    "resetPath": "Herstel path",
 
     "appearance": "Appearance",
-    "languageOption": "Language",
+    "languageOption": "Taal",
 
-    "customWindow": "Custom Window Border",
-    "relaunchNotice": "Relaunch the App for the changes to take effect.",
+    "customWindow": "Aangepaste Venster Rand",
+    "relaunchNotice": "Start de app opnieuw op om de aanpassingen effect te laten hebben.",
     "exit": "Exit",
 
-    "appTheme": "App Theme",
+    "appTheme": "App Thema",
 
-    "favHomePage": "Favorites is home-page",
-    "favHomePageDescription": "If off, search will be home-page. Requires restart.",
-    "restart": "Restart",
+    "favHomePage": "Favorieten zijn de startpagina",
+    "favHomePageDescription": "Als het uit staat, zoeken is dan de startpagina. Vereist opnieuw opstarten.",
+    "restart": "Opnieuw opstarten",
 
-    "behavior": "Behavior",
-    "trackListTapBehavior": "Track-list tap behavior",
-    "trackListTapBehaviorDescription": "The action that occurs when tapped on item in the track-list.",
-    "previewSong": "Preview song",
+    "behavior": "Gedrag",
+    "trackListTapBehavior": "Tracklist klik gedrag",
+    "trackListTapBehaviorDescription": "De actie die gebeurt wanneer je op het nummer klikt in de tracklist.",
+    "previewSong": "Nummer voorspellen",
 
     "popUps": "Pop-Ups",
-    "popUpsDescription": "The pop-up displayed when downloading an song/album.",
+    "popUpsDescription": "De pop-up die wordt weergegeven wanneer je de nummer/album download.",
 
-    "concurrentDownloads": "Concurrent Downloads",
-    "concurrentDownloadsDescription": "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices.",
+    "concurrentDownloads": "Achtervolgende downloads",
+    "concurrentDownloadsDescription": "Verander de hoevelheid achtervolgende downloads toegestaan door de app. Het is geadviseerd het op '1' te zetten voor telefoons.",
 
-    "currentlyUnused": "Currently unused.",
+    "currentlyUnused": "Tijdelijk niet gebruikt.",
 
-    "noResults": "No results!",
-    "adjustTerm": "Try adjusting your search term.",
+    "noResults": "Geen resultaten!",
+    "adjustTerm": "Probeer je zoektermen aan te passen.",
 
-    "welcome": "Welcome to Khinsider Ripper!",
-    "welcomeDescription": "Welcome to Khinsider Ripper! Start searching for albums at the top. Future favorites will be displayed here.",
+    "welcome": "Welkom tot Khinsider Ripper!",
+    "welcomeDescription": "Welkom tot Khinsider Ripper! Begin zoeken voor albums aan de bovenkant. Toekomstige favorieten worden weergeven hier.",
 
-    "removeFavorite": "Remove",
+    "removeFavorite": "Verwijderen",
 
     "downloadAlbum": "Download Album",
 
-    "removeFromFavs": "Remove from Favorites",
-    "addToFavs": "Add to Favorites",
+    "removeFromFavs": "Verwijder uit Favorieten",
+    "addToFavs": "Voeg toe aan Favorieten",
 
-    "viewAllTracks": "View all Tracks",
-    "downloadAllTracks": "Download all Tracks",
-    "options": "Options",
+    "viewAllTracks": "Weergeef alle Nummers",
+    "downloadAllTracks": "Download alle Nummers",
+    "options": "Opties",
 
-    "availableFormats": "Available Formats: {formats}",
+    "availableFormats": "Beschikbare Formaten: {formats}",
     "@availableFormats": {
         "description": "Displayed under album details",
         "placeholders": {
@@ -95,7 +95,7 @@
         }
     },
 
-    "shareText": "Check out this {type} {name} on Khinsider!\n{url}",
+    "shareText": "Zie deze {type} {name} op Khinsider!\n{url}",
     "@shareText": {
         "description": "The template for when the User pressed share on a track/album",
         "placeholders": {
@@ -114,7 +114,7 @@
         }
     },
 
-    "downloadingAlbum": "Downloading {name}...",
+    "downloadingAlbum": "{name} aan het downloaden...",
     "@downloadingAlbum": {
         "description": "Text displayed when Album download intiated..",
         "placeholders": {
@@ -125,7 +125,7 @@
         }
     },
 
-    "defaultLocation": "Default: {location}",
+    "defaultLocation": "Standaard: {location}",
     "@defaultLocation": {
         "description": "The text displayed if no custom saving path was declared.",
         "placeholders": {
@@ -136,7 +136,7 @@
         }
     },
 
-    "savedTo": "Saved to {location}!",
+    "savedTo": "Opslaan in {location}!",
     "@savedTo": {
         "description": "Prompt User where File was saved.",
         "placeholders": {
@@ -154,6 +154,17 @@
             "format": {
                 "type": "String",
                 "example": "MP3"
+            }
+        }
+    },
+
+    "translatedBy": "Vertaald door {name}",
+    "@translatedBy": {
+        "description": "Thank you for translating this app, I appreciate it <3",
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "You"
             }
         }
     }
