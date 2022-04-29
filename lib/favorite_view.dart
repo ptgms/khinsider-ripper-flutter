@@ -10,23 +10,26 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-SizedBox noFavs() {
+
+SizedBox noFavs(context) {
   // if no favs saved return placeholder
+  var t = AppLocalizations.of(context)!;
   return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
             child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child:
-                    Text("Welcome to Khinsider Ripper!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
+                    Text(t.welcome, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: Text(
-                  'Welcome to Khinsider Ripper! Start searching for albums at the top. Future favorites will be displayed here.',
+                  t.welcomeDescription,
                   textAlign: TextAlign.center)),
         ),
       ]));
@@ -36,16 +39,19 @@ Future<void> saveFavs() async {
   // save favorites in preferences
   List<String> favNames = [];
   List<String> favLinks = [];
+  List<String> favCover = [];
 
   for (var favItem in favorites) {
     favNames.add(favItem.albumName);
     favLinks.add(favItem.albumLink);
+    favCover.add(favItem.albumCover);
   }
 
   final prefs = await SharedPreferences.getInstance();
 
   await prefs.setStringList("favs_name", favNames);
   await prefs.setStringList("favs_link", favLinks);
+  await prefs.setStringList("favs_cover", favCover);
 }
 
 class FavoriteWidget extends StatefulWidget {
@@ -215,6 +221,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
     //List<Widget> TitleTextColumn = getTitleText();
     double width = MediaQuery.of(context).size.width;
@@ -237,7 +244,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         child: ValueListenableBuilder<int>(
           valueListenable: favUpdater,
           builder: (_, __, ___) {
-            if (favorites.isEmpty && favoriteHome) return noFavs();
+            if (favorites.isEmpty && favoriteHome) return noFavs(context);
             return GridView.builder(
                 itemCount: favorites.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -298,7 +305,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         child: ValueListenableBuilder<int>(
           valueListenable: favUpdater,
           builder: (_, __, ___) {
-            if (favorites.isEmpty && favoriteHome) return noFavs();
+            if (favorites.isEmpty && favoriteHome) return noFavs(context);
             return GridView.builder(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 itemCount: favorites.length,
@@ -309,6 +316,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                 itemBuilder: (context, index) => Card(
                     shape: cardShape,
                     child: InkWell(
+                      customBorder: cardShape,
                         mouseCursor: MouseCursor.uncontrolled,
                         onLongPress: () {
                           showDialog<String>(
@@ -320,7 +328,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                     child: Column(
                                       children: [
                                         ListTile(
-                                          title: const Text("Remove"),
+                                          title: Text(t.removeFavorite),
                                           leading: const Icon(Icons.star_half_rounded),
                                           onTap: () {
                                             Navigator.of(context).pop();
@@ -332,11 +340,11 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                           },
                                         ),
                                         ListTile(
-                                          title: const Text("Open in Browser"),
+                                          title: Text(t.openInBrowser),
                                           leading: const Icon(Icons.open_in_browser_rounded),
                                           onTap: () {
                                             Navigator.of(context).pop();
-                                            launch(baseUrl + favorites[index].albumLink);
+                                            launchUrl(Uri(path: baseUrl + favorites[index].albumLink));
                                           },
                                         ),
                                       ],

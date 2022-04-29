@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:native_context_menu/native_context_menu.dart' as ctxmenu;
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'main.dart';
 
@@ -128,42 +129,50 @@ class _TrackViewState extends State<TrackView> {
 
   _TrackViewState({required this.tags});
 
-  String getSnackBarContent(String pathToSaveIn) {
+  String getSnackBarContent(String pathToSaveIn, context) {
+    var t = AppLocalizations.of(context)!;
     if (Platform.isAndroid) {
       if (pathToSaveIn != "" && pathToSaveIn != "/storage/emulated/0/Download") {
-        return "Saved to $pathToSaveIn!";
+        return t.savedTo(pathToSaveIn); //"Saved to $pathToSaveIn!";
       }
-      return "Saved to Downloads!";
+      return t.savedTo("Downloads");//"Saved to Downloads!";
     } else if (Platform.isIOS) {
-      return "Saved to Files App!";
+      return t.savedTo("Files App");
     } else {
-      return "Saved to $pathToSaveIn!";
+      return t.savedTo(pathToSaveIn);
     }
   }
 
-  Future<void> downloadSong(int index, String value) async {
+  Future<void> downloadSong(int index, String value, context) async {
+    var t = AppLocalizations.of(context)!;
     if (busy) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       dismissDirection: DismissDirection.none,
       //duration: const Duration(seconds: 30),
-      content: Text("Please wait, downloading..."),
+      content: Text(t.downloading),
       behavior: SnackBarBehavior.floating,
     ));
     await downloadFile(tags, index, value);
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(getSnackBarContent(pathToSaveIn)),
+      content: Text(getSnackBarContent(pathToSaveIn, context)),
       behavior: SnackBarBehavior.floating,
     ));
   }
 
   @override
   Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
     ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
 
     String downloadText = "";
+<<<<<<< HEAD
     if (pathToSaveIn == "" && (Platform.isMacOS || Platform.isLinux)) {
       downloadText = "Warning: No saving path specified! Using the programs' directory.\n";
+=======
+    if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+      downloadText = t.noDefaultPath;
+>>>>>>> 91bcd8c0be454cc9eb1be67676fb6aecd6058b05
     }
 
     bool isPopup = true;
@@ -185,7 +194,7 @@ class _TrackViewState extends State<TrackView> {
               Card(
                   shape: cardShape,
                   child: ListTile(
-                    title: const Text("Download song"),
+                    title: Text(t.downloadSong),
                     subtitle: Text(downloadText + tags.tracks[index]),
                   )),
               Container(height: 30, color: Colors.transparent),
@@ -205,7 +214,7 @@ class _TrackViewState extends State<TrackView> {
                         onTap: () => Navigator.pop(context, 'mp3'),
                         child: ListTile(
                           leading: const Icon(Icons.download_rounded),
-                          title: const Text("Download in MP3"),
+                          title: Text(t.downloadIn("MP3")),
                           subtitle: Text(tags.trackSizeMP3[index]),
                         ))),
               if (tags.flac)
@@ -215,7 +224,7 @@ class _TrackViewState extends State<TrackView> {
                         onTap: () => Navigator.pop(context, 'flac'),
                         child: ListTile(
                           leading: const Icon(Icons.download_rounded),
-                          title: const Text("Download in FLAC"),
+                          title: Text(t.downloadIn("FLAC")),
                           subtitle: Text(tags.trackSizeFLAC[index]),
                         ))),
               if (tags.ogg)
@@ -225,15 +234,15 @@ class _TrackViewState extends State<TrackView> {
                         onTap: () => Navigator.pop(context, 'ogg'),
                         child: ListTile(
                           leading: const Icon(Icons.download_rounded),
-                          title: const Text("Download in OGG"),
+                          title: Text(t.downloadIn("OGG")),
                           subtitle: Text(tags.trackSizeOGG[index]),
                         ))),
               Card(
                   shape: cardShape,
                   child: InkWell(
-                    child: const ListTile(
-                      leading: Icon(Icons.cancel_outlined),
-                      title: Text("Cancel"),
+                    child: ListTile(
+                      leading: const Icon(Icons.cancel_outlined),
+                      title: Text(t.cancel),
                     ),
                     onTap: () => Navigator.pop(context, null),
                   )),
@@ -242,17 +251,17 @@ class _TrackViewState extends State<TrackView> {
           context: context,
         ).then((value) {
           if (value != null) {
-            downloadSong(index, value);
+            downloadSong(index, value, context);
           }
         });
       } else {
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-              title: const Text('Download song'), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
+              title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
-            downloadSong(index, value);
+            downloadSong(index, value, context);
           }
         });
       }
@@ -273,19 +282,15 @@ class _TrackViewState extends State<TrackView> {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.ios_share_rounded),
-                              title: const Text('Share Track'),
+                              title: Text(t.shareTrack),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                Share.share("Check out this Song '" +
-                                    tags.tracks[index] +
-                                    "' on Khinsider!\n" +
-                                    baseUrl +
-                                    tags.trackURL[index]);
+                                Share.share(t.shareText("Song", tags.tracks[index], baseUrl + tags.trackURL[index]));
                               },
                             ),
                             ListTile(
                               leading: const Icon(Icons.download_rounded),
-                              title: const Text('Download Track'),
+                              title: Text(t.downloadSong),
                               onTap: () {
                                 Navigator.of(context).pop();
                                 showDownloadPopup(index);
@@ -293,22 +298,22 @@ class _TrackViewState extends State<TrackView> {
                             ),
                             ListTile(
                               leading: const Icon(Icons.open_in_browser_rounded),
-                              title: const Text('Open in Browser'),
+                              title: Text(t.openInBrowser),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                launch(baseUrl + tags.trackURL[index]);
+                                launchUrl(Uri(path: baseUrl + tags.trackURL[index]));
                               },
                             ),
                             ListTile(
                               leading: const Icon(Icons.copy_rounded),
-                              title: const Text("Copy URL"),
+                              title: Text(t.copyURL),
                               onTap: () {
                                 Navigator.of(context).pop();
                                 Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   dismissDirection: DismissDirection.none,
-                                  duration: Duration(seconds: 1),
-                                  content: Text("Copied URL to clipboard!"),
+                                  duration: const Duration(seconds: 1),
+                                  content: Text(t.copiedURL),
                                   behavior: SnackBarBehavior.floating,
                                 ));
                               },
@@ -368,7 +373,7 @@ class _TrackViewState extends State<TrackView> {
                   }
                 }
               });
-              await launch(playingURL);
+              await launchUrl(Uri(path: playingURL));
               playingURL = "";
             } else if (trackListBehavior == 2) {
               showDownloadPopup(index);
@@ -402,7 +407,7 @@ class _TrackViewState extends State<TrackView> {
           ));
     }
 
-    String titleAppBar = "Tracks";
+    String titleAppBar = t.trackListView;
     double? heightTitleBar = 40.0;
     if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";
@@ -414,7 +419,7 @@ class _TrackViewState extends State<TrackView> {
     }
     if (Platform.isMacOS || Platform.isLinux) {
       AppBar? trackListAppBar = AppBar(
-        title: const Text("Tracks"),
+        title: Text(t.trackListView),
       );
 
       AppBar? display = trackListAppBar;
@@ -514,7 +519,7 @@ class _TrackViewState extends State<TrackView> {
     } else {
       return Scaffold(
           appBar: AppBar(
-            title: const Text("Tracks"),
+            title: Text(t.trackListView),
           ),
           body: ListView.builder(
               itemCount: tags.tracks.length,

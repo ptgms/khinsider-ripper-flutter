@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/search_page.dart';
@@ -7,6 +8,7 @@ import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'favorite_view.dart';
 import 'config.dart';
 
@@ -18,6 +20,10 @@ Future<void> main() async {
 
   var favNames = prefs.getStringList("favs_name");
   var favLink = prefs.getStringList("favs_link");
+  var favCover = prefs.getStringList("favs_cover");
+
+  var defaultLang = "system";
+  if (Platform.isIOS || Platform.isMacOS) defaultLang = "en";
 
   pathToSaveIn = prefs.getString("location") ?? "";
   favoriteHome = prefs.getBool("fav_home") ?? true;
@@ -27,6 +33,7 @@ Future<void> main() async {
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
+  setLanguage = prefs.getString("language") ?? defaultLang;
   // analytics = prefs.getBool("analytics") ?? true;
   // ------
 
@@ -39,7 +46,7 @@ Future<void> main() async {
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
-      favorites.add(AlbumStruct(favNames[i], favLink[i], ""));
+      favorites.add(AlbumStruct(favNames[i], favLink[i], favCover?[i] ?? ""));
     }
   }
   runApp(Phoenix(child: const MyApp()));
@@ -115,6 +122,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //final ValueNotifier<int> _notifier = ValueNotifier(appTheme);
+    var language = "";
+    if (setLanguage == "system") {
+      String defaultLocale = Platform.localeName.split("_")[0];
+
+      if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
+        defaultLocale = "en";
+      }
+
+      language = defaultLocale;
+    } else {
+      language = setLanguage;
+    }
+
     return ValueListenableBuilder<int>(
         valueListenable: notifier,
         builder: (_, mode, __) {
@@ -135,12 +155,19 @@ class MyApp extends StatelessWidget {
             default:
           }
           return MaterialApp(
-            title: 'Khinsider Ripper',
+            title: "Khinsider Ripper",
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en', ''), Locale('de', ''), Locale('nl', ''), Locale('pl', ''), Locale('ar', '')],
             debugShowCheckedModeBanner: false,
+            locale: Locale(language, ''),
             theme: ThemeData.light().copyWith(useMaterial3: md3),
             darkTheme: (appTheme == 3) ? amoledTheme : ThemeData.dark().copyWith(useMaterial3: md3),
             themeMode: theme,
-            home: favoriteHome ? const FavoriteHome(title: 'Khinsider Ripper') : const SearchWidget(),
+            home: favoriteHome ? const FavoriteHome(title: "Khinsider Ripper") : const SearchWidget(),
           );
         });
   }

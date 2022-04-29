@@ -32,6 +32,8 @@ var maxDownloads = 1;
 var md3 = false;
 // Custom Window Border (Desktop only)
 var windowBorder = true;
+// Language code
+var setLanguage = "en";
 // Analytics (Android, iOS, macOS only) -- Removed, may be added back. Someday.
 // var analytics = true;
 

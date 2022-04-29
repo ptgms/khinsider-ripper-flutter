@@ -41,7 +41,8 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   }
 
   String toDownload = "";
-  await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
+  debugPrint(baseUrl + tags.trackURL[index]);
+  http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
 
     var element = bs.find('', id: 'EchoTopic')!;
@@ -105,7 +106,7 @@ Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async
   }
 
   String toDownload = "";
-  await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
+  http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
 
     var element = bs.find('', id: 'EchoTopic')!;
