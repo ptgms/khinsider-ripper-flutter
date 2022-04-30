@@ -120,7 +120,9 @@ class _SearchWidgetState extends State<SearchWidget> {
         coverURL.add(imgurl!);
       }
 
-      if (coverURL.isEmpty) { coverURL.add("none"); }
+      if (coverURL.isEmpty) {
+        coverURL.add("none");
+      }
 
       var link = bs.find('', id: 'songlist');
 
@@ -340,14 +342,15 @@ class _SearchWidgetState extends State<SearchWidget> {
               valueListenable: favUpdater,
               builder: (_, __, ___) {
                 Widget noPicFound = const Icon(Icons.album);
-    Decoration searchImage = const BoxDecoration();
-    if (_searchResults[index].albumCover != "none" && _searchResults[index].albumCover != "") {
-      noPicFound = Container();
-      searchImage = BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-              color: const Color.fromRGBO(71, 71, 71, 0.2),
-              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)));
-    }
+                Decoration searchImage = const BoxDecoration();
+                if (_searchResults[index].albumCover != "none" && _searchResults[index].albumCover != "") {
+                  noPicFound = Container();
+                  searchImage = BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+                      color: const Color.fromRGBO(71, 71, 71, 0.2),
+                      image:
+                          DecorationImage(fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)));
+                }
                 return Card(
                     shape: cardShape,
                     child: InkWell(
@@ -358,32 +361,28 @@ class _SearchWidgetState extends State<SearchWidget> {
                         goToAlbum(context, index);
                       },
                       child: ListTile(
-                            leading: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: searchImage,
-                                child: noPicFound),
-                            trailing: IconButton(
-                              icon: foundInFavorites(searchResults[index])
-                                  ? const Icon(Icons.star)
-                                  : const Icon(Icons.star_border),
-                              onPressed: () {
-                                if (favorites.contains(searchResults[index])) {
-                                  favorites.removeAt(locateInFavorites(searchResults[index]));
-                                } else {
-                                  favorites.add(searchResults[index]);
-                                }
-                                setState(() {
-                                  saveFavs();
-                                  favUpdater.value += 1;
-                                });
-                              },
-                            ),
-                            title: Marquee(child: Text(_searchResults[index].albumName)),
-                            subtitle: Marquee(
-                              child: Text(_searchResults[index].albumLink),
-                            ),
-                          ),
+                        leading: Container(width: 50, height: 50, decoration: searchImage, child: noPicFound),
+                        trailing: IconButton(
+                          icon: foundInFavorites(searchResults[index])
+                              ? const Icon(Icons.star)
+                              : const Icon(Icons.star_border),
+                          onPressed: () {
+                            if (favorites.contains(searchResults[index])) {
+                              favorites.removeAt(locateInFavorites(searchResults[index]));
+                            } else {
+                              favorites.add(searchResults[index]);
+                            }
+                            setState(() {
+                              saveFavs();
+                              favUpdater.value += 1;
+                            });
+                          },
+                        ),
+                        title: Marquee(child: Text(_searchResults[index].albumName)),
+                        subtitle: Marquee(
+                          child: Text(_searchResults[index].albumLink),
+                        ),
+                      ),
                     ));
               }) /**/
           );
@@ -527,16 +526,12 @@ class _SearchWidgetState extends State<SearchWidget> {
                                               ),
                                             ),
                                           ))),
-                                  if ((Platform.isMacOS || Platform.isLinux) && !windowBorder)
-                                    const WindowButtons(),
+                                  if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) const WindowButtons(),
                                   if (windowBorder) Expanded(child: searchBox)
                                 ] +
                                 actions))),
               if (favoriteHome)
-                if ((Platform.isMacOS || Platform.isLinux) &&
-                    !windowBorder &&
-                    searchAppBar != null)
-                  searchAppBar,
+                if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && searchAppBar != null) searchAppBar,
               Expanded(child: bodyDisplay)
             ])));
   }

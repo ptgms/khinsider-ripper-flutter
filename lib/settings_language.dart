@@ -40,45 +40,16 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
       defaultLocale = "en";
     }
-    Future.delayed(Duration.zero,() {
+    Future.delayed(Duration.zero, () {
       var t = AppLocalizations.of(context)!;
       var data = json.decode(_loadedData);
       var systemLanguage = SettingsTile.navigation(
-        title: Text(t.themeSystem),
-        leading: Text(data[defaultLocale + "_flag"]),
-        trailing: selectedMark,
-        onPressed: (value) {
-          setState(() {
-            setLanguage = "system";
-            saveSettings();
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            behavior: SnackBarBehavior.floating,
-            content: Text(t.relaunchNotice),
-            action: SnackBarAction(
-                //textColor: Colors.white,
-                label: t.restart,
-                onPressed: () {
-                  Phoenix.rebirth(context);
-                }),
-          ));
-        });
-    for (var item in languages!) {
-      var selected = item.languageCode == setLanguage;
-      Widget selectedMark = Container();
-      if (selected) {
-        selectedMark = const Icon(Icons.check);
-      }
-      debugPrint(data[item.languageCode + "_flag"]);
-      sectionsLanguages.add(SettingsTile.navigation(
-          title: Text(data[item.languageCode]),
-          description: Text(t.translatedBy(data[item.languageCode + "_credit"].join(", "))),
-          leading: Text(data[item.languageCode + "_flag"]),
+          title: Text(t.themeSystem),
+          leading: Text(data[defaultLocale + "_flag"]),
           trailing: selectedMark,
           onPressed: (value) {
             setState(() {
-              setLanguage = item.languageCode;
+              setLanguage = "system";
               saveSettings();
             });
 
@@ -92,13 +63,43 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                     Phoenix.rebirth(context);
                   }),
             ));
-          }));
-    }
-    setState(() {
-      sectionsSettings = [
-                          if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
-                          SettingsSection(tiles: sectionsLanguages)];
-    });
+          });
+      for (var item in languages!) {
+        var selected = item.languageCode == setLanguage;
+        Widget selectedMark = Container();
+        if (selected) {
+          selectedMark = const Icon(Icons.check);
+        }
+        debugPrint(data[item.languageCode + "_flag"]);
+        sectionsLanguages.add(SettingsTile.navigation(
+            title: Text(data[item.languageCode]),
+            description: Text(t.translatedBy(data[item.languageCode + "_credit"].join(", "))),
+            leading: Text(data[item.languageCode + "_flag"]),
+            trailing: selectedMark,
+            onPressed: (value) {
+              setState(() {
+                setLanguage = item.languageCode;
+                saveSettings();
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                behavior: SnackBarBehavior.floating,
+                content: Text(t.relaunchNotice),
+                action: SnackBarAction(
+                    //textColor: Colors.white,
+                    label: t.restart,
+                    onPressed: () {
+                      Phoenix.rebirth(context);
+                    }),
+              ));
+            }));
+      }
+      setState(() {
+        sectionsSettings = [
+          SettingsSection(tiles: [systemLanguage]),
+          SettingsSection(tiles: sectionsLanguages)
+        ];
+      });
     });
   }
 
@@ -139,11 +140,9 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -152,13 +151,9 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       sectionColor = Colors.white10;
     }
 
-    
-
-     // [
-                          //if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]), 
-                          //SettingsSection(tiles: sectionsLanguages)]
-
-
+    // [
+    //if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]),
+    //SettingsSection(tiles: sectionsLanguages)]
 
     //var devicePlat = null;
     /*if (Platform.isAndroid) {

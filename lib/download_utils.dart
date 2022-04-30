@@ -42,15 +42,17 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
 
   String toDownload = "";
   debugPrint(baseUrl + tags.trackURL[index]);
-  http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
+  await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
 
-    var element = bs.find('', id: 'EchoTopic')!;
+    var element = bs.find('', id: 'pageContent')!;
 
     for (var link in element.findAll('a')) {
+      debugPrint("iterating");
       if (link.attributes['href'] != null) {
         if (link.attributes['href']!.endsWith(".$type")) {
           toDownload = link.attributes['href']!;
+          debugPrint(toDownload);
         }
       }
     }
@@ -106,10 +108,10 @@ Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async
   }
 
   String toDownload = "";
-  http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
+  await http.read(Uri.parse(baseUrl + tags.trackURL[index])).then((contents) {
     BeautifulSoup bs = BeautifulSoup(contents);
 
-    var element = bs.find('', id: 'EchoTopic')!;
+    var element = bs.find('', id: 'pageContent')!;
 
     for (var link in element.findAll('a')) {
       if (link.attributes['href'] != null) {

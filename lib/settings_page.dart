@@ -59,13 +59,16 @@ class _SettingsPageState extends State<SettingsPage> {
 
     prefs.setString("location", pathToSaveIn);
   }
+
   String langaugeCurrent = "";
 
   void _loadData() async {
     final _loadedData = await rootBundle.loadString('assets/languages.json');
     var data = json.decode(_loadedData);
     setState(() {
-      langaugeCurrent = setLanguage == "system"? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+      langaugeCurrent = setLanguage == "system"
+          ? "System"
+          : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     });
   }
 
@@ -78,15 +81,13 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     var t = AppLocalizations.of(context)!;
-    var defaultText = t
-        .defaultLocation("Path of executable"); //"Default: Path of executable";
+    var defaultText = t.defaultLocation("Path of executable"); //"Default: Path of executable";
     folderToSave = defaultText;
 
     if (pathToSaveIn == "") {
       folderToSave = defaultText;
     } else {
-      if (Platform.isAndroid &&
-          pathToSaveIn == "/storage/emulated/0/Download") {
+      if (Platform.isAndroid && pathToSaveIn == "/storage/emulated/0/Download") {
         folderToSave = t.defaultLocation("Downloads");
       } else {
         folderToSave = pathToSaveIn;
@@ -99,16 +100,8 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     var themes = ["System", "Light", "Dark", "Black"];
-    var trackListBehaviorStrings = [
-      "Preview",
-      "Browser",
-      "Download"
-    ];
-    var popupBehaviorStrings = [
-      "Auto",
-      "Pop-up",
-      "Bottom"
-    ];
+    var trackListBehaviorStrings = ["Preview", "Browser", "Download"];
+    var popupBehaviorStrings = ["Auto", "Pop-up", "Bottom"];
 
     var trackListSelect = trackListBehavior;
     var colorDownloadButton = Theme.of(context).hintColor;
@@ -123,8 +116,7 @@ class _SettingsPageState extends State<SettingsPage> {
       colorDownloadButton = Colors.red;
     }
 
-    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) &&
-        trackListSelect == 0) {
+    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
       trackListSelect = 1;
     }
 
@@ -170,18 +162,16 @@ class _SettingsPageState extends State<SettingsPage> {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-        !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
     //var config = File('assets/languages.json');
 
     //var str = config.readAsStringSync();
-    
+
     //var devicePlat = null;
     /*if (Platform.isAndroid) {
       devicePlat = DevicePlatform.android;
@@ -211,33 +201,25 @@ class _SettingsPageState extends State<SettingsPage> {
                                   height: heightTitleBar,
                                   child: MoveWindow(
                                     child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 5, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                                       child: Text(
                                         titleAppBar,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6,
+                                        style: Theme.of(context).textTheme.headline6,
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ))),
                           const WindowButtons()
                         ]))),
-              if ((Platform.isMacOS || Platform.isLinux) &&
-                  !windowBorder &&
-                  settingsAppBar != null)
-                settingsAppBar,
+              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && settingsAppBar != null) settingsAppBar,
               Expanded(
                 child: SettingsList(
                   //platform: devicePlat,
-                  physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
+                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   darkTheme: SettingsThemeData(
                       settingsListBackground: Theme.of(context).cardColor,
                       settingsSectionBackground: sectionColor,
-                      titleTextColor:
-                          Theme.of(context).textTheme.bodyText1!.color!),
+                      titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
                   //platform: DevicePlatform.android,
                   sections: [
                     if (!Platform.isIOS)
@@ -254,11 +236,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                   await Permission.storage.request();
                                 }
                               }
-                              String? path = await FilePicker.platform
-                                  .getDirectoryPath(
-                                      dialogTitle: t.filePickerChoose,
-                                      initialDirectory:
-                                          Directory(homeDirectory()).path);
+                              String? path = await FilePicker.platform.getDirectoryPath(
+                                  dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
 
                               if (path != null) {
                                 setState(() {
@@ -290,14 +269,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: Text(t.languageOption),
                           trailing: Text(langaugeCurrent),
                           onPressed: (context) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const LanguageSettings()));
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageSettings()));
                           },
                         ),
-                        if (Platform.isMacOS ||
-                            Platform.isLinux)
+                        if (Platform.isMacOS || Platform.isLinux)
                           SettingsTile.switchTile(
                             title: Text(t.customWindow),
                             initialValue: windowBorder,
@@ -308,8 +283,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 windowBorder = value;
                                 saveSettings();
                               });
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 content: Text(t.relaunchNotice),
                                 action: SnackBarAction(
@@ -384,21 +358,18 @@ class _SettingsPageState extends State<SettingsPage> {
                               },
                               items: [
                                 DropdownMenuItem(
-                                  child: Text(t.themeSystem,
-                                      textAlign: TextAlign.center),
+                                  child: Text(t.themeSystem, textAlign: TextAlign.center),
                                   value: "System",
                                 ),
                                 DropdownMenuItem(
-                                  child: Text(t.themeLight,
-                                      textAlign: TextAlign.center),
+                                  child: Text(t.themeLight, textAlign: TextAlign.center),
                                   value: "Light",
                                 ),
                                 DropdownMenuItem(
                                   child: Text(t.themeDark),
                                   value: "Dark",
                                 ),
-                                DropdownMenuItem(
-                                    child: Text(t.themeBlack), value: "Black"),
+                                DropdownMenuItem(child: Text(t.themeBlack), value: "Black"),
                               ]),
                           title: Text(t.appTheme),
                           onPressed: (context) {
@@ -413,8 +384,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 md3 = value;
                                 saveSettings();
                               });
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 content: Text(t.relaunchNotice),
                                 action: SnackBarAction(
@@ -507,9 +477,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 saveSettings();
                               },
                               items: [
-                                if (Platform.isIOS ||
-                                    Platform.isMacOS ||
-                                    Platform.isAndroid)
+                                if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
                                   DropdownMenuItem(
                                     child: Text(t.trackListPreview),
                                     value: "Preview",
@@ -581,54 +549,37 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: Text(t.concurrentDownloads),
                           description: Text(t.currentlyUnused),
                           value: Row(children: [
-                            Text(maxDownloads.toString() + " - ",
-                                style: TextStyle(color: colorDownloadButton)),
+                            Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
                             Text(
                               "Unused",
-                              style: TextStyle(
-                                  color: Theme.of(context).errorColor),
+                              style: TextStyle(color: Theme.of(context).errorColor),
                             )
                           ]),
                           onPressed: (context) {
                             showDialog(
                                     builder: (BuildContext context) {
-                                      return StatefulBuilder(
-                                          builder: (context, setStateAlert) {
+                                      return StatefulBuilder(builder: (context, setStateAlert) {
                                         return Dialog(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        12.0)),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                             child: SizedBox(
-                                                width: (MediaQuery.of(context)
-                                                            .size
-                                                            .width /
-                                                        4) *
-                                                    3,
+                                                width: (MediaQuery.of(context).size.width / 4) * 3,
                                                 height: 163,
                                                 child: Column(
                                                   children: [
                                                     ListTile(
-                                                      contentPadding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      title: Text(t
-                                                          .concurrentDownloads),
-                                                      subtitle: Text(t
-                                                          .concurrentDownloadsDescription),
+                                                      contentPadding: const EdgeInsets.all(10),
+                                                      title: Text(t.concurrentDownloads),
+                                                      subtitle: Text(t.concurrentDownloadsDescription),
                                                     ),
                                                     Slider(
                                                         min: 1,
                                                         max: 10,
-                                                        label: maxDownloads
-                                                            .toString(),
+                                                        label: maxDownloads.toString(),
                                                         divisions: 9,
-                                                        value: maxDownloads
-                                                            .toDouble(),
+                                                        value: maxDownloads.toDouble(),
                                                         onChanged: (value) {
                                                           setStateAlert(() {
-                                                            maxDownloads =
-                                                                value.toInt();
+                                                            maxDownloads = value.toInt();
                                                           });
                                                         })
                                                   ],

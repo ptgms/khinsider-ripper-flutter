@@ -24,7 +24,6 @@ Future<void> main() async {
   var favCover = prefs.getStringList("favs_cover");
 
   var defaultLang = "system";
-  if (Platform.isIOS || Platform.isMacOS) defaultLang = "en";
 
   pathToSaveIn = prefs.getString("location") ?? "";
   favoriteHome = prefs.getBool("fav_home") ?? true;
@@ -35,7 +34,7 @@ Future<void> main() async {
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
   setLanguage = prefs.getString("language") ?? defaultLang;
-  
+
   // analytics = prefs.getBool("analytics") ?? true;
   // ------
 
@@ -53,7 +52,7 @@ Future<void> main() async {
   }
 
   await findSystemLocale();
-  
+
   runApp(Phoenix(child: const MyApp()));
 
   if ((Platform.isLinux || Platform.isMacOS)) {
@@ -166,7 +165,13 @@ class MyApp extends StatelessWidget {
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en', ''), Locale('de', ''), Locale('nl', ''), Locale('pl', ''), Locale('ar', '')],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('de', ''),
+              Locale('nl', ''),
+              Locale('pl', ''),
+              Locale('ar', '')
+            ],
             debugShowCheckedModeBanner: false,
             locale: Locale(language, ''),
             theme: ThemeData.light().copyWith(useMaterial3: md3),
@@ -287,8 +292,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                           if (windowBorder) Row(children: actions),
                           const SizedBox(child: WindowButtons())
                         ]))),
-              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null)
-                mainAppBar,
+              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null) mainAppBar,
               Expanded(child: bodyToPush)
             ])));
   }

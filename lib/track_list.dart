@@ -135,7 +135,7 @@ class _TrackViewState extends State<TrackView> {
       if (pathToSaveIn != "" && pathToSaveIn != "/storage/emulated/0/Download") {
         return t.savedTo(pathToSaveIn); //"Saved to $pathToSaveIn!";
       }
-      return t.savedTo("Downloads");//"Saved to Downloads!";
+      return t.savedTo("Downloads"); //"Saved to Downloads!";
     } else if (Platform.isIOS) {
       return t.savedTo("Files App");
     } else {
@@ -327,7 +327,7 @@ class _TrackViewState extends State<TrackView> {
                 await http.read(completedUrl).then((contents) {
                   BeautifulSoup bs = BeautifulSoup(contents);
 
-                  var element = bs.find('', id: 'EchoTopic')!;
+                  var element = bs.find('', id: 'pageContent')!;
 
                   for (var link in element.findAll('a')) {
                     if (link.attributes['href'] != null) {
@@ -351,10 +351,7 @@ class _TrackViewState extends State<TrackView> {
 
               debugPrint("yoooo " + completedUrl.toString());
 
-
-              //TODO: Null error? idk why
               await http.read(completedUrl).then((contents) {
-
                 debugPrint(contents);
                 BeautifulSoup bs = BeautifulSoup(contents);
 
@@ -470,10 +467,7 @@ class _TrackViewState extends State<TrackView> {
                                     ))),
                             const WindowButtons(),
                           ]))),
-                if ((Platform.isMacOS || Platform.isLinux) &&
-                    !windowBorder &&
-                    trackListAppBar != null)
-                  trackListAppBar,
+                if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && trackListAppBar != null) trackListAppBar,
                 Expanded(
                     child: ListView.builder(
                         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -483,7 +477,8 @@ class _TrackViewState extends State<TrackView> {
                               height: 55,
                               child: Card(
                                   shape: cardShape,
-                                  child: trackItem(index)/*ctxmenu.ContextMenuRegion(
+                                  child: trackItem(
+                                      index) /*ctxmenu.ContextMenuRegion(
                                       onItemSelected: ((item) {
                                         switch (item.title) {
                                           case "Download Track":
@@ -510,7 +505,8 @@ class _TrackViewState extends State<TrackView> {
                                         ctxmenu.MenuItem(title: "Open in Browser"),
                                         ctxmenu.MenuItem(title: "Copy URL"),
                                       ],
-                                      child: trackItem(index))*/));
+                                      child: trackItem(index))*/
+                                  ));
                         })))
               ])));
     } else {
