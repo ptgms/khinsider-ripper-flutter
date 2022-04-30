@@ -1,89 +1,66 @@
 {
     "khinsiderRipper": "Khinsider Ripper",
-    "albumView": "Album Details",
+    "albumView": "Album Informatie",
     "settingsView": "Instellingen",
     "settingsLanguageView": "Taal",
     "trackListView": "Nummer",
     "favorites": "Favorieten",
     "search": "Opzoeken",
-
     "startSearch": "Begin met opzoeken!",
     "startSearchDescription": "Zoek iets op om resultaten te laten zien!",
     "searchForOSTs": "Zoek voor een OST",
-
     "shareTrack": "Deel een nummer",
-    "openInBrowser": "Open in Browser",
+    "openInBrowser": "Open in browser",
     "copyURL": "Kopieer URL",
     "copiedURL": "URL gekopieerd naar clipboard!",
     "downloadSong": "Download nummer",
     "formats": "Formaten",
     "downloading": "Wacht even, bezig met downloaden...",
-    "noDefaultPath": "Waarschuwing: Geen opslaan pad gekozen! Gebruik de map van het programma zelf. \n",
-
+    "noDefaultPath": "Waarschuwing: Geen pad om in op te slaan gekozen! Gebruik de map van het programma zelf. \n",
     "cancel": "Annuleren",
-
     "themeSystem": "Systeem",
     "themeLight": "Licht",
     "themeDark": "Donker",
     "themeBlack": "Zwart",
-
-    "trackListPreview": "Preview",
+    "trackListPreview": "Voorbeeld",
     "trackListBrowser": "Browser",
     "trackListDownload": "Download",
-
     "popupBehaviorAuto": "Auto",
     "popupBehaviorPopup": "Pop-Up",
     "popupBehaviorBottom": "Bottom",
-
     "savingPath": "Opslaan pad",
     "path": "Pad",
-
     "filePickerChoose": "Kies Download Folder",
-    "resetPath": "Herstel path",
-
-    "appearance": "Appearance",
+    "resetPath": "Herstel pad",
+    "appearance": "Uiterlijk",
     "languageOption": "Taal",
-
     "customWindow": "Aangepaste Venster Rand",
     "relaunchNotice": "Start de app opnieuw op om de aanpassingen effect te laten hebben.",
-    "exit": "Exit",
-
+    "exit": "Sluiten",
     "appTheme": "App Thema",
-
     "favHomePage": "Favorieten zijn de startpagina",
     "favHomePageDescription": "Als het uit staat, zoeken is dan de startpagina. Vereist opnieuw opstarten.",
     "restart": "Opnieuw opstarten",
-
     "behavior": "Gedrag",
     "trackListTapBehavior": "Tracklist klik gedrag",
     "trackListTapBehaviorDescription": "De actie die gebeurt wanneer je op het nummer klikt in de tracklist.",
     "previewSong": "Nummer voorspellen",
-
     "popUps": "Pop-Ups",
     "popUpsDescription": "De pop-up die wordt weergegeven wanneer je de nummer/album download.",
-
     "concurrentDownloads": "Achtervolgende downloads",
-    "concurrentDownloadsDescription": "Verander de hoevelheid achtervolgende downloads toegestaan door de app. Het is geadviseerd het op '1' te zetten voor telefoons.",
-
+    "concurrentDownloadsDescription": "Verander de hoeveelheid achtervolgende downloads toegestaan door de app. Het is geadviseerd het op '1' te zetten voor telefoons.",
     "currentlyUnused": "Tijdelijk niet gebruikt.",
-
     "noResults": "Geen resultaten!",
     "adjustTerm": "Probeer je zoektermen aan te passen.",
-
     "welcome": "Welkom bij Khinsider Ripper!",
     "welcomeDescription": "Welkom bij Khinsider Ripper! Begin zoeken voor albums aan de bovenkant. Toekomstige favorieten worden weergeven hier.",
-
     "removeFavorite": "Verwijderen",
-
     "downloadAlbum": "Download Album",
-
     "removeFromFavs": "Verwijder uit Favorieten",
     "addToFavs": "Voeg toe aan Favorieten",
-
     "viewAllTracks": "Weergeef alle Nummers",
     "downloadAllTracks": "Download alle Nummers",
     "options": "Opties",
-
     "availableFormats": "Beschikbare Formaten: {formats}",
     "@availableFormats": {
         "description": "Displayed under album details",
@@ -94,7 +71,6 @@
             }
         }
     },
-
     "shareText": "Zie deze {type} {name} op Khinsider!\n{url}",
     "@shareText": {
         "description": "The template for when the User pressed share on a track/album",
@@ -113,7 +89,6 @@
             }
         }
     },
-
     "downloadingAlbum": "{name} aan het downloaden...",
     "@downloadingAlbum": {
         "description": "Text displayed when Album download intiated..",
@@ -124,7 +99,6 @@
             }
         }
     },
-
     "defaultLocation": "Standaard: {location}",
     "@defaultLocation": {
         "description": "The text displayed if no custom saving path was declared.",
@@ -135,7 +109,6 @@
             }
         }
     },
-
     "savedTo": "Opslaan in {location}!",
     "@savedTo": {
         "description": "Prompt User where File was saved.",
@@ -146,8 +119,7 @@
             }
         }
     },
-    
-    "downloadIn": "Download in {format}",
+    "downloadIn": "Download het als {format}",
     "@downloadIn": {
         "description": "Ask User what Format to save in",
         "placeholders": {
@@ -157,7 +129,6 @@
             }
         }
     },
-
     "translatedBy": "Vertaald door {name}",
     "@translatedBy": {
         "description": "Thank you for translating this app, I appreciate it <3",
@@ -167,5 +138,6 @@
                 "example": "You"
             }
         }
-    }
+    },
+    "helpTranslation": "Help deze app te vertalen!"
 }

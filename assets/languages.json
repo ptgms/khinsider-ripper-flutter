@@ -4,16 +4,71 @@
     "nl": "Nederlands - Dutch",
     "pl": "Polski - Polish",
     "ar": "Arabic - العربية",
+    "fr": "Français - French",
+    "es": "Español - Spanish",
 
     "en_flag": "🇺🇸",
     "de_flag": "🇩🇪",
     "nl_flag": "🇳🇱",
     "pl_flag": "🇵🇱",
     "ar_flag": "🇸🇦",
+    "fr_flag": "🇫🇷",
+    "es_flag": "🇪🇸",
 
-    "en_credit": ["ptgms Industries"],
-    "de_credit": ["ptgms Industries"],
-    "nl_credit": ["ModderOwls", "EpicDonutDude"],
-    "pl_credit": ["MattRoot"],
-    "ar_credit": ["TMDR"]
+    "credits": {
+        "en": [
+            {
+                "name": "ptgms Industries",
+                "url": "https://github.com/ptgms"
+            }
+        ],
+        "de": [
+            {
+                "name": "ptgms Industries",
+                "url": "https://github.com/ptgms"
+            }
+        ],
+        "nl": [
+            {
+                "name": "ModderOwls",
+                "url": "https://www.youtube.com/channel/UCSrHJEWgTQIoWh02y1Y8L4g"
+            },
+            {
+                "name": "EpicDonutDude",
+                "url": "https://www.youtube.com/channel/UCpzml8N7xz3G_efuqWxY_YQ"
+            }
+        ],
+        "pl": [
+            {
+                "name": "MattRoot",
+                "url": "https://github.com/MattRoot"
+            },
+            {
+                "name": "Villqee",
+                "url": "https://instagram.com/itsvillqee"
+            }
+        ],
+        "ar": [
+            {
+                "name": "TMDR",
+                "url": "https://github.com/TMDR"
+            }
+        ],
+        "fr": [
+            {
+                "name": "TMDR",
+                "url": "https://github.com/TMDR"
+            },
+            {
+                "name": "ModderOwls",
+                "url": "https://www.youtube.com/channel/UCSrHJEWgTQIoWh02y1Y8L4g"
+            }
+        ],
+        "es": [
+            {
+                "name": "/",
+                "url": ""
+            }
+        ]
+    }
 }

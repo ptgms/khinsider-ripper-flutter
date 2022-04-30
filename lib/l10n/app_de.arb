@@ -1,16 +1,14 @@
 {
     "khinsiderRipper": "Khinsider Ripper",
-    "albumView": "Album Details",
+    "albumView": "Albumdetails",
     "settingsView": "Einstellungen",
     "settingsLanguageView": "Sprache",
     "trackListView": "Songs",
     "favorites": "Favoriten",
     "search": "Suchen",
-
     "startSearch": "Starte eine Suche!",
     "startSearchDescription": "Starte eine Suche um Resultate anzuzeigen!",
     "searchForOSTs": "Nach OSTs suchen",
-
     "shareTrack": "Song Teilen",
     "openInBrowser": "Im Browser öffnen",
     "copyURL": "URL kopieren",
@@ -19,71 +17,50 @@
     "formats": "Formate",
     "downloading": "Bitte warten, lädt herunter...",
     "noDefaultPath": "Warnung! Kein Speicher-Pfad angegeben. Nutze Programm-Pfad.\n",
-
     "cancel": "Abbrechen",
-
     "themeSystem": "System",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
     "themeBlack": "Schwarz",
-
     "trackListPreview": "Vorschau",
     "trackListBrowser": "Browser",
     "trackListDownload": "Herunterladen",
-
     "popupBehaviorAuto": "Auto",
-    "popupBehaviorPopup": "Pop-Up",
-    "popupBehaviorBottom": "Bottom",
-
+    "popupBehaviorPopup": "Pop Up",
+    "popupBehaviorBottom": "Unten",
     "savingPath": "Speicher-Pfad",
     "path": "Pfad",
-
     "filePickerChoose": "Wähle Download Ordner",
     "resetPath": "Pfad zurücksetzen",
-
     "appearance": "Anzeige",
     "languageOption": "Sprache",
-
     "customWindow": "Benutzerdefinierter Fensterrahmen",
-    "relaunchNotice": "App neustarten damit änderungen in Kraft treten.",
+    "relaunchNotice": "App neustarten damit Änderungen in Kraft treten.",
     "exit": "Schließen",
-
     "appTheme": "App-Thema",
-
-    "favHomePage": "Favorten ist Hauptseite",
-    "favHomePageDescription": "Wenn aus, wird die Suche die Hauptseite. Benötigt neustart.",
+    "favHomePage": "Favoriten sind Startseite",
+    "favHomePageDescription": "Wenn aus, wird die Suche die Hauptseite. Benötigt Neustart.",
     "restart": "Neustarten",
-
     "behavior": "Verhalten",
     "trackListTapBehavior": "Songliste Tipp-Verhalten",
-    "trackListTapBehaviorDescription": "Die Aktion wenn ein Song in der Song-Liste ausgewählt wird.",
+    "trackListTapBehaviorDescription": "Die Aktion, wenn ein Song in der Song-Liste ausgewählt wird.",
     "previewSong": "Song vorschau",
-
-    "popUps": "Pop-Ups",
+    "popUps": "Pop Ups",
     "popUpsDescription": "Der Pop-Up der angezeigt wird, wenn ein Song/Album heruntergeladen wird.",
-
     "concurrentDownloads": "Gleichzeitige Downloads",
     "concurrentDownloadsDescription": "Ändere die maximal-Erlaubte Anzahl an gleichzeitige Downloads. '1' auf mobilen Geräte empfohlen.",
-
     "currentlyUnused": "Momentan nicht genutzt.",
-
     "noResults": "Keine Resultate!",
     "adjustTerm": "Versuche deine Suche zu verändern.",
-
     "welcome": "Willkommen beim Khinsider Ripper!",
     "welcomeDescription": "Willkommen beim Khinsider Ripper! Starte oben eine 'Suche'. Spätere Favoriten werden hier angezeigt.",
-
     "removeFavorite": "Entfernen",
-
     "downloadAlbum": "Album herunterladen",
-
     "removeFromFavs": "Von Favoriten entfernen",
     "addToFavs": "Zu Favoriten hinzufügen",
-
     "viewAllTracks": "Alle Songs anzeigen",
     "downloadAllTracks": "Alle Songs herunterladen",
     "options": "Optionen",
-
     "availableFormats": "Verfügbare Formate: {formats}",
     "@availableFormats": {
         "description": "Displayed under album details",
@@ -94,7 +71,6 @@
             }
         }
     },
-
     "shareText": "Schau dir mal diesen/dieses {type} {name} auf Khinsider an!\n{url}",
     "@shareText": {
         "description": "The template for when the User pressed share on a track/album",
@@ -113,7 +89,6 @@
             }
         }
     },
-
     "downloadingAlbum": "Lade {name} herunter...",
     "@downloadingAlbum": {
         "description": "Text displayed when Album download intiated..",
@@ -124,7 +99,6 @@
             }
         }
     },
-
     "defaultLocation": "Standard: {location}",
     "@defaultLocation": {
         "description": "The text displayed if no custom saving path was declared.",
@@ -135,8 +109,7 @@
             }
         }
     },
-
-    "savedTo": "Gepsichert in {location}!",
+    "savedTo": "Gespeichert in {location}!",
     "@savedTo": {
         "description": "Prompt User where File was saved.",
         "placeholders": {
@@ -146,7 +119,6 @@
             }
         }
     },
-    
     "downloadIn": "Herunterladen in {format}",
     "@downloadIn": {
         "description": "Ask User what Format to save in",
@@ -157,7 +129,6 @@
             }
         }
     },
-
     "translatedBy": "Übersetzt von {name}",
     "@translatedBy": {
         "description": "Thank you for translating this app, I appreciate it <3",
@@ -167,5 +138,6 @@
                 "example": "You"
             }
         }
-    }
+    },
+    "helpTranslation": "Hilf mit, diese App zu übersetzen!"
 }
