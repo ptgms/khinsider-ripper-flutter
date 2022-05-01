@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:khinrip/downloading_view.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/main.dart';
@@ -11,6 +12,8 @@ import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class AlbumView extends StatefulWidget {
   const AlbumView({Key? key, required this.tags}) : super(key: key);
@@ -30,6 +33,16 @@ class _AlbumViewState extends State<AlbumView> {
   ShapeBorder cardShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue()));
 
   _AlbumViewState({required this.tags});
+
+  @override
+  void initState() {
+    if (tags.coverURL[0] != "" && tags.coverURL[0] != "none") {
+      extractColor(tags.coverURL).then((value) {
+        setState(() {});
+      });
+    }
+    super.initState();
+  }
 
   void showDownloadModal(bool isPopUp, context) {
     var t = AppLocalizations.of(context)!;
@@ -219,71 +232,143 @@ class _AlbumViewState extends State<AlbumView> {
 
   String downloadText = ""; // download add-on text if no custom path specified.
   int currentCover = 0;
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
+  Color stockAlbumColor = const Color.fromRGBO(71, 71, 71, 0.2);
+  List<Color> albumCardColor = [];
+
+  Future<void> extractColor(List<String> images) async {
+    for (var image in images) {
+      var imgBytes = (await NetworkAssetBundle(Uri.parse(image)).load(image)).buffer.asUint8List();
+      final PaletteGenerator paletteGenerator = await PaletteGenerator.fromImage(await decodeImageFromList(imgBytes));
+      albumCardColor.add(paletteGenerator.dominantColor!.color);
+    }
+  }
 
   Widget albumCover(AlbumTags tags, context) {
-    Widget noPicFound = const Icon(Icons.album);
+    Widget albumBuild = Container();
     Decoration albumImage = const BoxDecoration();
-    if (tags.coverURL[currentCover] != "none" && tags.coverURL[currentCover] != "") {
-      noPicFound = tags.coverURL.length == 1
-          ? Container()
-          : Container(
-              alignment: Alignment.bottomRight,
-              child: Opacity(
-                opacity: 0.7,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Card(
-                      child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              if (currentCover != 0) {
-                                currentCover--;
-                              } else {
-                                currentCover = tags.coverURL.length - 1;
-                              }
-                            });
-                          },
-                          child: const Text("<")),
+    if (tags.coverURL[0] != "none" && tags.coverURL[0] != "") {
+      if (tags.coverURL.length == 1) {
+        albumImage = BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+            color: const Color.fromRGBO(71, 71, 71, 0.2),
+            image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[currentCover])));
+        albumBuild = AspectRatio(
+            aspectRatio: 1 / 1,
+            child: Container(
+              decoration: albumImage,
+            ));
+      } else {
+        albumBuild = ShaderMask(
+          shaderCallback: (Rect rect) {
+            return const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Colors.purple, Colors.transparent, Colors.transparent, Colors.purple],
+              stops: [0.0, 0.1, 0.9, 1.0], // 10% purple, 80% transparent, 10% purple
+            ).createShader(rect);
+          },
+          blendMode: BlendMode.dstOut,
+          child: CarouselSlider(
+            items: tags.coverURL.map((item) {
+              albumImage = BoxDecoration(
+                  color: albumCardColor.length != tags.coverURL.length
+                      ? stockAlbumColor
+                      : albumCardColor[tags.coverURL.indexOf(item)],
+                  image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(item)));
+              return ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+                  child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(decoration: albumImage),
+                        //Image.network(item, fit: BoxFit.fill),
+                        Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color.fromARGB(200, 0, 0, 0), Color.fromARGB(0, 0, 0, 0)],
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                            child: Text(
+                              'Cover #${tags.coverURL.indexOf(item) + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Text((currentCover + 1).toString() + "/" + (tags.coverURL.length).toString()),
-                      ),
-                    ),
-                    Card(
-                      child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              if (currentCover != tags.coverURL.length - 1) {
-                                currentCover++;
-                              } else {
-                                currentCover = 0;
-                              }
-                            });
-                          },
-                          child: const Text(">")),
-                    )
-                  ],
-                ),
-              ));
+                  ));
+            }).toList(),
+            carouselController: _controller,
+            options: CarouselOptions(
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 1.22,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                }),
+          ),
+        );
+      }
+    } else {
       albumImage = BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-          color: const Color.fromRGBO(71, 71, 71, 0.2),
-          image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[currentCover])));
+        borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+        color: const Color.fromRGBO(71, 71, 71, 0.2),
+        //image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[currentCover])
+      );
+      albumBuild = AspectRatio(
+          aspectRatio: 1 / 1,
+          child: Container(
+            decoration: albumImage,
+            child: const Icon(
+              Icons.album,
+              size: 100.0,
+            ),
+          ));
     }
 
-    Widget albumCover = Center(
+    //Widget albumCover = SizedBox(child: albumBuild, height: 400, width: 400);
+    return Center(
         child: Container(
             constraints: BoxConstraints(maxWidth: 400, maxHeight: MediaQuery.of(context).size.height / 1.5),
             child: Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
-                child: AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: Container(width: 100, height: 100, decoration: albumImage, child: noPicFound)))));
-    return albumCover;
+                child: albumBuild)));
+  }
+
+  Widget albumDots() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: tags.coverURL.asMap().entries.map((entry) {
+        return GestureDetector(
+          onTap: () => _controller.animateToPage(entry.key),
+          child: Container(
+            width: 12.0,
+            height: 12.0,
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)
+                    .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+          ),
+        );
+      }).toList(),
+    );
   }
 
 // The small cell at the top containing the album information
@@ -327,7 +412,7 @@ class _AlbumViewState extends State<AlbumView> {
 
   Widget albumOptions(AlbumTags tags, context, isPopUp, widthScreen) {
     //double width = 100;
-    int widthCard = 150;
+    int widthCard = 170;
 
     int heightCard = 60;
 
@@ -364,13 +449,13 @@ class _AlbumViewState extends State<AlbumView> {
     if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       downloadText = t.noDefaultPath + tags.albumName;
     }
-    //debugPrint(pathToSaveIn);
 
     return Center(
       child: ListView(
         padding: const EdgeInsets.all(8),
         children: <Widget>[
           albumCover(tags, context),
+          if (tags.coverURL.length > 1) albumDots(),
           Center(
             child: Container(constraints: const BoxConstraints(maxWidth: 500), child: albumView(tags, context)),
           ),
@@ -456,40 +541,10 @@ class _AlbumViewState extends State<AlbumView> {
                                     ))),
                           ),
                         )),
-
-                    //Opacity(opacity: isExpanded? 1.0 : 0, child: Container(height: isExpanded? 55.0*tags.tracks.length : 0, child: TrackView(tags: tags)))]))
-                    Visibility(
-                        child: TrackView(tags: tags, width: MediaQuery.of(context).size.width), visible: isExpanded),
+                    Visibility(child: TrackView(tags: tags), visible: isExpanded),
                   ])),
             ),
           )
-
-          // Hey, p8t, why don't you use a visibility widget to hide? Well, everytime you hide/unhide it reloads the fucking track list, causing lag. So, I'd rather
-          // make it invisible and 0px high, and then undo that later on :) NO LAG! And I know how to do it the other way, I added it above so you can't say
-          // I did this because I don't know how. F u
-
-          /*Container(
-              padding: EdgeInsets.zero,
-              child: Card(
-                  shape: cardShape,
-                  // view all tracks button
-                  child: InkWell(
-                      customBorder: cardShape,
-                      mouseCursor: MouseCursor.uncontrolled,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TrackView(
-                                    tags: tags,
-                                  )),
-                        );
-                      },
-                      child: ListTile(
-                        title: Text(t.viewAllTracks),
-                        leading: const Icon(Icons.view_list_rounded),
-                        trailing: const Icon(Icons.chevron_right),
-                      )))),*/
         ],
       ),
     );

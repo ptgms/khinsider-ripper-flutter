@@ -18,19 +18,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'main.dart';
 
 class TrackView extends StatefulWidget {
-  const TrackView({Key? key, required this.tags, required this.width}) : super(key: key);
+  const TrackView({Key? key, required this.tags}) : super(key: key);
 
   final AlbumTags tags;
-  final double width;
 
   @override
   // ignore: no_logic_in_create_state
-  _TrackViewState createState() => _TrackViewState(tags: tags, width: width);
+  _TrackViewState createState() => _TrackViewState(tags: tags);
 }
 
 class _TrackViewState extends State<TrackView> {
   final AlbumTags tags;
-  final double width;
 
   String playingURL = "";
   var busy = false;
@@ -129,7 +127,7 @@ class _TrackViewState extends State<TrackView> {
     );
   }
 
-  _TrackViewState({required this.tags, required this.width});
+  _TrackViewState({required this.tags});
 
   String getSnackBarContent(String pathToSaveIn, context) {
     var t = AppLocalizations.of(context)!;
@@ -403,17 +401,21 @@ class _TrackViewState extends State<TrackView> {
           ));
     }
 
+    var sWidth = MediaQuery.of(context).size.width;
+
+    //debugPrint(sWidth.toString());
+
     int widthCard = 400;
 
     int heightCard = 55;
 
-    if (width < widthCard) {
-      widthCard = width.toInt() - 1;
+    if (sWidth < widthCard) {
+      widthCard = sWidth.toInt() - 1;
     }
 
-    int count = width ~/ widthCard;
+    int count = sWidth ~/ widthCard;
 
-    widthCard = width ~/ count;
+    widthCard = sWidth ~/ count;
 
     //debugPrint(width.toString() + "w + " + count.toString());
 

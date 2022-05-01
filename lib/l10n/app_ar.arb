@@ -59,7 +59,7 @@
     "removeFromFavs": "الحذف من المفضلات",
     "addToFavs": "الإضافة إلى المفضلات",
     "viewAllTracks": "إظهار جميع التسجيلات",
-    "hideAllTracks": "Hide all Tracks",
+    "hideAllTracks": "إخفاء جميع التسجيلات",
     "downloadAllTracks": "تنزيل جميع التسجيلات",
     "options": "الخيارات",
     "availableFormats": "الصيغ المتاحة: {formats}",
@@ -139,6 +139,5 @@
                 "example": "You"
             }
         }
-    },
-    "helpTranslation": "المساعدة في ترجمة هذا البرنامج!"
+    }
 }
