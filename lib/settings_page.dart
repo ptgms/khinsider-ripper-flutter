@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:window_manager/window_manager.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -136,13 +136,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
     double splashRadius = 35.0;
 
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       splashRadius = 1.0;
     }
 
     String titleAppBar = t.settingsView;
     double? heightTitleBar = 40.0;
-    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -158,7 +158,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ));
     AppBar? display = settingsAppBar;
 
-    if ((Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
     double? widthOfBorder;
@@ -179,229 +179,246 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Scaffold(
         appBar: display,
-        body: WindowBorder(
-            width: widthOfBorder,
-            color: Theme.of(context).backgroundColor,
+        body: Container(
+            //width: widthOfBorder,
+            //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isLinux || Platform.isMacOS))
-                SizedBox(
-                    child: Container(
-                        color: Theme.of(context).cardColor,
-                        child: Row(children: [
-                          if (Platform.isMacOS) const SizedBox(width: 60),
-                          if (windowBorder)
-                            IconButton(
-                                splashRadius: splashRadius,
-                                icon: const Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                }),
-                          Expanded(
-                              child: SizedBox(
-                                  height: heightTitleBar,
-                                  child: MoveWindow(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                      child: Text(
-                                        titleAppBar,
-                                        style: Theme.of(context).textTheme.headline6,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ))),
-                          const WindowButtons()
-                        ]))),
-              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && settingsAppBar != null) settingsAppBar,
-              Expanded(
-                child: SettingsList(
-                  platform: devicePlat,
-                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                  darkTheme: SettingsThemeData(
-                      settingsListBackground: Theme.of(context).cardColor,
-                      settingsSectionBackground: sectionColor,
-                      titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
-                  //platform: DevicePlatform.android,
-                  sections: [
-                    if (!Platform.isIOS)
-                      SettingsSection(
-                        title: Text(t.savingPath),
-                        tiles: <SettingsTile>[
-                          SettingsTile.navigation(
-                            title: Text(t.path),
-                            value: Text(folderToSave),
-                            onPressed: (context) async {
-                              if (Platform.isAndroid) {
-                                var status = await Permission.storage.status;
-                                if (!status.isGranted) {
-                                  await Permission.storage.request();
-                                }
-                              }
-                              String? path = await FilePicker.platform.getDirectoryPath(
-                                  dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
+          if ((Platform.isLinux || Platform.isMacOS || Platform.isWindows))
+            SizedBox(
+                child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Row(children: [
+                      if (Platform.isMacOS) const SizedBox(width: 60),
+                      if (windowBorder)
+                        IconButton(
+                            splashRadius: splashRadius,
+                            icon: const Icon(Icons.navigate_before),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                      Expanded(
+                          child: GestureDetector(
+                        onTapDown: (details) {
+                          windowManager.startDragging();
+                        },
+                        onDoubleTap: () {
+                          windowManager.isMaximized().then((value) {
+                            if (value) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                              height: heightTitleBar,
+                              child: VirtualWindowFrame(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                child: Text(
+                                  titleAppBar,
+                                  style: Theme.of(context).textTheme.headline6,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))),
+                        ),
+                      )),
+                      const WindowButtons()
+                    ]))),
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && settingsAppBar != null)
+            settingsAppBar,
+          Expanded(
+            child: SettingsList(
+              platform: devicePlat,
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              darkTheme: SettingsThemeData(
+                  settingsListBackground: Theme.of(context).cardColor,
+                  settingsSectionBackground: sectionColor,
+                  titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+              //platform: DevicePlatform.android,
+              sections: [
+                if (!Platform.isIOS)
+                  SettingsSection(
+                    title: Text(t.savingPath),
+                    tiles: <SettingsTile>[
+                      SettingsTile.navigation(
+                        title: Text(t.path),
+                        value: Text(folderToSave),
+                        onPressed: (context) async {
+                          if (Platform.isAndroid) {
+                            var status = await Permission.storage.status;
+                            if (!status.isGranted) {
+                              await Permission.storage.request();
+                            }
+                          }
+                          String? path = await FilePicker.platform.getDirectoryPath(
+                              dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
 
-                              if (path != null) {
-                                setState(() {
-                                  pathToSaveIn = path;
-                                  saveLocation();
-                                  folderToSave = path;
-                                });
-                              }
-                            },
-                          ),
-                          if (!Platform.isIOS && pathToSaveIn != "")
-                            SettingsTile.navigation(
-                              trailing: Container(),
-                              title: Text(t.resetPath),
-                              onPressed: (context) {
-                                setState(() {
-                                  pathToSaveIn = "";
-                                  saveLocation();
-                                  folderToSave = defaultText;
-                                });
-                              },
-                            )
-                        ],
-                      ),
-                    SettingsSection(
-                      title: Text(t.appearance),
-                      tiles: <SettingsTile>[
-                        SettingsTile.navigation(
-                          title: Text(t.languageOption),
-                          value: Text(languageCurrent),
-                          onPressed: (context) {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageSettings()));
-                          },
-                        ),
-                        if (Platform.isMacOS || Platform.isLinux)
-                          SettingsTile.switchTile(
-                            title: Text(t.customWindow),
-                            initialValue: windowBorder,
-                            onToggle: (value) {
-                              ScaffoldMessenger.of(context).clearSnackBars();
-                              //debugPrint(value.toString());
-                              setState(() {
-                                windowBorder = value;
-                                saveSettings();
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                content: Text(t.relaunchNotice),
-                                action: SnackBarAction(
-                                    //textColor: Colors.white,
-                                    label: t.exit,
-                                    onPressed: () {
-                                      exit(0);
-                                    }),
-                              ));
-                            },
-                          ),
-                        SettingsTile.switchTile(
-                          title: Text(t.favHomePage),
-                          description: Text(t.favHomePageDescription),
-                          initialValue: favoriteHome,
-                          onToggle: (value) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            //debugPrint(value.toString());
+                          if (path != null) {
                             setState(() {
-                              favoriteHome = value;
-                              saveSettings();
+                              pathToSaveIn = path;
+                              saveLocation();
+                              folderToSave = path;
                             });
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(t.relaunchNotice),
-                              action: SnackBarAction(
-                                  //textColor: Colors.white,
-                                  label: t.restart,
-                                  onPressed: () {
-                                    Phoenix.rebirth(context);
-                                  }),
-                            ));
-                          },
-                        ),
+                          }
+                        },
+                      ),
+                      if (!Platform.isIOS && pathToSaveIn != "")
                         SettingsTile.navigation(
-                          trailing: DropdownButton<String>(
-                              alignment: AlignmentDirectional.centerEnd,
-                              key: _dropdownTheme,
-                              icon: const Icon(Icons.chevron_right_outlined),
-                              underline: Container(),
-                              //iconSize: 0.0,
-                              value: themes[appTheme],
-                              onChanged: (value) {
-                                switch (value) {
-                                  case "System":
-                                    setState(() {
-                                      appTheme = 0;
-                                      notifier.value = 0;
-                                    });
-                                    break;
-                                  case "Light":
-                                    setState(() {
-                                      appTheme = 1;
-                                      notifier.value = 1;
-                                    });
-                                    break;
-                                  case "Dark":
-                                    setState(() {
-                                      appTheme = 2;
-                                      notifier.value = 2;
-                                    });
-                                    break;
-                                  case "Black":
-                                    setState(() {
-                                      appTheme = 3;
-                                      notifier.value = 3;
-                                    });
-                                    break;
-                                  default:
-                                }
-                                saveSettings();
-                              },
-                              items: [
-                                DropdownMenuItem(
-                                  child: Text(t.themeSystem, textAlign: TextAlign.center),
-                                  value: "System",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text(t.themeLight, textAlign: TextAlign.center),
-                                  value: "Light",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text(t.themeDark),
-                                  value: "Dark",
-                                ),
-                                DropdownMenuItem(child: Text(t.themeBlack), value: "Black"),
-                              ]),
-                          title: Text(t.appTheme),
+                          trailing: Container(),
+                          title: Text(t.resetPath),
                           onPressed: (context) {
-                            openDropdown(_dropdownTheme);
+                            setState(() {
+                              pathToSaveIn = "";
+                              saveLocation();
+                              folderToSave = defaultText;
+                            });
                           },
-                        ),
-                        SettingsTile.switchTile(
-                            initialValue: md3,
-                            onToggle: (value) {
-                              setState(() {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                                md3 = value;
-                                saveSettings();
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                content: Text(t.relaunchNotice),
-                                action: SnackBarAction(
-                                    //textColor: Colors.white,
-                                    label: t.restart,
-                                    onPressed: () {
-                                      Phoenix.rebirth(context);
-                                    }),
-                              ));
-                            },
-                            title: const Text("Material Design 3"))
-                      ],
+                        )
+                    ],
+                  ),
+                SettingsSection(
+                  title: Text(t.appearance),
+                  tiles: <SettingsTile>[
+                    SettingsTile.navigation(
+                      title: Text(t.languageOption),
+                      value: Text(languageCurrent),
+                      onPressed: (context) {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageSettings()));
+                      },
                     ),
-                    SettingsSection(
-                      title: Text(t.behavior),
-                      tiles: [
-                        /*if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
+                    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+                      SettingsTile.switchTile(
+                        title: Text(t.customWindow),
+                        initialValue: windowBorder,
+                        onToggle: (value) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          //debugPrint(value.toString());
+                          setState(() {
+                            windowBorder = value;
+                            saveSettings();
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(t.relaunchNotice),
+                            action: SnackBarAction(
+                                //textColor: Colors.white,
+                                label: t.exit,
+                                onPressed: () {
+                                  exit(0);
+                                }),
+                          ));
+                        },
+                      ),
+                    SettingsTile.switchTile(
+                      title: Text(t.favHomePage),
+                      description: Text(t.favHomePageDescription),
+                      initialValue: favoriteHome,
+                      onToggle: (value) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        //debugPrint(value.toString());
+                        setState(() {
+                          favoriteHome = value;
+                          saveSettings();
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(t.relaunchNotice),
+                          action: SnackBarAction(
+                              //textColor: Colors.white,
+                              label: t.restart,
+                              onPressed: () {
+                                Phoenix.rebirth(context);
+                              }),
+                        ));
+                      },
+                    ),
+                    SettingsTile.navigation(
+                      trailing: DropdownButton<String>(
+                          alignment: AlignmentDirectional.centerEnd,
+                          key: _dropdownTheme,
+                          icon: const Icon(Icons.chevron_right_outlined),
+                          underline: Container(),
+                          //iconSize: 0.0,
+                          value: themes[appTheme],
+                          onChanged: (value) {
+                            switch (value) {
+                              case "System":
+                                setState(() {
+                                  appTheme = 0;
+                                  notifier.value = 0;
+                                });
+                                break;
+                              case "Light":
+                                setState(() {
+                                  appTheme = 1;
+                                  notifier.value = 1;
+                                });
+                                break;
+                              case "Dark":
+                                setState(() {
+                                  appTheme = 2;
+                                  notifier.value = 2;
+                                });
+                                break;
+                              case "Black":
+                                setState(() {
+                                  appTheme = 3;
+                                  notifier.value = 3;
+                                });
+                                break;
+                              default:
+                            }
+                            saveSettings();
+                          },
+                          items: [
+                            DropdownMenuItem(
+                              child: Text(t.themeSystem, textAlign: TextAlign.center),
+                              value: "System",
+                            ),
+                            DropdownMenuItem(
+                              child: Text(t.themeLight, textAlign: TextAlign.center),
+                              value: "Light",
+                            ),
+                            DropdownMenuItem(
+                              child: Text(t.themeDark),
+                              value: "Dark",
+                            ),
+                            DropdownMenuItem(child: Text(t.themeBlack), value: "Black"),
+                          ]),
+                      title: Text(t.appTheme),
+                      onPressed: (context) {
+                        openDropdown(_dropdownTheme);
+                      },
+                    ),
+                    SettingsTile.switchTile(
+                        initialValue: md3,
+                        onToggle: (value) {
+                          setState(() {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            md3 = value;
+                            saveSettings();
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(t.relaunchNotice),
+                            action: SnackBarAction(
+                                //textColor: Colors.white,
+                                label: t.restart,
+                                onPressed: () {
+                                  Phoenix.rebirth(context);
+                                }),
+                          ));
+                        },
+                        title: const Text("Material Design 3"))
+                  ],
+                ),
+                SettingsSection(
+                  title: Text(t.behavior),
+                  tiles: [
+                    /*if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
                           SettingsTile.switchTile(
                               initialValue: analytics,
                               onToggle: (value) {
@@ -444,159 +461,159 @@ class _SettingsPageState extends State<SettingsPage> {
                                     );
                                   },
                                   child: const Text("Learn more"))),*/
-                        SettingsTile.navigation(
-                          title: Text(t.trackListTapBehavior),
-                          description: Text(t.trackListTapBehaviorDescription),
-                          trailing: DropdownButton<String>(
-                              key: _dropdownTracklist,
-                              alignment: AlignmentDirectional.centerEnd,
-                              icon: const Icon(Icons.chevron_right_outlined),
-                              underline: Container(),
-                              value: trackListBehaviorStrings[trackListSelect],
-                              onChanged: (value) {
-                                debugPrint(value);
-                                switch (value) {
-                                  case "Preview":
-                                    setState(() {
-                                      trackListBehavior = 0;
-                                    });
-                                    break;
-                                  case "Browser":
-                                    setState(() {
-                                      trackListBehavior = 1;
-                                    });
-                                    break;
-                                  case "Download":
-                                    setState(() {
-                                      trackListBehavior = 2;
-                                    });
-                                    break;
-                                  default:
-                                    return;
-                                }
-                                saveSettings();
-                              },
-                              items: [
-                                if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
-                                  DropdownMenuItem(
-                                    child: Text(t.trackListPreview),
-                                    value: "Preview",
-                                  ),
-                                DropdownMenuItem(
-                                  child: Text(t.trackListBrowser),
-                                  value: "Browser",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text(t.trackListDownload),
-                                  value: "Download",
-                                )
-                              ]),
-                          onPressed: (context) {
-                            openDropdown(_dropdownTracklist);
+                    SettingsTile.navigation(
+                      title: Text(t.trackListTapBehavior),
+                      description: Text(t.trackListTapBehaviorDescription),
+                      trailing: DropdownButton<String>(
+                          key: _dropdownTracklist,
+                          alignment: AlignmentDirectional.centerEnd,
+                          icon: const Icon(Icons.chevron_right_outlined),
+                          underline: Container(),
+                          value: trackListBehaviorStrings[trackListSelect],
+                          onChanged: (value) {
+                            debugPrint(value);
+                            switch (value) {
+                              case "Preview":
+                                setState(() {
+                                  trackListBehavior = 0;
+                                });
+                                break;
+                              case "Browser":
+                                setState(() {
+                                  trackListBehavior = 1;
+                                });
+                                break;
+                              case "Download":
+                                setState(() {
+                                  trackListBehavior = 2;
+                                });
+                                break;
+                              default:
+                                return;
+                            }
+                            saveSettings();
                           },
-                        ),
-                        SettingsTile.navigation(
-                          title: Text(t.popUps),
-                          description: Text(t.popUpsDescription),
-                          trailing: DropdownButton<String>(
-                              key: _dropdownPopUp,
-                              alignment: AlignmentDirectional.centerEnd,
-                              icon: const Icon(Icons.chevron_right_outlined),
-                              underline: Container(),
-                              value: popupBehaviorStrings[popupStyle],
-                              onChanged: (value) {
-                                debugPrint(value);
-                                switch (value) {
-                                  case "Auto":
-                                    setState(() {
-                                      popupStyle = 0;
-                                    });
-                                    break;
-                                  case "Pop-up":
-                                    setState(() {
-                                      popupStyle = 1;
-                                    });
-                                    break;
-                                  case "Bottom":
-                                    setState(() {
-                                      popupStyle = 2;
-                                    });
-                                    break;
-                                  default:
-                                    return;
-                                }
-                                saveSettings();
-                              },
-                              items: [
-                                DropdownMenuItem(
-                                  child: Text(t.popupBehaviorAuto),
-                                  value: "Auto",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text(t.popupBehaviorPopup),
-                                  value: "Pop-up",
-                                ),
-                                DropdownMenuItem(
-                                  child: Text(t.popupBehaviorBottom),
-                                  value: "Bottom",
-                                )
-                              ]),
-                          onPressed: (context) {
-                            openDropdown(_dropdownPopUp);
-                          },
-                        ),
-                        SettingsTile.navigation(
-                          title: Text(t.concurrentDownloads),
-                          description: Text(t.currentlyUnused),
-                          value: Row(children: [
-                            Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
-                            Text(
-                              "Unused",
-                              style: TextStyle(color: Theme.of(context).errorColor),
+                          items: [
+                            if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
+                              DropdownMenuItem(
+                                child: Text(t.trackListPreview),
+                                value: "Preview",
+                              ),
+                            DropdownMenuItem(
+                              child: Text(t.trackListBrowser),
+                              value: "Browser",
+                            ),
+                            DropdownMenuItem(
+                              child: Text(t.trackListDownload),
+                              value: "Download",
                             )
                           ]),
-                          onPressed: (context) {
-                            showDialog(
-                                    builder: (BuildContext context) {
-                                      return StatefulBuilder(builder: (context, setStateAlert) {
-                                        return Dialog(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                            child: SizedBox(
-                                                width: (MediaQuery.of(context).size.width / 4) * 3,
-                                                height: 163,
-                                                child: Column(
-                                                  children: [
-                                                    ListTile(
-                                                      contentPadding: const EdgeInsets.all(10),
-                                                      title: Text(t.concurrentDownloads),
-                                                      subtitle: Text(t.concurrentDownloadsDescription),
-                                                    ),
-                                                    Slider(
-                                                        min: 1,
-                                                        max: 10,
-                                                        label: maxDownloads.toString(),
-                                                        divisions: 9,
-                                                        value: maxDownloads.toDouble(),
-                                                        onChanged: (value) {
-                                                          setStateAlert(() {
-                                                            maxDownloads = value.toInt();
-                                                          });
-                                                        })
-                                                  ],
-                                                )));
-                                      });
-                                    },
-                                    context: context)
-                                .then((value) => setState(
-                                      () {},
-                                    ));
+                      onPressed: (context) {
+                        openDropdown(_dropdownTracklist);
+                      },
+                    ),
+                    SettingsTile.navigation(
+                      title: Text(t.popUps),
+                      description: Text(t.popUpsDescription),
+                      trailing: DropdownButton<String>(
+                          key: _dropdownPopUp,
+                          alignment: AlignmentDirectional.centerEnd,
+                          icon: const Icon(Icons.chevron_right_outlined),
+                          underline: Container(),
+                          value: popupBehaviorStrings[popupStyle],
+                          onChanged: (value) {
+                            debugPrint(value);
+                            switch (value) {
+                              case "Auto":
+                                setState(() {
+                                  popupStyle = 0;
+                                });
+                                break;
+                              case "Pop-up":
+                                setState(() {
+                                  popupStyle = 1;
+                                });
+                                break;
+                              case "Bottom":
+                                setState(() {
+                                  popupStyle = 2;
+                                });
+                                break;
+                              default:
+                                return;
+                            }
+                            saveSettings();
                           },
+                          items: [
+                            DropdownMenuItem(
+                              child: Text(t.popupBehaviorAuto),
+                              value: "Auto",
+                            ),
+                            DropdownMenuItem(
+                              child: Text(t.popupBehaviorPopup),
+                              value: "Pop-up",
+                            ),
+                            DropdownMenuItem(
+                              child: Text(t.popupBehaviorBottom),
+                              value: "Bottom",
+                            )
+                          ]),
+                      onPressed: (context) {
+                        openDropdown(_dropdownPopUp);
+                      },
+                    ),
+                    SettingsTile.navigation(
+                      title: Text(t.concurrentDownloads),
+                      description: Text(t.currentlyUnused),
+                      value: Row(children: [
+                        Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
+                        Text(
+                          "Unused",
+                          style: TextStyle(color: Theme.of(context).errorColor),
                         )
-                      ],
+                      ]),
+                      onPressed: (context) {
+                        showDialog(
+                                builder: (BuildContext context) {
+                                  return StatefulBuilder(builder: (context, setStateAlert) {
+                                    return Dialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                        child: SizedBox(
+                                            width: (MediaQuery.of(context).size.width / 4) * 3,
+                                            height: 163,
+                                            child: Column(
+                                              children: [
+                                                ListTile(
+                                                  contentPadding: const EdgeInsets.all(10),
+                                                  title: Text(t.concurrentDownloads),
+                                                  subtitle: Text(t.concurrentDownloadsDescription),
+                                                ),
+                                                Slider(
+                                                    min: 1,
+                                                    max: 10,
+                                                    label: maxDownloads.toString(),
+                                                    divisions: 9,
+                                                    value: maxDownloads.toDouble(),
+                                                    onChanged: (value) {
+                                                      setStateAlert(() {
+                                                        maxDownloads = value.toInt();
+                                                      });
+                                                    })
+                                              ],
+                                            )));
+                                  });
+                                },
+                                context: context)
+                            .then((value) => setState(
+                                  () {},
+                                ));
+                      },
                     )
                   ],
-                ),
-              )
-            ])));
+                )
+              ],
+            ),
+          )
+        ])));
   }
 }

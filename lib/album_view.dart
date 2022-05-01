@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khinrip/downloading_view.dart';
@@ -14,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AlbumView extends StatefulWidget {
   const AlbumView({Key? key, required this.tags}) : super(key: key);
@@ -565,13 +565,13 @@ class _AlbumViewState extends State<AlbumView> {
 
     String titleAppBar = t.albumView;
     double? heightTitleBar = 40.0;
-    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
 
     double splashRadius = 35.0;
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       splashRadius = 1.0;
     }
 
@@ -581,14 +581,14 @@ class _AlbumViewState extends State<AlbumView> {
 
     AppBar? display = albumViewAppBar;
 
-    if ((Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
 
     double? widthOfBorder;
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       albumViewAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -598,40 +598,56 @@ class _AlbumViewState extends State<AlbumView> {
 
     return Scaffold(
         appBar: display,
-        body: WindowBorder(
-            width: widthOfBorder,
-            color: Theme.of(context).backgroundColor,
+        body: Container(
+            //width: widthOfBorder,
+            //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isMacOS || Platform.isLinux))
-                SizedBox(
-                    child: Container(
-                        color: Theme.of(context).cardColor,
-                        child: Row(children: [
-                          if (Platform.isMacOS) const SizedBox(width: 60),
-                          if (windowBorder)
-                            IconButton(
-                                splashRadius: splashRadius,
-                                icon: const Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                }),
-                          Expanded(
-                              child: SizedBox(
-                                  height: heightTitleBar,
-                                  child: MoveWindow(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                      child: Text(
-                                        titleAppBar,
-                                        style: Theme.of(context).textTheme.headline6,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ))),
-                          const WindowButtons(),
-                        ]))),
-              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && albumViewAppBar != null) albumViewAppBar,
-              Expanded(child: buildAlbumScreen(context, tags, isPopup))
-            ])));
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
+            SizedBox(
+                child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Row(children: [
+                      if (Platform.isMacOS) const SizedBox(width: 60),
+                      if (windowBorder)
+                        IconButton(
+                            splashRadius: splashRadius,
+                            icon: const Icon(Icons.navigate_before),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                      Expanded(
+                          child: GestureDetector(
+                        onTapDown: (details) {
+                          windowManager.startDragging();
+                        },
+                        onDoubleTap: () {
+                          windowManager.isMaximized().then((value) {
+                            if (value) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                              height: heightTitleBar,
+                              child: VirtualWindowFrame(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                child: Text(
+                                  titleAppBar,
+                                  style: Theme.of(context).textTheme.headline6,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))),
+                        ),
+                      )),
+                      const WindowButtons(),
+                    ]))),
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && albumViewAppBar != null) albumViewAppBar,
+          Expanded(child: buildAlbumScreen(context, tags, isPopup))
+        ])));
   }
 }

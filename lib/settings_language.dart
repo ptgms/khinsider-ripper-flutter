@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
+//import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -11,6 +11,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:window_manager/window_manager.dart';
 
 class LanguageSettings extends StatefulWidget {
   const LanguageSettings({Key? key}) : super(key: key);
@@ -143,13 +144,13 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     var t = AppLocalizations.of(context)!;
     double splashRadius = 35.0;
 
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       splashRadius = 1.0;
     }
 
     String titleAppBar = t.languageOption;
     double? heightTitleBar = 40.0;
-    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
@@ -165,13 +166,13 @@ class _LanguageSettingsState extends State<LanguageSettings> {
         ));
     AppBar? display = settingsAppBar;
 
-    if ((Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
     double? widthOfBorder;
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -191,52 +192,66 @@ class _LanguageSettingsState extends State<LanguageSettings> {
 
     return Scaffold(
         appBar: display,
-        body: WindowBorder(
-            width: widthOfBorder,
-            color: Theme.of(context).backgroundColor,
+        body: Container(
+            //width: widthOfBorder,
+            //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isLinux || Platform.isMacOS))
-                SizedBox(
-                    child: Container(
-                        color: Theme.of(context).cardColor,
-                        child: Row(children: [
-                          if (Platform.isMacOS) const SizedBox(width: 60),
-                          if (windowBorder)
-                            IconButton(
-                                splashRadius: splashRadius,
-                                icon: const Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                }),
-                          Expanded(
-                              child: SizedBox(
-                                  height: heightTitleBar,
-                                  child: MoveWindow(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                      child: Text(
-                                        titleAppBar,
-                                        style: Theme.of(context).textTheme.headline6,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ))),
-                          const WindowButtons()
-                        ]))),
-              if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) &&
-                  !windowBorder &&
-                  settingsAppBar != null)
-                settingsAppBar,
-              Expanded(
-                  child: SettingsList(
-                      platform: devicePlat,
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      darkTheme: SettingsThemeData(
-                          settingsListBackground: Theme.of(context).cardColor,
-                          settingsSectionBackground: sectionColor,
-                          titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
-                      //platform: DevicePlatform.android,
-                      sections: sectionsSettings))
-            ])));
+          if ((Platform.isLinux || Platform.isMacOS))
+            SizedBox(
+                child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Row(children: [
+                      if (Platform.isMacOS) const SizedBox(width: 60),
+                      if (windowBorder)
+                        IconButton(
+                            splashRadius: splashRadius,
+                            icon: const Icon(Icons.navigate_before),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                      Expanded(
+                          child: GestureDetector(
+                        onTapDown: (details) {
+                          windowManager.startDragging();
+                        },
+                        onDoubleTap: () {
+                          windowManager.isMaximized().then((value) {
+                            if (value) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                              height: heightTitleBar,
+                              child: VirtualWindowFrame(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                child: Text(
+                                  titleAppBar,
+                                  style: Theme.of(context).textTheme.headline6,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))),
+                        ),
+                      )),
+                      const WindowButtons()
+                    ]))),
+          if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && settingsAppBar != null)
+            settingsAppBar,
+          Expanded(
+              child: SettingsList(
+                  platform: devicePlat,
+                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  darkTheme: SettingsThemeData(
+                      settingsListBackground: Theme.of(context).cardColor,
+                      settingsSectionBackground: sectionColor,
+                      titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+                  //platform: DevicePlatform.android,
+                  sections: sectionsSettings))
+        ])));
   }
 }

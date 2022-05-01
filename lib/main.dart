@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:khinrip/search_page.dart';
@@ -10,6 +9,8 @@ import 'package:khinrip/structs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:titlebar_buttons/titlebar_buttons.dart';
+import 'package:window_manager/window_manager.dart';
 import 'favorite_view.dart';
 import 'config.dart';
 
@@ -53,26 +54,62 @@ Future<void> main() async {
 
   await findSystemLocale();
 
-  runApp(Phoenix(child: const MyApp()));
-
-  if ((Platform.isLinux || Platform.isMacOS)) {
-    doWhenWindowReady(() {
-      const initialSize = Size(550, 384);
-      appWindow.minSize = initialSize;
-      appWindow.size = initialSize;
-      appWindow.alignment = Alignment.center;
-      appWindow.title = "Khinsider Ripper";
-      appWindow.show();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = WindowOptions(
+      size: Size(800, 600),
+      minimumSize: Size(550, 384),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.hidden,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
     });
-    //runApp();
   }
+
+  runApp(Phoenix(child: const MyApp()));
+  //runApp();
 }
 
 class WindowButtons extends StatelessWidget {
   const WindowButtons({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    ThemeType _currentThemeType = ThemeType.adwaita;
+    return Row(children: [
+      InkWell(
+        autofocus: true,
+        child: DecoratedMinimizeButton(
+          type: _currentThemeType,
+          onPressed: () => windowManager.minimize(),
+        ),
+      ),
+      InkWell(
+        child: DecoratedMaximizeButton(
+          type: _currentThemeType,
+          onPressed: () {
+            windowManager.isMaximized().then((value) {
+              if (value) {
+                windowManager.restore();
+              } else {
+                windowManager.maximize();
+              }
+            });
+          },
+        ),
+      ),
+      InkWell(
+        child: DecoratedCloseButton(
+          type: _currentThemeType,
+          onPressed: () => exit(0),
+        ),
+      ),
+      const SizedBox(width: 5),
+    ]);
+    /*
     final buttonColors = WindowButtonColors(
         iconNormal: Theme.of(context).textTheme.bodyMedium!.color,
         mouseOver: Colors.grey,
@@ -103,7 +140,7 @@ class WindowButtons extends StatelessWidget {
           CloseWindowButton(colors: closeButtonColors),
         ],
       ),
-    );
+    );*/
   }
 }
 
@@ -159,7 +196,7 @@ class MyApp extends StatelessWidget {
             default:
           }
           return MaterialApp(
-            onGenerateTitle: (BuildContext context) => AppLocalizations.of(context)!.khinsiderRipper, 
+            onGenerateTitle: (BuildContext context) => AppLocalizations.of(context)!.khinsiderRipper,
             //title: "Khinsider Ripper",
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -246,58 +283,75 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
     AppBar? display = mainAppBar;
 
-    if ((Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
 
     double? widthOfBorder;
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       mainAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
-    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
+    if (/*Platform.isWindows || */ Platform.isAndroid || Platform.isIOS) {
       widthOfBorder = 0.0;
     }
 
     return Scaffold(
         appBar: display,
-        body: WindowBorder(
-            width: widthOfBorder,
-            color: Theme.of(context).backgroundColor,
+        body: Container(
+            //width: widthOfBorder,
+            //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isMacOS || Platform.isLinux))
-                SizedBox(
-                    child: Container(
-                        color: Theme.of(context).cardColor,
-                        child: Row(children: [
-                          if (Platform.isMacOS) const SizedBox(width: 60),
-                          if (!favoriteHome)
-                            IconButton(
-                              splashRadius: splashRadius,
-                              icon: const Icon(Icons.navigate_before),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          Expanded(
-                              child: SizedBox(
-                                  height: heightTitleBar,
-                                  child: MoveWindow(
-                                      child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                    child: Text(
-                                      titleAppBar,
-                                      style: Theme.of(context).textTheme.headline6,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  )))),
-                          if (windowBorder) Row(children: actions),
-                          const SizedBox(child: WindowButtons())
-                        ]))),
-              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null) mainAppBar,
-              Expanded(child: bodyToPush)
-            ])));
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
+            SizedBox(
+                child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Row(children: [
+                      if (Platform.isMacOS) const SizedBox(width: 60),
+                      if (!favoriteHome)
+                        IconButton(
+                          splashRadius: splashRadius,
+                          icon: const Icon(Icons.navigate_before),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      Expanded(
+                          child: GestureDetector(
+                        onTapDown: (details) {
+                          windowManager.startDragging();
+                        },
+                        onDoubleTap: () {
+                          windowManager.isMaximized().then((value) {
+                            if (value) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                              height: heightTitleBar,
+                              child: VirtualWindowFrame(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                child: Text(
+                                  titleAppBar,
+                                  style: Theme.of(context).textTheme.headline6,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ))),
+                        ),
+                      )),
+                      if (windowBorder) Row(children: actions),
+                      const SizedBox(child: WindowButtons())
+                    ]))),
+          if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null) mainAppBar,
+          Expanded(child: bodyToPush)
+        ])));
   }
 }

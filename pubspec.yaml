@@ -27,18 +27,6 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 
-dependency_overrides:
-  bitsdojo_window_linux:
-    git:
-      url: https://github.com/CorvusYe/bitsdojo_window
-      path: bitsdojo_window_linux
-      ref: master
-  bitsdojo_window_windows:
-    git:
-      url: https://github.com/CorvusYe/bitsdojo_window
-      path: bitsdojo_window_windows
-      ref: master
-
 dependencies:
   flutter:
     sdk: flutter
@@ -63,16 +51,13 @@ dependencies:
   file_picker: ^4.5.1
   #bitsdojo_window:
   #  path: bitsdojo_window/bitsdojo_window/
-  bitsdojo_window:
-    git:
-      url: https://github.com/CorvusYe/bitsdojo_window
-      path: bitsdojo_window
-      ref: master
   #native_context_menu: ^0.2.1+4
   intl: ^0.17.0
   country_codes: ^2.1.1
   carousel_slider: ^4.1.1
   palette_generator: ^0.3.3
+  window_manager: ^0.2.2
+  titlebar_buttons: ^1.0.0
 
 
 dev_dependencies:
