@@ -10,6 +10,7 @@ import 'package:khinrip/main.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LanguageSettings extends StatefulWidget {
   const LanguageSettings({Key? key}) : super(key: key);
@@ -37,7 +38,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       selectedMark = const Icon(Icons.check);
     }
 
-    if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
+    if (!["en", "de", "pl", "nl", "ar", "fr", "es"].contains(defaultLocale)) {
       defaultLocale = "en";
     }
     Future.delayed(Duration.zero, () {
@@ -70,10 +71,32 @@ class _LanguageSettingsState extends State<LanguageSettings> {
         if (selected) {
           selectedMark = const Icon(Icons.check);
         }
-        debugPrint(data[item.languageCode + "_flag"]);
+        //debugPrint(data[item.languageCode + "_flag"]);
+        List<Widget> credit = [];
+        credit.add(Text(t.translatedBy("")));
+        for (var contributer in data["credits"][item.languageCode]) {
+          var finalCredit = data["credits"][item.languageCode].last;
+
+          if (contributer["url"] == "") {
+            credit.add(Text(contributer["name"]));
+          } else {
+            credit.add(InkWell(
+                child: Text(
+                  contributer["name"],
+                  style: const TextStyle(color: Colors.blue),
+                ),
+                onTap: () {
+                  launchUrl(Uri.parse(contributer["url"]));
+                }));
+          }
+
+          if (finalCredit != contributer) {
+            credit.add(const Text(", "));
+          }
+        }
         sectionsLanguages.add(SettingsTile.navigation(
             title: Text(data[item.languageCode]),
-            description: Text(t.translatedBy(data[item.languageCode + "_credit"].join(", "))),
+            description: Row(children: credit),
             leading: Text(data[item.languageCode + "_flag"]),
             trailing: selectedMark,
             onPressed: (value) {
@@ -97,7 +120,13 @@ class _LanguageSettingsState extends State<LanguageSettings> {
       setState(() {
         sectionsSettings = [
           SettingsSection(tiles: [systemLanguage]),
-          SettingsSection(tiles: sectionsLanguages)
+          SettingsSection(tiles: sectionsLanguages),
+          SettingsSection(tiles: [
+            SettingsTile.navigation(
+              title: const Text("Crowdin"),
+              onPressed: (value) => launchUrl(Uri.parse("https://crwd.in/khinsider-ripper-flutter")),
+            )
+          ], title: Text(t.helpTranslation))
         ];
       });
     });
@@ -155,10 +184,10 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     //if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]),
     //SettingsSection(tiles: sectionsLanguages)]
 
-    //var devicePlat = null;
-    /*if (Platform.isAndroid) {
+    var devicePlat = DevicePlatform.iOS;
+    if (Platform.isAndroid) {
       devicePlat = DevicePlatform.android;
-    }*/
+    }
 
     return Scaffold(
         appBar: display,
@@ -200,7 +229,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                 settingsAppBar,
               Expanded(
                   child: SettingsList(
-                      //platform: devicePlat,
+                      platform: devicePlat,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       darkTheme: SettingsThemeData(
                           settingsListBackground: Theme.of(context).cardColor,

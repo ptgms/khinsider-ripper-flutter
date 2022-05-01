@@ -60,13 +60,13 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setString("location", pathToSaveIn);
   }
 
-  String langaugeCurrent = "";
+  String languageCurrent = "";
 
   void _loadData() async {
     final _loadedData = await rootBundle.loadString('assets/languages.json');
     var data = json.decode(_loadedData);
     setState(() {
-      langaugeCurrent = setLanguage == "system"
+      languageCurrent = setLanguage == "system"
           ? "System"
           : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     });
@@ -172,10 +172,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
     //var str = config.readAsStringSync();
 
-    //var devicePlat = null;
-    /*if (Platform.isAndroid) {
+    var devicePlat = DevicePlatform.iOS;
+    if (Platform.isAndroid) {
       devicePlat = DevicePlatform.android;
-    }*/
+    }
 
     return Scaffold(
         appBar: display,
@@ -214,7 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
               if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && settingsAppBar != null) settingsAppBar,
               Expanded(
                 child: SettingsList(
-                  //platform: devicePlat,
+                  platform: devicePlat,
                   physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                   darkTheme: SettingsThemeData(
                       settingsListBackground: Theme.of(context).cardColor,
@@ -267,7 +267,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       tiles: <SettingsTile>[
                         SettingsTile.navigation(
                           title: Text(t.languageOption),
-                          trailing: Text(langaugeCurrent),
+                          value: Text(languageCurrent),
                           onPressed: (context) {
                             Navigator.push(context, MaterialPageRoute(builder: (_) => const LanguageSettings()));
                           },

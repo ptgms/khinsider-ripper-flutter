@@ -130,7 +130,7 @@ class MyApp extends StatelessWidget {
     if (setLanguage == "system") {
       String defaultLocale = Platform.localeName.split("_")[0];
 
-      if (!["en", "de", "pl", "nl", "ar"].contains(defaultLocale)) {
+      if (!["en", "de", "pl", "nl", "ar", "fr", "es"].contains(defaultLocale)) {
         defaultLocale = "en";
       }
 
@@ -159,7 +159,8 @@ class MyApp extends StatelessWidget {
             default:
           }
           return MaterialApp(
-            title: "Khinsider Ripper",
+            onGenerateTitle: (BuildContext context) => AppLocalizations.of(context)!.khinsiderRipper, 
+            //title: "Khinsider Ripper",
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -170,7 +171,9 @@ class MyApp extends StatelessWidget {
               Locale('de', ''),
               Locale('nl', ''),
               Locale('pl', ''),
-              Locale('ar', '')
+              Locale('ar', ''),
+              Locale('fr', ''),
+              Locale('es', '')
             ],
             debugShowCheckedModeBanner: false,
             locale: Locale(language, ''),
@@ -202,6 +205,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
   @override
   Widget build(BuildContext context) {
+    var t = AppLocalizations.of(context)!;
     double splashRadius = 35.0;
     if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
       splashRadius = 1.0;
@@ -228,7 +232,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
           icon: const Icon(Icons.settings_rounded),
         ),
     ];
-    String titleAppBar = widget.title;
+    String titleAppBar = t.khinsiderRipper;
     double? heightTitleBar = 40.0;
     if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
       titleAppBar = "";

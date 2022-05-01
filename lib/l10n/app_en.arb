@@ -168,5 +168,7 @@
                 "example": "You"
             }
         }
-    }
+    },
+
+    "helpTranslation": "Help translating this App!"
 }
