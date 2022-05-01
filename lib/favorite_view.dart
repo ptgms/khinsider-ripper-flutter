@@ -134,14 +134,14 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     http.read(completedUrl).then((contents) async {
       BeautifulSoup bs = BeautifulSoup(contents);
 
-      for (var element in bs.findAll('img')) {
-        var imgurl = element['src'];
+      for (var element in bs.findAll('', class_: 'albumImage')) {
+        var imgurl = element.find('a')!['href'];
         //debugPrint(imgurl);
-        if (imgurl!.startsWith("/album_views.php")) {
-          coverURL.add("https://i.ibb.co/cgRJ97N/unknown.png");
-        } else {
-          coverURL.add(element['src']!);
-        }
+        coverURL.add(imgurl!);
+      }
+
+      if (coverURL.isEmpty) {
+        coverURL.add("none");
       }
 
       var link = bs.find('', id: 'songlist');

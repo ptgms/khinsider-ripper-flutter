@@ -18,19 +18,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'main.dart';
 
 class TrackView extends StatefulWidget {
-  const TrackView({Key? key, required this.tags, required this.width}) : super(key: key);
+  const TrackView({Key? key, required this.tags}) : super(key: key);
 
   final AlbumTags tags;
-  final double width;
 
   @override
   // ignore: no_logic_in_create_state
-  _TrackViewState createState() => _TrackViewState(tags: tags, width: width);
+  _TrackViewState createState() => _TrackViewState(tags: tags);
 }
 
 class _TrackViewState extends State<TrackView> {
   final AlbumTags tags;
-  final double width;
 
   String playingURL = "";
   var busy = false;
@@ -129,7 +127,7 @@ class _TrackViewState extends State<TrackView> {
     );
   }
 
-  _TrackViewState({required this.tags, required this.width});
+  _TrackViewState({required this.tags});
 
   String getSnackBarContent(String pathToSaveIn, context) {
     var t = AppLocalizations.of(context)!;
@@ -403,38 +401,124 @@ class _TrackViewState extends State<TrackView> {
           ));
     }
 
-    int widthCard = 400;
-
-    int heightCard = 55;
-
-    if (width < widthCard) {
-      widthCard = width.toInt() - 1;
+    String titleAppBar = t.trackListView;
+    double? heightTitleBar = 40.0;
+    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+      titleAppBar = "";
+      heightTitleBar = 30.0;
     }
+    double splashRadius = 35.0;
+    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+      splashRadius = 1.0;
+    }
+    if (Platform.isMacOS || Platform.isLinux) {
+      AppBar? trackListAppBar = AppBar(
+        title: Text(t.trackListView),
+      );
 
-    int count = width ~/ widthCard;
+      AppBar? display = trackListAppBar;
 
-    widthCard = width ~/ count;
+      if ((Platform.isMacOS || Platform.isLinux)) {
+        display = null;
+      }
 
-    debugPrint(width.toString() + "w + " + count.toString());
+      double? widthOfBorder;
+      if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+        trackListAppBar = null;
+      } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+        widthOfBorder = 0.0;
+      }
 
-    return GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: tags.tracks.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: count,
-          childAspectRatio: (widthCard / heightCard),
-        ),
-        itemBuilder: ((context, index) {
-          return SizedBox(child: Card(shape: cardShape, child: trackItem(index)));
-        }));
+      if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
+        widthOfBorder = 0.0;
+      }
 
-    /*return ListView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: tags.tracks.length,
-        itemBuilder: ((context, index) {
-          return SizedBox(height: 55, child: Card(shape: cardShape, child: trackItem(index)));
-        }));*/
+      return Scaffold(
+          appBar: display,
+          body: WindowBorder(
+              width: widthOfBorder,
+              color: Theme.of(context).backgroundColor,
+              child: Column(children: [
+                if ((Platform.isMacOS || Platform.isLinux))
+                  SizedBox(
+                      child: Container(
+                          color: Theme.of(context).cardColor,
+                          child: Row(children: [
+                            if (Platform.isMacOS) const SizedBox(width: 60),
+                            if (windowBorder)
+                              IconButton(
+                                  splashRadius: splashRadius,
+                                  icon: const Icon(Icons.navigate_before),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  }),
+                            Expanded(
+                                child: SizedBox(
+                                    height: heightTitleBar,
+                                    child: MoveWindow(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                        child: Text(
+                                          titleAppBar,
+                                          style: Theme.of(context).textTheme.headline6,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ))),
+                            const WindowButtons(),
+                          ]))),
+                if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && trackListAppBar != null) trackListAppBar,
+                Expanded(
+                    child: ListView.builder(
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        itemCount: tags.tracks.length,
+                        itemBuilder: ((context, index) {
+                          return SizedBox(
+                              height: 55,
+                              child: Card(
+                                  shape: cardShape,
+                                  child: trackItem(
+                                      index) /*ctxmenu.ContextMenuRegion(
+                                      onItemSelected: ((item) {
+                                        switch (item.title) {
+                                          case "Download Track":
+                                            showDownloadPopup(index);
+                                            break;
+                                          case "Open in Browser":
+                                            launch(baseUrl + tags.trackURL[index]);
+                                            break;
+                                          case "Copy URL":
+                                            Clipboard.setData(ClipboardData(text: baseUrl + tags.trackURL[index]));
+                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                              dismissDirection: DismissDirection.none,
+                                              duration: Duration(seconds: 1),
+                                              content: Text("Copied URL to clipboard!"),
+                                              behavior: SnackBarBehavior.floating,
+                                            ));
+                                            break;
+                                          default:
+                                            break;
+                                        }
+                                      }),
+                                      menuItems: [
+                                        ctxmenu.MenuItem(title: "Download Track"),
+                                        ctxmenu.MenuItem(title: "Open in Browser"),
+                                        ctxmenu.MenuItem(title: "Copy URL"),
+                                      ],
+                                      child: trackItem(index))*/
+                                  ));
+                        })))
+              ])));
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(t.trackListView),
+          ),
+          body: ListView.builder(
+              itemCount: tags.tracks.length,
+              itemBuilder: ((context, index) {
+                return SizedBox(height: 55, child: Card(shape: cardShape, child: trackItem(index)));
+              })));
+    }
   }
 }

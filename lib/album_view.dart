@@ -22,69 +22,6 @@ class AlbumView extends StatefulWidget {
   _AlbumViewState createState() => _AlbumViewState(tags: tags);
 }
 
-// The small cell at the top containing the album information
-Widget albumView(AlbumTags tags, context) {
-  var t = AppLocalizations.of(context)!;
-  String availableAddon = ""; // Building the String for "Available formats"
-
-  if (tags.mp3) {
-    availableAddon += "MP3 ";
-  }
-  if (tags.flac) {
-    availableAddon += "FLAC ";
-  }
-  if (tags.ogg) {
-    availableAddon += "OGG ";
-  }
-
-  Widget noPicFound = const Icon(Icons.album);
-    Decoration albumImage = const BoxDecoration();
-    if (tags.coverURL[0] != "none" && tags.coverURL[0] != "") {
-      noPicFound = Container();
-      albumImage = BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-              color: const Color.fromRGBO(71, 71, 71, 0.2),
-              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(tags.coverURL[0])));
-    }
-
-  return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
-      child: Row(children: [
-        Container(
-            width: 100,
-            height: 100,
-            decoration: albumImage,
-            child: noPicFound),
-        Expanded(
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-              child: SizedBox(
-                height: 100,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
-                    Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.bottomRight,
-                        child: Text(t.availableFormats(availableAddon),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                      ),
-                    )
-                  ],
-                ),
-              )),
-          flex: 2,
-        ),
-        IconButton(
-            onPressed: () async {
-              await launchUrl(Uri.parse(tags.albumLink));
-            },
-            icon: const Icon(Icons.open_in_browser))
-      ]));
-}
-
 class _AlbumViewState extends State<AlbumView> {
   final AlbumTags tags;
 
@@ -133,7 +70,7 @@ class _AlbumViewState extends State<AlbumView> {
                   child: InkWell(
                       customBorder: cardShape,
                       onTap: () => Navigator.pop(context, 'flac'),
-                      child:  ListTile(
+                      child: ListTile(
                         leading: const Icon(Icons.download_rounded),
                         title: Text(t.downloadIn("FLAC")),
                       ))),
@@ -143,7 +80,7 @@ class _AlbumViewState extends State<AlbumView> {
                   child: InkWell(
                       customBorder: cardShape,
                       onTap: () => Navigator.pop(context, 'ogg'),
-                      child:  ListTile(
+                      child: ListTile(
                         leading: const Icon(Icons.download_rounded),
                         title: Text(t.downloadIn("OGG")),
                       ))),
@@ -210,7 +147,6 @@ class _AlbumViewState extends State<AlbumView> {
                   }),
                   child: ListTile(
                     title: Text(t.removeFromFavs),
-                    trailing: const Icon(Icons.chevron_right),
                     leading: const Icon(Icons.star_rounded),
                   ))));
     } else {
@@ -221,7 +157,8 @@ class _AlbumViewState extends State<AlbumView> {
               child: InkWell(
                   customBorder: cardShape,
                   onTap: (() {
-                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), tags.coverURL[0]));
+                    favorites
+                        .add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), tags.coverURL[0]));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -229,10 +166,26 @@ class _AlbumViewState extends State<AlbumView> {
                   }),
                   child: ListTile(
                     title: Text(t.addToFavs),
-                    trailing: const Icon(Icons.chevron_right),
+                    // trailing: const Icon(Icons.chevron_right),
                     leading: const Icon(Icons.star_outline_rounded),
                   ))));
     }
+  }
+
+  Widget downloadCell(isPopUp, t) {
+    return SizedBox(
+        // download album button
+        child: Card(
+            shape: cardShape,
+            child: InkWell(
+                customBorder: cardShape,
+                onTap: () {
+                  showDownloadModal(isPopUp, context);
+                },
+                child: ListTile(
+                  title: Text(t.downloadAllTracks),
+                  leading: const Icon(Icons.download_rounded),
+                ))));
   }
 
   List<Widget> getButtons(AlbumTags tags, context) {
@@ -262,6 +215,131 @@ class _AlbumViewState extends State<AlbumView> {
   }
 
   String downloadText = ""; // download add-on text if no custom path specified.
+  int currentCover = 0;
+
+  Widget albumCover(AlbumTags tags, context) {
+    Widget noPicFound = const Icon(Icons.album);
+    Decoration albumImage = const BoxDecoration();
+    if (tags.coverURL[currentCover] != "none" && tags.coverURL[currentCover] != "") {
+      noPicFound = tags.coverURL.length==1? Container() : Container(
+      alignment: Alignment.bottomRight,
+      child: Opacity(
+        opacity: 0.7,
+        child: Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
+              Card(
+                child: TextButton(onPressed: () {
+                  setState(() {
+                    if (currentCover != 0) {currentCover--;} else {currentCover=tags.coverURL.length-1;}
+                  });
+                }, child: const Text("<")),
+              ),
+              Card(child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Text((currentCover + 1).toString() + "/" + (tags.coverURL.length).toString()),
+              ),),
+              Card(
+                child: TextButton(onPressed: () {
+                  setState(() {
+                    if (currentCover != tags.coverURL.length-1) {currentCover++;} else {currentCover=0;}
+                  });
+                }, child: const Text(">")),
+              )
+            ],
+          ),
+      )
+      );
+      albumImage = BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+          color: const Color.fromRGBO(71, 71, 71, 0.2),
+          image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(tags.coverURL[currentCover])));
+    }
+
+    Widget albumCover = Center(
+        child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
+                child: AspectRatio(
+                    aspectRatio: 1 / 1,
+                    child: Container(width: 100, height: 100, decoration: albumImage, child: noPicFound)))));
+    return albumCover;
+  }
+
+// The small cell at the top containing the album information
+  Widget albumView(AlbumTags tags, context) {
+    var t = AppLocalizations.of(context)!;
+    String availableAddon = ""; // Building the String for "Available formats"
+
+    if (tags.mp3) {
+      availableAddon += "MP3 ";
+    }
+    if (tags.flac) {
+      availableAddon += "FLAC ";
+    }
+    if (tags.ogg) {
+      availableAddon += "OGG ";
+    }
+
+    return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
+        child: Row(children: [
+          Expanded(
+            child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                child: SizedBox(
+                  height: 100,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
+                      Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
+                      const SizedBox(width: 200, child: Divider()),
+                      Text(t.availableFormats(availableAddon),
+                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                )),
+            flex: 2,
+          ),
+        ]));
+  }
+
+  Widget albumOptions(AlbumTags tags, context, isPopUp, width) {
+    //double width = 100;
+    int widthCard = 200;
+
+    int heightCard = 60;
+
+    if (width < widthCard) {
+      widthCard = width.toInt() - 1;
+    }
+
+    int count = width ~/ widthCard;
+
+    widthCard = width ~/ count;
+
+    debugPrint(count.toString());
+
+    Widget albumOptions = GridView(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: count,
+          childAspectRatio: (widthCard / heightCard),
+        ),
+        children: [
+          Container(
+              height: 60,
+              child: favCell(tags, context),
+              constraints: const BoxConstraints(minWidth: 100, maxWidth: 250)),
+          Container(
+              height: 60,
+              child: downloadCell(isPopUp, AppLocalizations.of(context)!),
+              constraints: const BoxConstraints(minWidth: 100, maxWidth: 250))
+        ]);
+
+    return albumOptions;
+  }
 
   Widget buildAlbumScreen(BuildContext context, AlbumTags tags, bool isPopUp) {
     var t = AppLocalizations.of(context)!;
@@ -271,69 +349,130 @@ class _AlbumViewState extends State<AlbumView> {
       downloadText = t.noDefaultPath + tags.albumName;
     }
     debugPrint(pathToSaveIn);
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: <Widget>[
-        albumView(tags, context),
-        Container(height: 30, color: Colors.transparent),
-        Container(
-          height: 20,
-          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            t.options,
-            style: const TextStyle(color: Colors.grey),
+
+    return Center(
+      child: ListView(
+        padding: const EdgeInsets.all(8),
+        children: <Widget>[
+          albumCover(tags, context),
+          Center(
+            child: Container(constraints: const BoxConstraints(maxWidth: 500), child: albumView(tags, context)),
           ),
-        ),
-        favCell(tags, context),
-        SizedBox(
-            // download album button
-            child: Card(
-                shape: cardShape,
-                child: InkWell(
-                    customBorder: cardShape,
-                    onTap: () {
-                      showDownloadModal(isPopUp, context);
-                    },
-                    child: ListTile(
-                      title: Text(t.downloadAllTracks),
-                      trailing: const Icon(Icons.chevron_right),
-                      leading: const Icon(Icons.download_rounded),
-                    )))),
-        Container(height: 30, color: Colors.transparent), // little spacer
-        Container(
-          // spacer/category text
-          height: 20,
-          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            t.viewAllTracks + ": " + tags.tracks.length.toString(),
-            style: const TextStyle(color: Colors.grey),
+          Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              height: 20,
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                t.options,
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
           ),
-        ),
-        Container(
-            padding: EdgeInsets.zero,
-            child: Card(
-                shape: cardShape,
-                // view all tracks button
-                child: InkWell(
-                    customBorder: cardShape,
-                    mouseCursor: MouseCursor.uncontrolled,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TrackView(
-                                  tags: tags,
-                                )),
-                      );
-                    },
-                    child: ListTile(
-                      title: Text(t.viewAllTracks),
-                      leading: const Icon(Icons.view_list_rounded),
-                      trailing: const Icon(Icons.chevron_right),
-                    )))),
-      ],
+          Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) =>
+                    albumOptions(tags, context, isPopUp, constraints.maxWidth),
+              ),
+            ),
+          ),
+          Center(
+              child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Card(
+                      shape: cardShape,
+                      child: InkWell(
+                          customBorder: cardShape,
+                          mouseCursor: MouseCursor.uncontrolled,
+                          onTap: () {
+                            launchUrl(Uri.parse(tags.albumLink));
+                          },
+                          child: ListTile(
+                              title: Text(t.openInBrowser),
+                              leading: const Icon(Icons.open_in_browser),
+                              trailing: const Icon(Icons.chevron_right)))))),
+          Container(height: 30, color: Colors.transparent), // little spacer
+          Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              // spacer/category text
+              height: 20,
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                t.trackListView + ": " + tags.tracks.length.toString(),
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              constraints: isExpanded ? null : const BoxConstraints(maxWidth: 500),
+              child: Card(
+                  child: Column(children: [
+                Container(
+                    padding: EdgeInsets.zero,
+                    child: Center(
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        child: Card(
+                            shape: cardShape,
+                            // view all tracks button
+                            child: InkWell(
+                                customBorder: cardShape,
+                                mouseCursor: MouseCursor.uncontrolled,
+                                onTap: () {
+                                  setState(() {
+                                    isExpanded = !isExpanded;
+                                  });
+                                },
+                                child: ListTile(
+                                  title: isExpanded ? Text(t.hideAllTracks) : Text(t.viewAllTracks),
+                                  leading: const Icon(Icons.view_list_rounded),
+                                  trailing: isExpanded
+                                      ? const Icon(Icons.arrow_upward_rounded)
+                                      : const Icon(Icons.arrow_downward_rounded),
+                                ))),
+                      ),
+                    )),
+
+                //Opacity(opacity: isExpanded? 1.0 : 0, child: Container(height: isExpanded? 55.0*tags.tracks.length : 0, child: TrackView(tags: tags)))]))
+                Visibility(child: TrackView(tags: tags, width: MediaQuery.of(context).size.width), visible: isExpanded),
+              ])),
+            ),
+          )
+
+          // Hey, p8t, why don't you use a visibility widget to hide? Well, everytime you hide/unhide it reloads the fucking track list, causing lag. So, I'd rather
+          // make it invisible and 0px high, and then undo that later on :) NO LAG! And I know how to do it the other way, I added it above so you can't say
+          // I did this because I don't know how. F u
+
+          /*Container(
+              padding: EdgeInsets.zero,
+              child: Card(
+                  shape: cardShape,
+                  // view all tracks button
+                  child: InkWell(
+                      customBorder: cardShape,
+                      mouseCursor: MouseCursor.uncontrolled,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TrackView(
+                                    tags: tags,
+                                  )),
+                        );
+                      },
+                      child: ListTile(
+                        title: Text(t.viewAllTracks),
+                        leading: const Icon(Icons.view_list_rounded),
+                        trailing: const Icon(Icons.chevron_right),
+                      )))),*/
+        ],
+      ),
     );
   }
 
@@ -382,7 +521,7 @@ class _AlbumViewState extends State<AlbumView> {
     if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
       widthOfBorder = 0.0;
     }
-    
+
     return Scaffold(
         appBar: display,
         body: WindowBorder(
@@ -417,10 +556,7 @@ class _AlbumViewState extends State<AlbumView> {
                                   ))),
                           const WindowButtons(),
                         ]))),
-              if ((Platform.isMacOS || Platform.isLinux) &&
-                  !windowBorder &&
-                  albumViewAppBar != null)
-                albumViewAppBar,
+              if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && albumViewAppBar != null) albumViewAppBar,
               Expanded(child: buildAlbumScreen(context, tags, isPopup))
             ])));
   }

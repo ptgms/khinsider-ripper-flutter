@@ -1,90 +1,68 @@
 {
-    "khinsiderRipper": "Khinsider Ripper",
-    "albumView": "Album Details",
-    "settingsView": "Settings",
-    "settingsLanguageView": "Language",
-    "trackListView": "Tracks",
-    "favorites": "Favorites",
-    "search": "Search",
-
-    "startSearch": "Start a search!",
-    "startSearchDescription": "Start searching to show results!",
-    "searchForOSTs": "Search for OSTs",
-
-    "shareTrack": "Share Track",
-    "openInBrowser": "Open in Browser",
-    "copyURL": "Copy URL",
-    "copiedURL": "Copied URL to clipboard!",
-    "downloadSong": "Download song",
-    "formats": "Formats",
-    "downloading": "Please wait, downloading...",
-    "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
-
-    "cancel": "Cancel",
-
-    "themeSystem": "System",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "themeBlack": "Black",
-
-    "trackListPreview": "Preview",
-    "trackListBrowser": "Browser",
-    "trackListDownload": "Download",
-
-    "popupBehaviorAuto": "Auto",
-    "popupBehaviorPopup": "Pop-Up",
-    "popupBehaviorBottom": "Bottom",
-
-    "savingPath": "Saving Path",
-    "path": "Path",
-
-    "filePickerChoose": "Choose Download Folder",
-    "resetPath": "Reset path",
-
-    "appearance": "Appearance",
-    "languageOption": "Language",
-
-    "customWindow": "Custom Window Border",
-    "relaunchNotice": "Relaunch the App for the changes to take effect.",
-    "exit": "Exit",
-
-    "appTheme": "App Theme",
-
-    "favHomePage": "Favorites is home-page",
-    "favHomePageDescription": "If off, search will be home-page. Requires restart.",
-    "restart": "Restart",
-
-    "behavior": "Behavior",
-    "trackListTapBehavior": "Track-list tap behavior",
-    "trackListTapBehaviorDescription": "The action that occurs when tapped on item in the track-list.",
-    "previewSong": "Preview song",
-
-    "popUps": "Pop-Ups",
-    "popUpsDescription": "The pop-up displayed when downloading an song/album.",
-
-    "concurrentDownloads": "Concurrent Downloads",
-    "concurrentDownloadsDescription": "Change the amount of concurrent downloads allowed by the app. Recommended to set to '1' on mobile devices.",
-
-    "currentlyUnused": "Currently unused.",
-
-    "noResults": "No results!",
-    "adjustTerm": "Try adjusting your search term.",
-
-    "welcome": "Welcome to Khinsider Ripper!",
-    "welcomeDescription": "Welcome to Khinsider Ripper! Start searching for albums at the top. Future favorites will be displayed here.",
-
-    "removeFavorite": "Remove",
-
-    "downloadAlbum": "Download Album",
-
-    "removeFromFavs": "Remove from Favorites",
-    "addToFavs": "Add to Favorites",
-
-    "viewAllTracks": "View all Tracks",
-    "downloadAllTracks": "Download all Tracks",
-    "options": "Options",
-
-    "availableFormats": "Available Formats: {formats}",
+    "khinsiderRipper": "خينسايدر ريبر",
+    "albumView": "تفاصيل الألبوم",
+    "settingsView": "الإعدادت",
+    "settingsLanguageView": "اللغة",
+    "trackListView": "التسجيلات",
+    "favorites": "المفضلين",
+    "search": "البحث",
+    "startSearch": "!إبدأ بالبحث",
+    "startSearchDescription": "إبدأ البحث لإظهار نتائج",
+    "searchForOSTs": "إبحث عن تسجيلات",
+    "shareTrack": "شارك التسجيل",
+    "openInBrowser": "الفتح في محرك انترنت",
+    "copyURL": "نسخ الرابط",
+    "copiedURL": "!تم النسخ",
+    "downloadSong": "تنزيل التسجيل",
+    "formats": "الصيغ",
+    "downloading": "...ارجوك انتظر، يتم التنزيل",
+    "noDefaultPath": "ملاحظة: لم يتم اختيار مكان للتنزيل! سنستخدم مكان التطبيق.\n",
+    "cancel": "إلغاء",
+    "themeSystem": "النظام",
+    "themeLight": "فاتح",
+    "themeDark": "مظلم",
+    "themeBlack": "أسود",
+    "trackListPreview": "معاينة",
+    "trackListBrowser": "محرك انترنت",
+    "trackListDownload": "تنزيل",
+    "popupBehaviorAuto": "تلقائي",
+    "popupBehaviorPopup": "ظاهر",
+    "popupBehaviorBottom": "الأسفل",
+    "savingPath": "مكان التخزين",
+    "path": "مكان",
+    "filePickerChoose": "اختر مكان تنزيل",
+    "resetPath": "محي المكان",
+    "appearance": "المظهر",
+    "languageOption": "اللغة",
+    "customWindow": "حدود نافذة اختيارية",
+    "relaunchNotice": "أعد تشغيل التطبيق لكي يتم تنفيذ التغييرات.",
+    "exit": "الخروج",
+    "appTheme": "مظهر التطبيق",
+    "favHomePage": "المفضلات هي الصفحة الرئيسية",
+    "favHomePageDescription": "اذا كانت مطفأة، البحث سيكون الصفحة الرئيسية. يحتاج ألى إعادة تشغيل.",
+    "restart": "إعادة تشغيل",
+    "behavior": "السلوك",
+    "trackListTapBehavior": "سلوك الضغط على لائحة التسجيلات",
+    "trackListTapBehaviorDescription": "السلوك الذي يحصل عندما يتم الضغط على عنصر من لائحة التسجيلات.",
+    "previewSong": "تجريب الأغنية",
+    "popUps": "لوائح ظاهرة",
+    "popUpsDescription": "اللائحة الظاهرة عند تنزيل تسجيل/ألبوم",
+    "concurrentDownloads": "التنزيلات المتوازية",
+    "concurrentDownloadsDescription": "تغيير عدد التنزيلات المتوازية المسموح. ينصح بوضعها ١ على الهواتف المحمولة.",
+    "currentlyUnused": "غير مستعملة حاليا.",
+    "noResults": "لا نتائج!",
+    "adjustTerm": "جرّب تغيير كلمات البحث.",
+    "welcome": "أهلا في خينسايدر ريبر!",
+    "welcomeDescription": "أهلا في خينسايدر ريبر! إبدأ البحث عن ألبومات في الأعلى. المفضلات ستظهر هنا.",
+    "removeFavorite": "الحذف",
+    "downloadAlbum": "تنزيل الألبوم",
+    "removeFromFavs": "الحذف من المفضلات",
+    "addToFavs": "الإضافة إلى المفضلات",
+    "viewAllTracks": "إظهار جميع التسجيلات",
+    "hideAllTracks": "Hide all Tracks",
+    "downloadAllTracks": "تنزيل جميع التسجيلات",
+    "options": "الخيارات",
+    "availableFormats": "الصيغ المتاحة: {formats}",
     "@availableFormats": {
         "description": "Displayed under album details",
         "placeholders": {
@@ -94,8 +72,7 @@
             }
         }
     },
-
-    "shareText": "Check out this {type} {name} on Khinsider!\n{url}",
+    "shareText": "ألقي نظرة على  {type} {name} على خينسايدر!\n{url}",
     "@shareText": {
         "description": "The template for when the User pressed share on a track/album",
         "placeholders": {
@@ -113,8 +90,7 @@
             }
         }
     },
-
-    "downloadingAlbum": "Downloading {name}...",
+    "downloadingAlbum": "يتم تنزيل {name}...",
     "@downloadingAlbum": {
         "description": "Text displayed when Album download intiated..",
         "placeholders": {
@@ -124,8 +100,7 @@
             }
         }
     },
-
-    "defaultLocation": "Default: {location}",
+    "defaultLocation": "الخيار الإفتراضي: {location}",
     "@defaultLocation": {
         "description": "The text displayed if no custom saving path was declared.",
         "placeholders": {
@@ -135,8 +110,7 @@
             }
         }
     },
-
-    "savedTo": "Saved to {location}!",
+    "savedTo": "تم الحفظ في {location}!",
     "@savedTo": {
         "description": "Prompt User where File was saved.",
         "placeholders": {
@@ -146,8 +120,7 @@
             }
         }
     },
-    
-    "downloadIn": "Download in {format}",
+    "downloadIn": "تنزيل في {format}",
     "@downloadIn": {
         "description": "Ask User what Format to save in",
         "placeholders": {
@@ -157,8 +130,7 @@
             }
         }
     },
-
-    "translatedBy": "Translated by {name}",
+    "translatedBy": "مترجم من {name}",
     "@translatedBy": {
         "description": "Thank you for translating this app, I appreciate it <3",
         "placeholders": {
