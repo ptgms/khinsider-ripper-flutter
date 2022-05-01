@@ -415,7 +415,7 @@ class _TrackViewState extends State<TrackView> {
 
     widthCard = width ~/ count;
 
-    debugPrint(width.toString() + "w + " + count.toString());
+    //debugPrint(width.toString() + "w + " + count.toString());
 
     return GridView.builder(
         shrinkWrap: true,

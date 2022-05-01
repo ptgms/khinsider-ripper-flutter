@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 SizedBox noFavs(context) {
   // if no favs saved return placeholder
   var t = AppLocalizations.of(context)!;
@@ -23,14 +22,11 @@ SizedBox noFavs(context) {
         Center(
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child:
-                    Text(t.welcome, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
+                child: Text(t.welcome, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text(
-                  t.welcomeDescription,
-                  textAlign: TextAlign.center)),
+              child: Text(t.welcomeDescription, textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -71,17 +67,13 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     if (favorites[index].albumCover != "none" && favorites[index].albumCover != "") {
       noPicFound = Container();
       favoriteImage = BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
-              color: const Color.fromRGBO(71, 71, 71, 0.2),
-              image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(favorites[index].albumCover)));
+          borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
+          color: const Color.fromRGBO(71, 71, 71, 0.2),
+          image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(favorites[index].albumCover)));
     }
 
     return ListTile(
-      leading: Container(
-          width: 50,
-          height: 50,
-          decoration: favoriteImage,
-          child: noPicFound),
+      leading: Container(width: 50, height: 50, decoration: favoriteImage, child: noPicFound),
       trailing: IconButton(
         icon: const Icon(Icons.remove_circle_outline),
         onPressed: () {
@@ -316,7 +308,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                 itemBuilder: (context, index) => Card(
                     shape: cardShape,
                     child: InkWell(
-                      customBorder: cardShape,
+                        customBorder: cardShape,
                         mouseCursor: MouseCursor.uncontrolled,
                         onLongPress: () {
                           showDialog<String>(

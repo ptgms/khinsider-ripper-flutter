@@ -146,6 +146,7 @@ class _AlbumViewState extends State<AlbumView> {
                     });
                   }),
                   child: ListTile(
+                    minLeadingWidth: 8,
                     title: Text(t.removeFromFavs),
                     leading: const Icon(Icons.star_rounded),
                   ))));
@@ -165,6 +166,7 @@ class _AlbumViewState extends State<AlbumView> {
                     });
                   }),
                   child: ListTile(
+                    minLeadingWidth: 8,
                     title: Text(t.addToFavs),
                     // trailing: const Icon(Icons.chevron_right),
                     leading: const Icon(Icons.star_outline_rounded),
@@ -183,6 +185,7 @@ class _AlbumViewState extends State<AlbumView> {
                   showDownloadModal(isPopUp, context);
                 },
                 child: ListTile(
+                  minLeadingWidth: 8,
                   title: Text(t.downloadAllTracks),
                   leading: const Icon(Icons.download_rounded),
                 ))));
@@ -221,33 +224,51 @@ class _AlbumViewState extends State<AlbumView> {
     Widget noPicFound = const Icon(Icons.album);
     Decoration albumImage = const BoxDecoration();
     if (tags.coverURL[currentCover] != "none" && tags.coverURL[currentCover] != "") {
-      noPicFound = tags.coverURL.length==1? Container() : Container(
-      alignment: Alignment.bottomRight,
-      child: Opacity(
-        opacity: 0.7,
-        child: Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
-              Card(
-                child: TextButton(onPressed: () {
-                  setState(() {
-                    if (currentCover != 0) {currentCover--;} else {currentCover=tags.coverURL.length-1;}
-                  });
-                }, child: const Text("<")),
-              ),
-              Card(child: Padding(
-                padding: const EdgeInsets.all(3.0),
-                child: Text((currentCover + 1).toString() + "/" + (tags.coverURL.length).toString()),
-              ),),
-              Card(
-                child: TextButton(onPressed: () {
-                  setState(() {
-                    if (currentCover != tags.coverURL.length-1) {currentCover++;} else {currentCover=0;}
-                  });
-                }, child: const Text(">")),
-              )
-            ],
-          ),
-      )
-      );
+      noPicFound = tags.coverURL.length == 1
+          ? Container()
+          : Container(
+              alignment: Alignment.bottomRight,
+              child: Opacity(
+                opacity: 0.7,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Card(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (currentCover != 0) {
+                                currentCover--;
+                              } else {
+                                currentCover = tags.coverURL.length - 1;
+                              }
+                            });
+                          },
+                          child: const Text("<")),
+                    ),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Text((currentCover + 1).toString() + "/" + (tags.coverURL.length).toString()),
+                      ),
+                    ),
+                    Card(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (currentCover != tags.coverURL.length - 1) {
+                                currentCover++;
+                              } else {
+                                currentCover = 0;
+                              }
+                            });
+                          },
+                          child: const Text(">")),
+                    )
+                  ],
+                ),
+              ));
       albumImage = BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
           color: const Color.fromRGBO(71, 71, 71, 0.2),
@@ -256,7 +277,7 @@ class _AlbumViewState extends State<AlbumView> {
 
     Widget albumCover = Center(
         child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
+            constraints: BoxConstraints(maxWidth: 400, maxHeight: MediaQuery.of(context).size.height / 1.5),
             child: Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
                 child: AspectRatio(
@@ -285,9 +306,9 @@ class _AlbumViewState extends State<AlbumView> {
         child: Row(children: [
           Expanded(
             child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: SizedBox(
-                  height: 100,
+                  //height: 100,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -304,39 +325,34 @@ class _AlbumViewState extends State<AlbumView> {
         ]));
   }
 
-  Widget albumOptions(AlbumTags tags, context, isPopUp, width) {
+  Widget albumOptions(AlbumTags tags, context, isPopUp, widthScreen) {
     //double width = 100;
-    int widthCard = 200;
+    int widthCard = 150;
 
     int heightCard = 60;
 
-    if (width < widthCard) {
-      widthCard = width.toInt() - 1;
+    if (widthScreen < widthCard) {
+      widthCard = widthScreen.toInt() - 1;
     }
 
-    int count = width ~/ widthCard;
+    int count = widthScreen ~/ widthCard;
 
-    widthCard = width ~/ count;
+    if (count > 2) {
+      count = 2;
+    }
 
-    debugPrint(count.toString());
+    widthCard = widthScreen ~/ count;
+
+    //debugPrint(count.toString() + " - " + widthCard.toString());
 
     Widget albumOptions = GridView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: count,
           childAspectRatio: (widthCard / heightCard),
         ),
-        children: [
-          Container(
-              height: 60,
-              child: favCell(tags, context),
-              constraints: const BoxConstraints(minWidth: 100, maxWidth: 250)),
-          Container(
-              height: 60,
-              child: downloadCell(isPopUp, AppLocalizations.of(context)!),
-              constraints: const BoxConstraints(minWidth: 100, maxWidth: 250))
-        ]);
+        children: [favCell(tags, context), downloadCell(isPopUp, AppLocalizations.of(context)!)]);
 
     return albumOptions;
   }
@@ -348,7 +364,7 @@ class _AlbumViewState extends State<AlbumView> {
     if (pathToSaveIn == "" && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
       downloadText = t.noDefaultPath + tags.albumName;
     }
-    debugPrint(pathToSaveIn);
+    //debugPrint(pathToSaveIn);
 
     return Center(
       child: ListView(
@@ -412,36 +428,39 @@ class _AlbumViewState extends State<AlbumView> {
             child: Container(
               constraints: isExpanded ? null : const BoxConstraints(maxWidth: 500),
               child: Card(
+                  color: isExpanded ? Theme.of(context).cardColor.withAlpha(120) : Colors.transparent,
+                  shadowColor: isExpanded ? null : Colors.transparent,
                   child: Column(children: [
-                Container(
-                    padding: EdgeInsets.zero,
-                    child: Center(
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 500),
-                        child: Card(
-                            shape: cardShape,
-                            // view all tracks button
-                            child: InkWell(
-                                customBorder: cardShape,
-                                mouseCursor: MouseCursor.uncontrolled,
-                                onTap: () {
-                                  setState(() {
-                                    isExpanded = !isExpanded;
-                                  });
-                                },
-                                child: ListTile(
-                                  title: isExpanded ? Text(t.hideAllTracks) : Text(t.viewAllTracks),
-                                  leading: const Icon(Icons.view_list_rounded),
-                                  trailing: isExpanded
-                                      ? const Icon(Icons.arrow_upward_rounded)
-                                      : const Icon(Icons.arrow_downward_rounded),
-                                ))),
-                      ),
-                    )),
+                    Container(
+                        padding: EdgeInsets.zero,
+                        child: Center(
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 500),
+                            child: Card(
+                                shape: cardShape,
+                                // view all tracks button
+                                child: InkWell(
+                                    customBorder: cardShape,
+                                    mouseCursor: MouseCursor.uncontrolled,
+                                    onTap: () {
+                                      setState(() {
+                                        isExpanded = !isExpanded;
+                                      });
+                                    },
+                                    child: ListTile(
+                                      title: isExpanded ? Text(t.hideAllTracks) : Text(t.viewAllTracks),
+                                      leading: const Icon(Icons.view_list_rounded),
+                                      trailing: isExpanded
+                                          ? const Icon(Icons.arrow_upward_rounded)
+                                          : const Icon(Icons.arrow_downward_rounded),
+                                    ))),
+                          ),
+                        )),
 
-                //Opacity(opacity: isExpanded? 1.0 : 0, child: Container(height: isExpanded? 55.0*tags.tracks.length : 0, child: TrackView(tags: tags)))]))
-                Visibility(child: TrackView(tags: tags, width: MediaQuery.of(context).size.width), visible: isExpanded),
-              ])),
+                    //Opacity(opacity: isExpanded? 1.0 : 0, child: Container(height: isExpanded? 55.0*tags.tracks.length : 0, child: TrackView(tags: tags)))]))
+                    Visibility(
+                        child: TrackView(tags: tags, width: MediaQuery.of(context).size.width), visible: isExpanded),
+                  ])),
             ),
           )
 

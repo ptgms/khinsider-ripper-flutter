@@ -348,8 +348,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                   searchImage = BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
                       color: const Color.fromRGBO(71, 71, 71, 0.2),
-                      image:
-                          DecorationImage(fit: BoxFit.contain, image: NetworkImage(_searchResults[index].albumCover)));
+                      image: DecorationImage(fit: BoxFit.cover, image: NetworkImage(_searchResults[index].albumCover)));
                 }
                 return Card(
                     shape: cardShape,
@@ -384,8 +383,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         ),
                       ),
                     ));
-              })
-          );
+              }));
     }
 
     var colorSearch = Colors.white;
