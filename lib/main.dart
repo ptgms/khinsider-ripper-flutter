@@ -78,7 +78,7 @@ class WindowButtons extends StatelessWidget {
   const WindowButtons({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    ThemeType _currentThemeType = ThemeType.adwaita;
+    ThemeType _currentThemeType = ThemeType.auto;
     return Row(children: [
       InkWell(
         autofocus: true,
@@ -300,7 +300,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
 
     return Scaffold(
         appBar: display,
-        body: Container(
+        body: VirtualWindowFrame(
             //width: widthOfBorder,
             //color: Theme.of(context).backgroundColor,
             child: Column(children: [
@@ -336,7 +336,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                           color: Colors.transparent,
                           child: SizedBox(
                               height: heightTitleBar,
-                              child: VirtualWindowFrame(
+                              child: Container(
                                   child: Padding(
                                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                                 child: Text(
