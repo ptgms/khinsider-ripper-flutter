@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khinrip/config.dart';

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/config.dart';
@@ -11,6 +10,7 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'album_view.dart';
 
@@ -406,7 +406,7 @@ class _SearchWidgetState extends State<SearchWidget> {
     debugPrint(searchTermBefore);
 
     double splashRadius = 35.0;
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       splashRadius = 1.0;
     }
 
@@ -431,7 +431,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
-      if (!favoriteHome && (Platform.isMacOS || Platform.isLinux)) const WindowButtons()
+      if (!favoriteHome && (Platform.isMacOS || Platform.isLinux || Platform.isWindows)) const WindowButtons()
     ];
 
     Widget searchBox = Container(
@@ -469,21 +469,21 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     String titleAppBar = t.search;
     double? heightTitleBar = 40.0;
-    if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       titleAppBar = "";
       heightTitleBar = 30.0;
     }
 
     AppBar? display = searchAppBar;
 
-    if ((Platform.isMacOS || Platform.isLinux)) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
 
     double? widthOfBorder;
-    if ((Platform.isMacOS || Platform.isLinux) && windowBorder) {
+    if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       searchAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) {
+    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
       widthOfBorder = 0.0;
     }
 
@@ -493,44 +493,60 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     return Scaffold(
         appBar: display,
-        body: WindowBorder(
-            width: widthOfBorder,
-            color: Theme.of(context).backgroundColor,
+        body: Container(
+            //width: widthOfBorder,
+            //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-              if ((Platform.isMacOS || Platform.isLinux))
-                SizedBox(
-                    child: Container(
-                        color: Theme.of(context).cardColor,
-                        child: Row(
-                            children: [
-                                  if (Platform.isMacOS) const SizedBox(width: 60),
-                                  if (favoriteHome && windowBorder)
-                                    IconButton(
-                                        splashRadius: splashRadius,
-                                        icon: const Icon(Icons.navigate_before),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        }),
-                                  Expanded(
-                                      child: SizedBox(
-                                          height: heightTitleBar,
-                                          child: MoveWindow(
-                                            child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                              child: Text(
-                                                titleAppBar,
-                                                style: Theme.of(context).textTheme.headline6,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ))),
-                                  if ((Platform.isMacOS || Platform.isLinux) && !windowBorder) const WindowButtons(),
-                                  if (windowBorder) Expanded(child: searchBox)
-                                ] +
-                                actions))),
-              if (favoriteHome)
-                if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && searchAppBar != null) searchAppBar,
-              Expanded(child: bodyDisplay)
-            ])));
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
+            SizedBox(
+                child: Container(
+                    color: Theme.of(context).cardColor,
+                    child: Row(
+                        children: [
+                              if (Platform.isMacOS) const SizedBox(width: 60),
+                              if (favoriteHome && windowBorder)
+                                IconButton(
+                                    splashRadius: splashRadius,
+                                    icon: const Icon(Icons.navigate_before),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    }),
+                              Expanded(
+                                  child: GestureDetector(
+                                onTapDown: (details) {
+                                  windowManager.startDragging();
+                                },
+                                onDoubleTap: () {
+                                  windowManager.isMaximized().then((value) {
+                                    if (value) {
+                                      windowManager.restore();
+                                    } else {
+                                      windowManager.maximize();
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  color: Colors.transparent,
+                                  child: SizedBox(
+                                      height: heightTitleBar,
+                                      child: VirtualWindowFrame(
+                                          child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                        child: Text(
+                                          titleAppBar,
+                                          style: Theme.of(context).textTheme.headline6,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ))),
+                                ),
+                              )),
+                              if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) const WindowButtons(),
+                              if (windowBorder) Expanded(child: searchBox)
+                            ] +
+                            actions))),
+          if (favoriteHome)
+            if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && searchAppBar != null) searchAppBar,
+          Expanded(child: bodyDisplay)
+        ])));
   }
 }
