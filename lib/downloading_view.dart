@@ -3,6 +3,7 @@ import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:khinrip/config.dart';
 
 // ignore: must_be_immutable
 class DownloadingView extends StatefulWidget {
@@ -28,24 +29,45 @@ class _DownloadingViewState extends State<DownloadingView> {
     if (!busy) {
       busy = true;
 
+      List<List<Future<bool>>> tasks = [];
+      List<Future<bool>> tasksSteps = [];
       for (var i = 0; i < tags.trackURL.length; i++) {
         if (cancel) {
           //cancel = false;
           return false;
         }
-        setState(() {
-          currentIndex = i;
-        });
-        await downloadFileFromAlbum(tags, i, type);
+        if (tasksSteps.length == maxDownloads) {
+          tasks.add(tasksSteps);
+          tasksSteps = [];
+        }
+        tasksSteps.add(downloadFileFromAlbum(tags, i, type));
+        //tasks.add(downloadFileFromAlbum(tags, i, type));
+        //await downloadFileFromAlbum(tags, i, type);
         if (cancel) {
           // Called again as user could have exited during await
           cancel = false;
           return false;
         }
       }
-      currentIndex = 0;
+
+      tasks.add(tasksSteps);
+      tasksSteps = [];
+
+      // var progress = 0;
+      for (var i = 0; i < tasks.length; i++) {
+        await runMultiple(tasks[i]).whenComplete(() {
+          debugPrint("Completed" + i.toString());
+          debugPrint("Right now: " + tasks.length.toString());
+          currentDownload.value += 1;
+          if (i == tasks.length - 1) {
+            Navigator.pop(context);
+            return;
+          }
+        });
+      }
+      debugPrint("Done");
+      currentDownload.value = 0;
       busy = false;
-      Navigator.pop(context);
       return true;
     }
     return false;
@@ -62,19 +84,29 @@ class _DownloadingViewState extends State<DownloadingView> {
               child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: Marquee(
-                      child: Text(t.downloadingAlbum(tags.albumName),
-                          style: const TextStyle(fontSize: 25), textAlign: TextAlign.center)))),
+                      child: Text(t.downloadingAlbum(tags.albumName), style: const TextStyle(fontSize: 25), textAlign: TextAlign.center)))),
           Center(
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Text(currentIndex.toString() + " / " + tags.trackURL.length.toString(),
-                    textAlign: TextAlign.center)),
+                child: ValueListenableBuilder<int>(
+                  valueListenable: currentDownload,
+                  builder: (context, value, child) {
+                    return Text(value.toString() + " / " + tags.trackURL.length.toString(), textAlign: TextAlign.center);
+                  },
+                )), //Text(currentIndex.toString() + " / " + tags.trackURL.length.toString(), textAlign: TextAlign.center)),
           ),
           Center(
               child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: LinearProgressIndicator(value: currentIndex / tags.trackURL.length),
-          ))
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: ValueListenableBuilder<int>(
+                      valueListenable: currentDownload,
+                      builder: (context, value, child) {
+                        return LinearProgressIndicator(value: value / tags.trackURL.length);
+                      }))),
+          Center(
+              child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: Marquee(child: Text(t.downloadThread(maxDownloads.toString()), textAlign: TextAlign.center)))),
         ]));
   }
 

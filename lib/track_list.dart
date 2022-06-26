@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,14 +8,10 @@ import 'package:khinrip/config.dart';
 import 'package:khinrip/download_utils.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:native_context_menu/native_context_menu.dart' as ctxmenu;
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'main.dart';
 
 class TrackView extends StatefulWidget {
   const TrackView({Key? key, required this.tags}) : super(key: key);
@@ -57,15 +54,34 @@ class _TrackViewState extends State<TrackView> {
   }
 
   AudioPlayer audioPlayer = AudioPlayer();
+  var currentPlaying = 0;
 
   Dialog previewDialog(AlbumTags tags, int index) {
-    debugPrint(tags.trackURL[index]);
-
     if (playingURL != "") {
-      audioPlayer.setUrl(playingURL);
-      audioPlayer.resume();
+      audioPlayer.setSourceUrl(playingURL);
+      audioPlayer.play(UrlSource(playingURL));
     }
-    audioPlayer.setReleaseMode(ReleaseMode.STOP);
+
+    ValueNotifier<String> duration = ValueNotifier("");
+    ValueNotifier<String> position = ValueNotifier("");
+
+    ValueNotifier<double> progress = ValueNotifier(0.0);
+
+    audioPlayer.onDurationChanged.listen((Duration d) {
+      //print('Max duration: $d');
+      duration.value = d.toString().split(".")[0];
+    });
+
+    audioPlayer.onPositionChanged.listen((Duration p) async {
+      //print('Current position: $p');
+      position.value = p.toString().split(".")[0];
+      var maxDuration = await audioPlayer.getDuration();
+      if (maxDuration != const Duration()) {
+        if (p.inMilliseconds != 0) {
+          progress.value = p.inMilliseconds / maxDuration!.inMilliseconds;
+        }
+      }
+    });
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -89,37 +105,110 @@ class _TrackViewState extends State<TrackView> {
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Marquee(child: Text(tags.tracks[index])),
             ),
-            /*
             Padding(
-              padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
-              child: LinearProgressIndicator(value: 0.2),
-            ),*/
-            /*Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+              child: ValueListenableBuilder<double>(
+                valueListenable: progress,
+                builder: (context, value, child) {
+                  if (value > 1.0) {
+                    return const Icon(Icons.check);
+                  }
+                  return Slider(
+                    value: value,
+                    onChanged: (double value) {
+                      progress.value = value;
+                    },
+                    onChangeStart: (value) async {
+                      await audioPlayer.pause();
+                    },
+                    onChangeEnd: (value) async {
+                      debugPrint("new: " + ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt().toString());
+                      await audioPlayer.seek(Duration(seconds: ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt()));
+                      await audioPlayer.resume();
+                    },
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Row(
                 children: [
                   Expanded(
                     flex: 2,
                     child: Container(
                         alignment: Alignment.centerLeft,
-                        child: Text("00:00:00")),
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: position,
+                          builder: (context, value, child) {
+                            return Text(value);
+                          },
+                        )),
                   ),
                   Expanded(
                     flex: 2,
                     child: Container(
                         alignment: Alignment.centerRight,
-                        child: Text("00:00:00")),
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: duration,
+                          builder: (context, value, child) {
+                            return Text(value);
+                          },
+                        )),
                   )
                 ],
               ),
-            ),*/
+            ),
             const Padding(padding: EdgeInsets.only(top: 10.0)),
-            IconButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await audioPlayer.stop();
-                },
-                icon: const Icon(Icons.stop))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    onPressed: ((index == 0) && nextTrackPrev)
+                        ? null
+                        : () async {
+                            if (nextTrackPrev) {
+                              if (currentPlaying != 0) {
+                                currentPlaying--;
+                              }
+                              displayPreviewAlert(currentPlaying);
+                            } else {
+                              var currentProgress = await audioPlayer.getCurrentPosition();
+                              if (currentProgress! < const Duration(seconds: 5)) {
+                                audioPlayer.seek(const Duration());
+                              } else {
+                                audioPlayer.seek((await audioPlayer.getCurrentPosition())! - const Duration(seconds: 5));
+                              }
+                            }
+                          },
+                    icon: nextTrackPrev ? const Icon(Icons.skip_previous) : const Icon(Icons.arrow_back)),
+                IconButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await audioPlayer.stop();
+                    },
+                    icon: const Icon(Icons.stop)),
+                IconButton(
+                    onPressed: ((index == tags.tracks.length - 1) && nextTrackPrev)
+                        ? null
+                        : () async {
+                            if (nextTrackPrev) {
+                              if (currentPlaying != tags.tracks.length - 1) {
+                                currentPlaying++;
+                              }
+                              displayPreviewAlert(currentPlaying);
+                            } else {
+                              var currentProgress = await audioPlayer.getCurrentPosition();
+                              if (currentProgress! + const Duration(seconds: 5) > (await audioPlayer.getDuration())!) {
+                                audioPlayer.seek((await audioPlayer.getDuration())!);
+                              } else {
+                                audioPlayer.seek((await audioPlayer.getCurrentPosition())! + const Duration(seconds: 5));
+                              }
+                            }
+                          },
+                    icon: nextTrackPrev ? const Icon(Icons.skip_next) : const Icon(Icons.arrow_forward))
+              ],
+            )
           ],
         ),
       ),
@@ -157,6 +246,39 @@ class _TrackViewState extends State<TrackView> {
       content: Text(getSnackBarContent(pathToSaveIn, context)),
       behavior: SnackBarBehavior.floating,
     ));
+  }
+
+  void displayPreviewAlert(index) async {
+    if (!busy) {
+      busy = true;
+      Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
+
+      await http.read(completedUrl).then((contents) {
+        BeautifulSoup bs = BeautifulSoup(contents);
+
+        var element = bs.find('', id: 'pageContent')!;
+
+        for (var link in element.findAll('a')) {
+          if (link.attributes['href'] != null) {
+            if (link.attributes['href']!.endsWith(".mp3")) {
+              playingURL = link.attributes['href']!;
+            } else if (link.attributes['href']!.endsWith(".ogg")) {
+              playingURL = link.attributes['href']!;
+            }
+          }
+        }
+      });
+
+      await showDialog(context: context, builder: (BuildContext context) => previewDialog(tags, index));
+      debugPrint("dismissed");
+      audioPlayer.stop();
+      playingURL = "";
+      busy = false;
+    } else {
+      Navigator.of(context).pop();
+      await audioPlayer.stop();
+      displayPreviewAlert(index);
+    }
   }
 
   @override
@@ -251,8 +373,8 @@ class _TrackViewState extends State<TrackView> {
       } else {
         showDialog<String>(
           context: context,
-          builder: (BuildContext context) => AlertDialog(
-              title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
+          builder: (BuildContext context) =>
+              AlertDialog(title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
             downloadSong(index, value, context);
@@ -318,34 +440,10 @@ class _TrackViewState extends State<TrackView> {
             }
           },
           onTap: () async {
-            if (trackListBehavior == 0 && (Platform.isMacOS || Platform.isAndroid || Platform.isIOS)) {
-              if (!busy) {
-                busy = true;
-                Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
-
-                await http.read(completedUrl).then((contents) {
-                  BeautifulSoup bs = BeautifulSoup(contents);
-
-                  var element = bs.find('', id: 'pageContent')!;
-
-                  for (var link in element.findAll('a')) {
-                    if (link.attributes['href'] != null) {
-                      if (link.attributes['href']!.endsWith(".mp3")) {
-                        playingURL = link.attributes['href']!;
-                      } else if (link.attributes['href']!.endsWith(".ogg")) {
-                        playingURL = link.attributes['href']!;
-                      }
-                    }
-                  }
-                });
-
-                await showDialog(context: context, builder: (BuildContext context) => previewDialog(tags, index));
-                debugPrint("dismissed");
-                audioPlayer.stop();
-                playingURL = "";
-                busy = false;
-              }
-            } else if ((Platform.isWindows && trackListBehavior == 0) || trackListBehavior == 1) {
+            if (trackListBehavior == 0) {
+              displayPreviewAlert(index);
+              currentPlaying = index;
+            } else if (trackListBehavior == 1) {
               Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
               debugPrint("yoooo " + completedUrl.toString());
@@ -384,8 +482,7 @@ class _TrackViewState extends State<TrackView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Marquee(child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
-                        Marquee(
-                            child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
+                        Marquee(child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
                       ],
                     )),
                 flex: 2,
@@ -420,7 +517,7 @@ class _TrackViewState extends State<TrackView> {
 
     return GridView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: tags.tracks.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: count,

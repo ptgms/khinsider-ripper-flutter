@@ -36,6 +36,10 @@ var windowBorder = true;
 var setLanguage = "en";
 // Analytics (Android, iOS, macOS only) -- Removed, may be added back. Someday.
 // var analytics = true;
+// Behavior of the "Preview" panel. If true, it shows Navigate back/forth, if false, go back/forward 5 secs
+var nextTrackPrev = true;
+
+ValueNotifier<int> currentDownload = ValueNotifier(0);
 
 // We load in the languages.json at start, as it requires an "await", making it not beneficial to load in later.
 String languageJson = "";

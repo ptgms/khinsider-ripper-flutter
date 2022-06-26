@@ -94,7 +94,7 @@
     "@downloadingAlbum": {
         "description": "Text displayed when Album download intiated..",
         "placeholders": {
-            "location": {
+            "name": {
                 "type": "String",
                 "example": "Never gonna give you up"
             }

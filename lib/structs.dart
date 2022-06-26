@@ -22,6 +22,6 @@ class AlbumTags {
   final List<String> trackSizeFLAC; // [String]
   final List<String> trackSizeOGG; // [String]
 
-  const AlbumTags(this.tracks, this.trackDuration, this.albumName, this.albumLink, this.trackURL, this.coverURL,
-      this.mp3, this.flac, this.ogg, this.tags, this.trackSizeMP3, this.trackSizeFLAC, this.trackSizeOGG);
+  const AlbumTags(this.tracks, this.trackDuration, this.albumName, this.albumLink, this.trackURL, this.coverURL, this.mp3, this.flac,
+      this.ogg, this.tags, this.trackSizeMP3, this.trackSizeFLAC, this.trackSizeOGG);
 }

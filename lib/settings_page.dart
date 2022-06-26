@@ -48,6 +48,7 @@ Future<void> saveSettings() async {
   prefs.setInt("popup_style", popupStyle);
   prefs.setBool("material_3", md3);
   prefs.setBool("window_border", windowBorder);
+  prefs.setBool("nextTrackPrev", nextTrackPrev);
   // prefs.setBool("analytics", analytics);
 }
 
@@ -66,9 +67,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final _loadedData = await rootBundle.loadString('assets/languages.json');
     var data = json.decode(_loadedData);
     setState(() {
-      languageCurrent = setLanguage == "system"
-          ? "System"
-          : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+      languageCurrent =
+          setLanguage == "system" ? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     });
   }
 
@@ -114,10 +114,6 @@ class _SettingsPageState extends State<SettingsPage> {
       colorDownloadButton = Colors.green;
     } else if (maxDownloads >= 6) {
       colorDownloadButton = Colors.red;
-    }
-
-    if (!(Platform.isMacOS || Platform.isIOS || Platform.isAndroid) && trackListSelect == 0) {
-      trackListSelect = 1;
     }
 
     void openDropdown(GlobalKey toOpen) {
@@ -227,8 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       )),
                       const WindowButtons()
                     ]))),
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && settingsAppBar != null)
-            settingsAppBar,
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && settingsAppBar != null) settingsAppBar,
           Expanded(
             child: SettingsList(
               platform: devicePlat,
@@ -253,8 +248,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               await Permission.storage.request();
                             }
                           }
-                          String? path = await FilePicker.platform.getDirectoryPath(
-                              dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
+                          String? path = await FilePicker.platform
+                              .getDirectoryPath(dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
 
                           if (path != null) {
                             setState(() {
@@ -494,11 +489,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             saveSettings();
                           },
                           items: [
-                            if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)
-                              DropdownMenuItem(
-                                child: Text(t.trackListPreview),
-                                value: "Preview",
-                              ),
+                            DropdownMenuItem(
+                              child: Text(t.trackListPreview),
+                              value: "Preview",
+                            ),
                             DropdownMenuItem(
                               child: Text(t.trackListBrowser),
                               value: "Browser",
@@ -512,6 +506,16 @@ class _SettingsPageState extends State<SettingsPage> {
                         openDropdown(_dropdownTracklist);
                       },
                     ),
+                    SettingsTile.switchTile(
+                        initialValue: nextTrackPrev,
+                        onToggle: (value) {
+                          setState(() {
+                            nextTrackPrev = value;
+                            saveSettings();
+                          });
+                        },
+                        title: Text(t.previewPanelBehavior),
+                        description: Text(t.previewPanelBehaviorDescription)),
                     SettingsTile.navigation(
                       title: Text(t.popUps),
                       description: Text(t.popUpsDescription),
@@ -564,13 +568,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     SettingsTile.navigation(
                       title: Text(t.concurrentDownloads),
-                      description: Text(t.currentlyUnused),
                       value: Row(children: [
                         Text(maxDownloads.toString() + " - ", style: TextStyle(color: colorDownloadButton)),
-                        Text(
-                          "Unused",
-                          style: TextStyle(color: Theme.of(context).errorColor),
-                        )
                       ]),
                       onPressed: (context) {
                         showDialog(

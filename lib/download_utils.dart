@@ -17,6 +17,11 @@ String getSeperator() {
   }
 }
 
+// run multiple tasks in parallel with max concurrency and stream
+Future<void> runMultiple(List<Future<bool>> tasks) async {
+  await Future.wait(tasks);
+}
+
 Future<List<String>> getDirects(AlbumTags tags, String type) async {
   List<String> directLinks = [];
   Future.wait([getDirectLink(tags, 0, type)]);
@@ -66,12 +71,7 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   if (pathToSaveIn != "") {
     fileName = pathToSaveIn + getSeperator() + tags.tracks[index] + ".$type";
   } else if (pathToSaveIn == "" && Platform.isIOS) {
-    fileName = await localPath +
-        getSeperator() +
-        tags.albumName.replaceAll(" ", "_") +
-        getSeperator() +
-        tags.tracks[index] +
-        ".$type";
+    fileName = await localPath + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
     fileName = "/storage/emulated/0/Download" +
         getSeperator() +
@@ -128,19 +128,10 @@ Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async
   var fileName = tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   debugPrint(await localPath);
   if (pathToSaveIn != "") {
-    fileName = pathToSaveIn +
-        getSeperator() +
-        tags.albumName.replaceAll(" ", "_") +
-        getSeperator() +
-        tags.tracks[index] +
-        ".$type";
+    fileName = pathToSaveIn + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
+    getSeperator() + tags.tracks[index] + ".$type";
   } else if (pathToSaveIn == "" && Platform.isIOS) {
-    fileName = await localPath +
-        getSeperator() +
-        tags.albumName.replaceAll(" ", "_") +
-        getSeperator() +
-        tags.tracks[index] +
-        ".$type";
+    fileName = await localPath + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
     fileName = "/storage/emulated/0/Download" +
         getSeperator() +

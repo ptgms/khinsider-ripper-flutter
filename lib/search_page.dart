@@ -25,8 +25,7 @@ SizedBox noResults() {
                 child: Text("No results!", style: TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
           child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text("Try adjusting your search term.", textAlign: TextAlign.center)),
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 0), child: Text("Try adjusting your search term.", textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -42,9 +41,8 @@ SizedBox emptySearch(context) {
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Text(t.startSearch, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text(t.startSearchDescription, textAlign: TextAlign.center)),
+          child:
+              Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 0), child: Text(t.startSearchDescription, textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -108,8 +106,8 @@ class _SearchWidgetState extends State<SearchWidget> {
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false,
-        tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    AlbumTags toPush = AlbumTags(
+        tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
     http.read(completedUrl).then((contents) {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -176,8 +174,8 @@ class _SearchWidgetState extends State<SearchWidget> {
         }
       }
 
-      toPush = AlbumTags(tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
-          trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+      toPush = AlbumTags(
+          tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
       debugPrint("Final: " + toPush.albumName);
       if (toPush.albumName != "Null") {
@@ -362,9 +360,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                       child: ListTile(
                         leading: Container(width: 50, height: 50, decoration: searchImage, child: noPicFound),
                         trailing: IconButton(
-                          icon: foundInFavorites(searchResults[index])
-                              ? const Icon(Icons.star)
-                              : const Icon(Icons.star_border),
+                          icon: foundInFavorites(searchResults[index]) ? const Icon(Icons.star) : const Icon(Icons.star_border),
                           onPressed: () {
                             if (favorites.contains(searchResults[index])) {
                               favorites.removeAt(locateInFavorites(searchResults[index]));
@@ -541,7 +537,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                                 ),
                               )),
                               if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) const WindowButtons(),
-                              if (windowBorder) Expanded(child: searchBox)
+                              if (windowBorder) Expanded(child: searchBox),
+                              if (windowBorder) const WindowButtons()
                             ] +
                             actions))),
           if (favoriteHome)

@@ -35,6 +35,7 @@ Future<void> main() async {
   md3 = prefs.getBool("material_3") ?? false;
   windowBorder = prefs.getBool("window_border") ?? true;
   setLanguage = prefs.getString("language") ?? defaultLang;
+  nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
 
   // analytics = prefs.getBool("analytics") ?? true;
   // ------
@@ -109,38 +110,6 @@ class WindowButtons extends StatelessWidget {
       ),
       const SizedBox(width: 5),
     ]);
-    /*
-    final buttonColors = WindowButtonColors(
-        iconNormal: Theme.of(context).textTheme.bodyMedium!.color,
-        mouseOver: Colors.grey,
-        mouseDown: Colors.black54,
-        iconMouseOver: Theme.of(context).textTheme.bodyMedium!.color,
-        iconMouseDown: Theme.of(context).textTheme.bodyMedium!.color);
-
-    final closeButtonColors = WindowButtonColors(
-      mouseOver: const Color(0xFFD32F2F),
-      mouseDown: const Color(0xFFB71C1C),
-      iconNormal: Theme.of(context).textTheme.bodyMedium!.color,
-      iconMouseOver: Theme.of(context).textTheme.bodyMedium!.color,
-    );
-
-    Widget resMaxButton = MaximizeWindowButton(colors: buttonColors);
-
-    if (appWindow.isMaximized) {
-      resMaxButton = RestoreWindowButton(colors: buttonColors);
-    }
-
-    return SizedBox(
-      child: Row(
-        //crossAxisAlignment: CrossAxisAlignment.start,
-        //mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          MinimizeWindowButton(colors: buttonColors),
-          resMaxButton,
-          CloseWindowButton(colors: closeButtonColors),
-        ],
-      ),
-    );*/
   }
 }
 
@@ -342,7 +311,6 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                                 child: Text(
                                   titleAppBar,
                                   style: Theme.of(context).textTheme.headline6,
-                                  textAlign: TextAlign.center,
                                 ),
                               ))),
                         ),
@@ -350,7 +318,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                       if (windowBorder) Row(children: actions),
                       const SizedBox(child: WindowButtons())
                     ]))),
-          if ((Platform.isMacOS || Platform.isLinux) && !windowBorder && mainAppBar != null) mainAppBar,
+          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && mainAppBar != null) mainAppBar,
           Expanded(child: bodyToPush)
         ])));
   }

@@ -196,7 +196,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
             //width: widthOfBorder,
             //color: Theme.of(context).backgroundColor,
             child: Column(children: [
-          if ((Platform.isLinux || Platform.isMacOS))
+          if ((Platform.isLinux || Platform.isMacOS || Platform.isWindows))
             SizedBox(
                 child: Container(
                     color: Theme.of(context).cardColor,
