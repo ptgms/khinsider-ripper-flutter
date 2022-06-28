@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khinrip/downloading_view.dart';
 import 'package:khinrip/favorite_view.dart';
-import 'package:khinrip/main.dart';
 import 'package:khinrip/track_list.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
@@ -577,15 +576,8 @@ class _AlbumViewState extends State<AlbumView> {
       display = null;
     }
 
-    double? widthOfBorder;
     if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       albumViewAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
-      widthOfBorder = 0.0;
-    }
-
-    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
-      widthOfBorder = 0.0;
     }
 
     List<Widget> actionsWindow = [

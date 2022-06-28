@@ -34,8 +34,8 @@ var md3 = false;
 var windowBorder = true;
 // Language code
 var setLanguage = "en";
-// Analytics (Android, iOS, macOS only) -- Removed, may be added back. Someday.
-// var analytics = true;
+// Analytics
+var analytics = true;
 // Behavior of the "Preview" panel. If true, it shows Navigate back/forth, if false, go back/forward 5 secs
 var nextTrackPrev = true;
 

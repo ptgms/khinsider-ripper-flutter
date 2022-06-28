@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl_standalone.dart';
+import 'package:khinrip/analytics_tools.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
@@ -38,14 +39,7 @@ Future<void> main() async {
   setLanguage = prefs.getString("language") ?? defaultLang;
   nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
 
-  // analytics = prefs.getBool("analytics") ?? true;
-  // ------
-
-  /*if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }*/
+  analytics = prefs.getBool("analytics") ?? true;
 
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
@@ -55,12 +49,12 @@ Future<void> main() async {
   }
 
   await findSystemLocale();
-
+  await initialiseAnalytics();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
-      size: Size(800, 600),
-      minimumSize: Size(550, 384),
+      size: const Size(800, 600),
+      minimumSize: const Size(550, 384),
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
@@ -257,15 +251,8 @@ class _FavoriteHomeState extends State<FavoriteHome> {
       display = null;
     }
 
-    double? widthOfBorder;
     if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       mainAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
-      widthOfBorder = 0.0;
-    }
-
-    if (/*Platform.isWindows || */ Platform.isAndroid || Platform.isIOS) {
-      widthOfBorder = 0.0;
     }
 
     List<Widget> actionsWindow = [
@@ -296,14 +283,13 @@ class _FavoriteHomeState extends State<FavoriteHome> {
           color: Colors.transparent,
           child: SizedBox(
               height: heightTitleBar,
-              child: Container(
-                  child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
                   style: Theme.of(context).textTheme.headline6,
                 ),
-              ))),
+              )),
         ),
       )),
     ];

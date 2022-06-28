@@ -24,9 +24,7 @@ SizedBox noFavs(context) {
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Text(t.welcome, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center))),
         Center(
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text(t.welcomeDescription, textAlign: TextAlign.center)),
+          child: Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 0), child: Text(t.welcomeDescription, textAlign: TextAlign.center)),
         ),
       ]));
 }
@@ -120,8 +118,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
     //debugPrint(completed_url.toString());
 
-    AlbumTags toPush = AlbumTags(tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false,
-        tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    AlbumTags toPush = AlbumTags(
+        tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
     http.read(completedUrl).then((contents) async {
       BeautifulSoup bs = BeautifulSoup(contents);
@@ -188,8 +186,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         }
       }
 
-      toPush = AlbumTags(tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
-          trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+      toPush = AlbumTags(
+          tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
       //debugPrint("Final: " + toPush.AlbumName);
       if (toPush.albumName != "Null") {

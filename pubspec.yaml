@@ -59,6 +59,10 @@ dependencies:
   palette_generator: ^0.3.3
   window_manager: ^0.2.2
   titlebar_buttons: ^1.0.0
+  firebase_analytics: ^9.1.10
+  firebase_core: ^1.18.0
+  firebase_core_desktop: ^0.1.1-dev.0
+  firebase_crashlytics: ^2.8.2
 
 
 dev_dependencies:

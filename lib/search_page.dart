@@ -477,15 +477,8 @@ class _SearchWidgetState extends State<SearchWidget> {
       display = null;
     }
 
-    double? widthOfBorder;
     if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       searchAppBar = null;
-    } else if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
-      widthOfBorder = 0.0;
-    }
-
-    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
-      widthOfBorder = 0.0;
     }
 
     List<Widget> actionsWindow = [

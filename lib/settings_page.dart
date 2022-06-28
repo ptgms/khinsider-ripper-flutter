@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
-import 'package:khinrip/main.dart';
 import 'package:khinrip/settings_language.dart';
 import 'package:khinrip/window.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -158,11 +158,8 @@ class _SettingsPageState extends State<SettingsPage> {
     if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
-    double? widthOfBorder;
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && !windowBorder) {
-      widthOfBorder = 0.0;
     }
 
     //var config = File('assets/languages.json');
@@ -402,49 +399,56 @@ class _SettingsPageState extends State<SettingsPage> {
         SettingsSection(
           title: Text(t.behavior),
           tiles: [
-            /*if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)
-                          SettingsTile.switchTile(
-                              initialValue: analytics,
-                              onToggle: (value) {
-                                setState(() {
-                                  ScaffoldMessenger.of(context).clearSnackBars();
-                                  analytics = value;
-                                  saveSettings();
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  content: const Text('You have to relaunch the App for the changes to take effect.'),
-                                  action: SnackBarAction(
-                                      //textColor: Colors.white,
-                                      label: 'Exit',
-                                      onPressed: () {
-                                        exit(0);
-                                      }),
-                                ));
-                              },
-                              title: const Text("Analytics"),
-                              description: TextButton(
-                                  onPressed: () {
-                                    showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) => AlertDialog(
-                                        title: const Text('Analytics'),
-                                        content: const Text("Analytics collects ONLY the following data:\n"
-                                            "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
-                                            "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
-                                            "You can fully opt out. By unchecking, the Analytic component does not even get initialised."),
-                                        actions: [
-                                          TextButton(
-                                              style: TextButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                              ),
-                                              onPressed: () => Navigator.pop(context, null),
-                                              child: const Text("OK")),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  child: const Text("Learn more"))),*/
+            SettingsTile.switchTile(
+                initialValue: analytics,
+                onToggle: (value) {
+                  setState(() {
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    analytics = value;
+                    saveSettings();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    content: const Text('You have to relaunch the App for the changes to take effect.'),
+                    action: SnackBarAction(
+                        //textColor: Colors.white,
+                        label: 'Exit',
+                        onPressed: () {
+                          exit(0);
+                        }),
+                  ));
+                },
+                title: const Text("Analytics"),
+                description: TextButton(
+                    onPressed: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Analytics'),
+                          content: const Text("Analytics collects ONLY the following data:\n"
+                              "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
+                              "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
+                              "You can fully opt out. By unchecking, the Analytic component does not even get initialised.\n"
+                              "Crash collection currently does not work under Linux and Windows."),
+                          actions: [
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                onPressed: () => Navigator.pop(context, null),
+                                child: const Text("OK")),
+                            if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics)
+                              TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  onPressed: () => FirebaseCrashlytics.instance.crash(),
+                                  child: const Text("Cause crash")),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text("Learn more"))),
             SettingsTile.navigation(
               title: Text(t.trackListTapBehavior),
               description: Text(t.trackListTapBehaviorDescription),

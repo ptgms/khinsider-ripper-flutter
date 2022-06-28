@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:khinrip/config.dart';
-import 'package:khinrip/main.dart';
 import 'package:khinrip/window.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -170,11 +169,9 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows)) {
       display = null;
     }
-    double? widthOfBorder;
+
     if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isWindows) && windowBorder) {
       settingsAppBar = null;
-    } else if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) {
-      widthOfBorder = 0.0;
     }
 
     var sectionColor = Colors.white10; //Theme.of(context).cardColor;
