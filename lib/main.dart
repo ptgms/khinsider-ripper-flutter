@@ -6,6 +6,7 @@ import 'package:intl/intl_standalone.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
+import 'package:khinrip/window.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -267,59 +268,47 @@ class _FavoriteHomeState extends State<FavoriteHome> {
       widthOfBorder = 0.0;
     }
 
-    return Scaffold(
-        appBar: display,
-        body: VirtualWindowFrame(
-            //width: widthOfBorder,
-            //color: Theme.of(context).backgroundColor,
-            child: Column(children: [
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
-            SizedBox(
-                child: Container(
-                    color: Theme.of(context).cardColor,
-                    child: Row(children: [
-                      if (Platform.isMacOS) const SizedBox(width: 60),
-                      if (!favoriteHome)
-                        IconButton(
-                          splashRadius: splashRadius,
-                          icon: const Icon(Icons.navigate_before),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      Expanded(
-                          child: GestureDetector(
-                        onTapDown: (details) {
-                          windowManager.startDragging();
-                        },
-                        onDoubleTap: () {
-                          windowManager.isMaximized().then((value) {
-                            if (value) {
-                              windowManager.restore();
-                            } else {
-                              windowManager.maximize();
-                            }
-                          });
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          child: SizedBox(
-                              height: heightTitleBar,
-                              child: Container(
-                                  child: Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                child: Text(
-                                  titleAppBar,
-                                  style: Theme.of(context).textTheme.headline6,
-                                ),
-                              ))),
-                        ),
-                      )),
-                      if (windowBorder) Row(children: actions),
-                      const SizedBox(child: WindowButtons())
-                    ]))),
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && mainAppBar != null) mainAppBar,
-          Expanded(child: bodyToPush)
-        ])));
+    List<Widget> actionsWindow = [
+      if (Platform.isMacOS) const SizedBox(width: 60),
+      if (!favoriteHome)
+        IconButton(
+          splashRadius: splashRadius,
+          icon: const Icon(Icons.navigate_before),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      Expanded(
+          child: GestureDetector(
+        onTapDown: (details) {
+          windowManager.startDragging();
+        },
+        onDoubleTap: () {
+          windowManager.isMaximized().then((value) {
+            if (value) {
+              windowManager.restore();
+            } else {
+              windowManager.maximize();
+            }
+          });
+        },
+        child: Container(
+          color: Colors.transparent,
+          child: SizedBox(
+              height: heightTitleBar,
+              child: Container(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                child: Text(
+                  titleAppBar,
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              ))),
+        ),
+      )),
+    ];
+
+    return MainWindow(
+        appBar: mainAppBar, display: display, actions: actions, actionsWindow: actionsWindow, title: widget.title, body: bodyToPush);
   }
 }

@@ -8,6 +8,7 @@ import 'package:khinrip/main.dart';
 import 'package:khinrip/track_list.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
+import 'package:khinrip/window.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -151,8 +152,7 @@ class _AlbumViewState extends State<AlbumView> {
               child: InkWell(
                   customBorder: cardShape,
                   onTap: (() {
-                    favorites.removeAt(
-                        locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), "")));
+                    favorites.removeAt(locateInFavorites(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), "")));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -171,8 +171,7 @@ class _AlbumViewState extends State<AlbumView> {
               child: InkWell(
                   customBorder: cardShape,
                   onTap: (() {
-                    favorites
-                        .add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), tags.coverURL[0]));
+                    favorites.add(AlbumStruct(tags.albumName, tags.albumLink.replaceAll(baseUrl, ""), tags.coverURL[0]));
                     setState(() {
                       saveFavs();
                       favUpdater.value += 1;
@@ -273,9 +272,7 @@ class _AlbumViewState extends State<AlbumView> {
           child: CarouselSlider(
             items: tags.coverURL.map((item) {
               albumImage = BoxDecoration(
-                  color: albumCardColor.length != tags.coverURL.length
-                      ? stockAlbumColor
-                      : albumCardColor[tags.coverURL.indexOf(item)],
+                  color: albumCardColor.length != tags.coverURL.length ? stockAlbumColor : albumCardColor[tags.coverURL.indexOf(item)],
                   image: DecorationImage(fit: BoxFit.contain, image: NetworkImage(item)));
               return ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(getRoundedValue())),
@@ -346,9 +343,7 @@ class _AlbumViewState extends State<AlbumView> {
     return Center(
         child: Container(
             constraints: BoxConstraints(maxWidth: 400, maxHeight: MediaQuery.of(context).size.height / 1.5),
-            child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
-                child: albumBuild)));
+            child: Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())), child: albumBuild)));
   }
 
   Widget albumDots() {
@@ -400,8 +395,7 @@ class _AlbumViewState extends State<AlbumView> {
                       Marquee(child: Text(tags.albumName, style: const TextStyle(fontSize: 20))),
                       Marquee(child: Text(tags.albumLink, style: const TextStyle(color: Colors.grey))),
                       const SizedBox(width: 200, child: Divider()),
-                      Text(t.availableFormats(availableAddon),
-                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(t.availableFormats(availableAddon), style: const TextStyle(fontSize: 12, color: Colors.grey)),
                     ],
                   ),
                 )),
@@ -475,8 +469,7 @@ class _AlbumViewState extends State<AlbumView> {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 500),
               child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) =>
-                    albumOptions(tags, context, isPopUp, constraints.maxWidth),
+                builder: (BuildContext context, BoxConstraints constraints) => albumOptions(tags, context, isPopUp, constraints.maxWidth),
               ),
             ),
           ),
@@ -535,9 +528,8 @@ class _AlbumViewState extends State<AlbumView> {
                                     child: ListTile(
                                       title: isExpanded ? Text(t.hideAllTracks) : Text(t.viewAllTracks),
                                       leading: const Icon(Icons.view_list_rounded),
-                                      trailing: isExpanded
-                                          ? const Icon(Icons.arrow_upward_rounded)
-                                          : const Icon(Icons.arrow_downward_rounded),
+                                      trailing:
+                                          isExpanded ? const Icon(Icons.arrow_upward_rounded) : const Icon(Icons.arrow_downward_rounded),
                                     ))),
                           ),
                         )),
@@ -596,58 +588,52 @@ class _AlbumViewState extends State<AlbumView> {
       widthOfBorder = 0.0;
     }
 
-    return Scaffold(
-        appBar: display,
-        body: Container(
-            //width: widthOfBorder,
-            //color: Theme.of(context).backgroundColor,
-            child: Column(children: [
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
-            SizedBox(
-                child: Container(
-                    color: Theme.of(context).cardColor,
-                    child: Row(children: [
-                      if (Platform.isMacOS) const SizedBox(width: 60),
-                      if (windowBorder)
-                        IconButton(
-                            splashRadius: splashRadius,
-                            icon: const Icon(Icons.navigate_before),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            }),
-                      Expanded(
-                          child: GestureDetector(
-                        onTapDown: (details) {
-                          windowManager.startDragging();
-                        },
-                        onDoubleTap: () {
-                          windowManager.isMaximized().then((value) {
-                            if (value) {
-                              windowManager.restore();
-                            } else {
-                              windowManager.maximize();
-                            }
-                          });
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          child: SizedBox(
-                              height: heightTitleBar,
-                              child: VirtualWindowFrame(
-                                  child: Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                child: Text(
-                                  titleAppBar,
-                                  style: Theme.of(context).textTheme.headline6,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ))),
-                        ),
-                      )),
-                      const WindowButtons(),
-                    ]))),
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && albumViewAppBar != null) albumViewAppBar,
-          Expanded(child: buildAlbumScreen(context, tags, isPopup))
-        ])));
+    List<Widget> actionsWindow = [
+      if (Platform.isMacOS) const SizedBox(width: 60),
+      if (windowBorder)
+        IconButton(
+            splashRadius: splashRadius,
+            icon: const Icon(Icons.navigate_before),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+      Expanded(
+          child: GestureDetector(
+        onTapDown: (details) {
+          windowManager.startDragging();
+        },
+        onDoubleTap: () {
+          windowManager.isMaximized().then((value) {
+            if (value) {
+              windowManager.restore();
+            } else {
+              windowManager.maximize();
+            }
+          });
+        },
+        child: Container(
+          color: Colors.transparent,
+          child: SizedBox(
+              height: heightTitleBar,
+              child: VirtualWindowFrame(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                child: Text(
+                  titleAppBar,
+                  style: Theme.of(context).textTheme.headline6,
+                  textAlign: TextAlign.center,
+                ),
+              ))),
+        ),
+      )),
+    ];
+
+    return MainWindow(
+        appBar: albumViewAppBar,
+        display: display,
+        actions: const [],
+        actionsWindow: actionsWindow,
+        title: t.albumView,
+        body: buildAlbumScreen(context, tags, isPopup));
   }
 }

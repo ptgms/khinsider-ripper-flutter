@@ -6,6 +6,7 @@ import 'package:khinrip/config.dart';
 import 'package:khinrip/main.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
+import 'package:khinrip/window.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:http/http.dart' as http;
@@ -487,63 +488,48 @@ class _SearchWidgetState extends State<SearchWidget> {
       widthOfBorder = 0.0;
     }
 
-    return Scaffold(
-        appBar: display,
-        body: Container(
-            //width: widthOfBorder,
-            //color: Theme.of(context).backgroundColor,
-            child: Column(children: [
-          if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows))
-            SizedBox(
-                child: Container(
-                    color: Theme.of(context).cardColor,
-                    child: Row(
-                        children: [
-                              if (Platform.isMacOS) const SizedBox(width: 60),
-                              if (favoriteHome && windowBorder)
-                                IconButton(
-                                    splashRadius: splashRadius,
-                                    icon: const Icon(Icons.navigate_before),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    }),
-                              Expanded(
-                                  child: GestureDetector(
-                                onTapDown: (details) {
-                                  windowManager.startDragging();
-                                },
-                                onDoubleTap: () {
-                                  windowManager.isMaximized().then((value) {
-                                    if (value) {
-                                      windowManager.restore();
-                                    } else {
-                                      windowManager.maximize();
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  color: Colors.transparent,
-                                  child: SizedBox(
-                                      height: heightTitleBar,
-                                      child: VirtualWindowFrame(
-                                          child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
-                                        child: Text(
-                                          titleAppBar,
-                                          style: Theme.of(context).textTheme.headline6,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ))),
-                                ),
-                              )),
-                              if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder) const WindowButtons(),
-                              if (windowBorder) Expanded(child: searchBox),
-                              if (windowBorder) const WindowButtons()
-                            ] +
-                            actions))),
-          if (favoriteHome)
-            if ((Platform.isMacOS || Platform.isLinux || Platform.isWindows) && !windowBorder && searchAppBar != null) searchAppBar,
-          Expanded(child: bodyDisplay)
-        ])));
+    List<Widget> actionsWindow = [
+      if (Platform.isMacOS) const SizedBox(width: 60),
+      if (favoriteHome && windowBorder)
+        IconButton(
+            splashRadius: splashRadius,
+            icon: const Icon(Icons.navigate_before),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+      Expanded(
+          child: GestureDetector(
+        onTapDown: (details) {
+          windowManager.startDragging();
+        },
+        onDoubleTap: () {
+          windowManager.isMaximized().then((value) {
+            if (value) {
+              windowManager.restore();
+            } else {
+              windowManager.maximize();
+            }
+          });
+        },
+        child: Container(
+          color: Colors.transparent,
+          child: SizedBox(
+              height: heightTitleBar,
+              child: VirtualWindowFrame(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                child: Text(
+                  titleAppBar,
+                  style: Theme.of(context).textTheme.headline6,
+                  textAlign: TextAlign.center,
+                ),
+              ))),
+        ),
+      )),
+      if (windowBorder) Expanded(child: searchBox),
+    ];
+
+    return MainWindow(
+        appBar: searchAppBar, display: display, actions: actions, actionsWindow: actionsWindow, title: t.search, body: bodyDisplay);
   }
 }
