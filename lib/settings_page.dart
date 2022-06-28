@@ -68,8 +68,9 @@ class _SettingsPageState extends State<SettingsPage> {
     final _loadedData = await rootBundle.loadString('assets/languages.json');
     var data = json.decode(_loadedData);
     setState(() {
-      languageCurrent =
-          setLanguage == "system" ? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+      languageCurrent = setLanguage == "system"
+          ? "System"
+          : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     });
   }
 
@@ -234,8 +235,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       await Permission.storage.request();
                     }
                   }
-                  String? path = await FilePicker.platform
-                      .getDirectoryPath(dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
+                  String? path = await FilePicker.platform.getDirectoryPath(
+                      dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
 
                   if (path != null) {
                     setState(() {
@@ -429,7 +430,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
                               "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
                               "You can fully opt out. By unchecking, the Analytic component does not even get initialised.\n"
-                              "Crash collection currently does not work under Linux and Windows."),
+                              "Crash collection currently does not work under Linux, MacOS and Windows."),
                           actions: [
                             TextButton(
                                 style: TextButton.styleFrom(
@@ -437,7 +438,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 onPressed: () => Navigator.pop(context, null),
                                 child: const Text("OK")),
-                            if ((Platform.isAndroid || Platform.isIOS || Platform.isMacOS) && analytics)
+                            if ((Platform.isAndroid || Platform.isIOS) && analytics)
                               TextButton(
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,

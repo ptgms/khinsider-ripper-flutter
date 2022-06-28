@@ -34,7 +34,7 @@ Future<void> main() async {
   trackListBehavior = prefs.getInt("track_behavior") ?? 0;
   popupStyle = prefs.getInt("popup_style") ?? 0;
   maxDownloads = prefs.getInt("max_downloads") ?? 1;
-  md3 = prefs.getBool("material_3") ?? false;
+  md3 = prefs.getBool("material_3") ?? true;
   windowBorder = prefs.getBool("window_border") ?? true;
   setLanguage = prefs.getString("language") ?? defaultLang;
   nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
@@ -75,6 +75,9 @@ class WindowButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeType _currentThemeType = ThemeType.auto;
+    if (Platform.isMacOS) {
+      return Container();
+    }
     return Row(children: [
       InkWell(
         autofocus: true,
@@ -284,7 +287,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
           child: SizedBox(
               height: heightTitleBar,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
                 child: Text(
                   titleAppBar,
                   style: Theme.of(context).textTheme.headline6,
@@ -295,6 +298,11 @@ class _FavoriteHomeState extends State<FavoriteHome> {
     ];
 
     return MainWindow(
-        appBar: mainAppBar, display: display, actions: actions, actionsWindow: actionsWindow, title: widget.title, body: bodyToPush);
+        appBar: mainAppBar,
+        display: display,
+        actions: actions,
+        actionsWindow: actionsWindow,
+        title: widget.title,
+        body: bodyToPush);
   }
 }

@@ -1,6 +1,6 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '11.0'
-$FirebaseAnalyticsWithoutAdIdSupport = true
+platform :ios, '12.4'
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
