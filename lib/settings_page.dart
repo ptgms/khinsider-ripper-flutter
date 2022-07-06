@@ -410,17 +410,50 @@ class _SettingsPageState extends State<SettingsPage> {
                   });
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     behavior: SnackBarBehavior.floating,
-                    content: const Text('You have to relaunch the App for the changes to take effect.'),
+                    content: Text(t.relaunchNotice),
                     action: SnackBarAction(
                         //textColor: Colors.white,
-                        label: 'Exit',
+                        label: t.exit,
                         onPressed: () {
                           exit(0);
                         }),
                   ));
                 },
-                title: const Text("Analytics"),
-                description: TextButton(
+                title: Text(t.analytics),
+                description: InkWell(
+                  child: Text(
+                    t.learnMore,
+                    style: const TextStyle(color: Colors.blue),
+                  ),
+                  onTap: () {
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text(t.analytics),
+                        content: const Text("Analytics collects ONLY the following data:\n"
+                            "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
+                            "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
+                            "You can fully opt out. By unchecking, the Analytic component does not even get initialised.\n"
+                            "Crash collection currently does not work under Linux, MacOS and Windows."),
+                        actions: [
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: () => Navigator.pop(context, null),
+                              child: const Text("OK")),
+                          if ((Platform.isAndroid || Platform.isIOS) && analytics)
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                onPressed: () => FirebaseCrashlytics.instance.crash(),
+                                child: const Text("Cause crash")),
+                        ],
+                      ),
+                    );
+                  },
+                ) /*TextButton(
                     onPressed: () {
                       showDialog<String>(
                         context: context,
@@ -449,7 +482,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       );
                     },
-                    child: const Text("Learn more"))),
+                    child: const Text("Learn more"))*/
+                ),
             SettingsTile.navigation(
               title: Text(t.trackListTapBehavior),
               description: Text(t.trackListTapBehaviorDescription),

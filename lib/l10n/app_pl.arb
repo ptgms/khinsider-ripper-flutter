@@ -18,6 +18,8 @@
     "downloading": "Please wait, downloading...",
     "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
     "cancel": "Cancel",
+    "analytics": "Analytics",
+    "learnMore": "Learn more",
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
@@ -45,6 +47,8 @@
     "trackListTapBehavior": "Track-list tap behavior",
     "trackListTapBehaviorDescription": "The action that occurs when tapped on item in the track-list.",
     "previewSong": "Preview song",
+    "previewPanelBehavior": "Preview panel behavior",
+    "previewPanelBehaviorDescription": "Changes if the buttons in the preview panel navigate or skip through songs.",
     "popUps": "Pop-Ups",
     "popUpsDescription": "The pop-up displayed when downloading an song/album.",
     "concurrentDownloads": "Concurrent Downloads",
@@ -97,6 +101,16 @@
             "name": {
                 "type": "String",
                 "example": "Never gonna give you up"
+            }
+        }
+    },
+    "downloadThread": "Downloading with {count} concurrent Downloads!",
+    "@downloadThread": {
+        "description": "The concurrent download count displayed in the download view",
+        "placeholders": {
+            "count": {
+                "type": "String",
+                "example": "1"
             }
         }
     },

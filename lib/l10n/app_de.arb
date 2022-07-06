@@ -18,6 +18,8 @@
     "downloading": "Bitte warten, lädt herunter...",
     "noDefaultPath": "Warnung! Kein Speicher-Pfad angegeben. Nutze Programm-Pfad.\n",
     "cancel": "Abbrechen",
+    "analytics": "Nutzungsdaten",
+    "learnMore": "Mehr erfahren",
     "themeSystem": "System",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
@@ -45,6 +47,8 @@
     "trackListTapBehavior": "Songliste Tipp-Verhalten",
     "trackListTapBehaviorDescription": "Die Aktion, wenn ein Song in der Song-Liste ausgewählt wird.",
     "previewSong": "Song vorschau",
+    "previewPanelBehavior": "Verhalten der Vorschauanzeige",
+    "previewPanelBehaviorDescription": "Ändert ob die Knöpfe bei der Vorschau durch den Song springen oder komplett überspringen.",
     "popUps": "Pop Ups",
     "popUpsDescription": "Der Pop-Up der angezeigt wird, wenn ein Song/Album heruntergeladen wird.",
     "concurrentDownloads": "Gleichzeitige Downloads",
@@ -97,6 +101,16 @@
             "name": {
                 "type": "String",
                 "example": "Never gonna give you up"
+            }
+        }
+    },
+    "downloadThread": "Lade mit {count} gleichzeitigen Downloads herunter!",
+    "@downloadThread": {
+        "description": "The concurrent download count displayed in the download view",
+        "placeholders": {
+            "count": {
+                "type": "String",
+                "example": "1"
             }
         }
     },

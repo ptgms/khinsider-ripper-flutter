@@ -18,6 +18,8 @@
     "downloading": "Wacht even, bezig met downloaden...",
     "noDefaultPath": "Waarschuwing: Geen pad om in op te slaan gekozen! Gebruik de map van het programma zelf. \n",
     "cancel": "Annuleren",
+    "analytics": "Statistieken",
+    "learnMore": "Meer info",
     "themeSystem": "Systeem",
     "themeLight": "Licht",
     "themeDark": "Donker",
@@ -45,6 +47,8 @@
     "trackListTapBehavior": "Tracklist klik gedrag",
     "trackListTapBehaviorDescription": "De actie die gebeurt wanneer je op het nummer klikt in de tracklist.",
     "previewSong": "Nummer voorspellen",
+    "previewPanelBehavior": "Preview panel behavior",
+    "previewPanelBehaviorDescription": "Changes if the buttons in the preview panel navigate or skip through songs.",
     "popUps": "Pop-Ups",
     "popUpsDescription": "De pop-up die wordt weergegeven wanneer je de nummer/album download.",
     "concurrentDownloads": "Achtervolgende downloads",
@@ -97,6 +101,16 @@
             "name": {
                 "type": "String",
                 "example": "Never gonna give you up"
+            }
+        }
+    },
+    "downloadThread": "Downloading with {count} concurrent Downloads!",
+    "@downloadThread": {
+        "description": "The concurrent download count displayed in the download view",
+        "placeholders": {
+            "count": {
+                "type": "String",
+                "example": "1"
             }
         }
     },

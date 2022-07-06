@@ -18,6 +18,8 @@
     "downloading": "...ارجوك انتظر، يتم التنزيل",
     "noDefaultPath": "ملاحظة: لم يتم اختيار مكان للتنزيل! سنستخدم مكان التطبيق.\n",
     "cancel": "إلغاء",
+    "analytics": "Analytics",
+    "learnMore": "Learn more",
     "themeSystem": "النظام",
     "themeLight": "فاتح",
     "themeDark": "مظلم",
@@ -45,6 +47,8 @@
     "trackListTapBehavior": "سلوك الضغط على لائحة التسجيلات",
     "trackListTapBehaviorDescription": "السلوك الذي يحصل عندما يتم الضغط على عنصر من لائحة التسجيلات.",
     "previewSong": "تجريب الأغنية",
+    "previewPanelBehavior": "Preview panel behavior",
+    "previewPanelBehaviorDescription": "Changes if the buttons in the preview panel navigate or skip through songs.",
     "popUps": "لوائح ظاهرة",
     "popUpsDescription": "اللائحة الظاهرة عند تنزيل تسجيل/ألبوم",
     "concurrentDownloads": "التنزيلات المتوازية",
@@ -100,6 +104,16 @@
             }
         }
     },
+    "downloadThread": "Downloading with {count} concurrent Downloads!",
+    "@downloadThread": {
+        "description": "The concurrent download count displayed in the download view",
+        "placeholders": {
+            "count": {
+                "type": "String",
+                "example": "1"
+            }
+        }
+    },
     "defaultLocation": "الخيار الإفتراضي: {location}",
     "@defaultLocation": {
         "description": "The text displayed if no custom saving path was declared.",
@@ -139,5 +153,6 @@
                 "example": "You"
             }
         }
-    }
+    },
+    "helpTranslation": "Help translating this App!"
 }
