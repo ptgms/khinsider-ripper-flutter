@@ -61,9 +61,13 @@ dependencies:
   titlebar_buttons: ^1.0.0
   firebase_analytics: ^9.1.10
   firebase_core: ^1.18.0
-  firebase_core_desktop: ^0.1.1-dev.0
+  firebase_core_desktop: ^0.1.1-dev.2
   firebase_crashlytics: ^2.8.2
+  firebase_performance: ^0.8.1+1
+  external_app_launcher: ^3.0.0
 
+dependency_overrides:
+  firebase_core_platform_interface: 4.2.1
 
 dev_dependencies:
   flutter_test:

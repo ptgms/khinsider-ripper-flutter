@@ -21,6 +21,7 @@
     "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
 
     "cancel": "Cancel",
+    "show": "Show",
 
     "analytics": "Analytics",
     "learnMore": "Learn more",

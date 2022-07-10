@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khinrip/config.dart';
@@ -122,8 +123,10 @@ class _TrackViewState extends State<TrackView> {
                       await audioPlayer.pause();
                     },
                     onChangeEnd: (value) async {
-                      debugPrint("new: " + ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt().toString());
-                      await audioPlayer.seek(Duration(seconds: ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt()));
+                      debugPrint("new: " +
+                          ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt().toString());
+                      await audioPlayer.seek(
+                          Duration(seconds: ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt()));
                       await audioPlayer.resume();
                     },
                   );
@@ -177,7 +180,8 @@ class _TrackViewState extends State<TrackView> {
                               if (currentProgress! < const Duration(seconds: 5)) {
                                 audioPlayer.seek(const Duration());
                               } else {
-                                audioPlayer.seek((await audioPlayer.getCurrentPosition())! - const Duration(seconds: 5));
+                                audioPlayer
+                                    .seek((await audioPlayer.getCurrentPosition())! - const Duration(seconds: 5));
                               }
                             }
                           },
@@ -202,7 +206,8 @@ class _TrackViewState extends State<TrackView> {
                               if (currentProgress! + const Duration(seconds: 5) > (await audioPlayer.getDuration())!) {
                                 audioPlayer.seek((await audioPlayer.getDuration())!);
                               } else {
-                                audioPlayer.seek((await audioPlayer.getCurrentPosition())! + const Duration(seconds: 5));
+                                audioPlayer
+                                    .seek((await audioPlayer.getCurrentPosition())! + const Duration(seconds: 5));
                               }
                             }
                           },
@@ -241,9 +246,18 @@ class _TrackViewState extends State<TrackView> {
       behavior: SnackBarBehavior.floating,
     ));
     await downloadFile(tags, index, value);
+    var savedPath = await localPath;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(getSnackBarContent(pathToSaveIn, context)),
+      action: Platform.isIOS
+          ? SnackBarAction(
+              label: t.show,
+              onPressed: () async {
+                await LaunchApp.openApp(androidPackageName: null, iosUrlScheme: 'shareddocuments://' + savedPath);
+              },
+            )
+          : null,
       behavior: SnackBarBehavior.floating,
     ));
   }
@@ -373,8 +387,8 @@ class _TrackViewState extends State<TrackView> {
       } else {
         showDialog<String>(
           context: context,
-          builder: (BuildContext context) =>
-              AlertDialog(title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
+          builder: (BuildContext context) => AlertDialog(
+              title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
             downloadSong(index, value, context);
@@ -482,7 +496,8 @@ class _TrackViewState extends State<TrackView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Marquee(child: Text(tags.tracks[index], style: const TextStyle(fontSize: 16))),
-                        Marquee(child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
+                        Marquee(
+                            child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
                       ],
                     )),
                 flex: 2,

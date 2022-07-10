@@ -39,7 +39,7 @@ Future<void> main() async {
   setLanguage = prefs.getString("language") ?? defaultLang;
   nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
 
-  analytics = prefs.getBool("analytics") ?? true;
+  analytics = false; //prefs.getBool("analytics") ?? true;
 
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
