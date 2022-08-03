@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:khinrip/analytics_tools.dart';
+import 'package:khinrip/browse_popular.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
 import 'package:khinrip/structs.dart';
@@ -39,7 +40,7 @@ Future<void> main() async {
   setLanguage = prefs.getString("language") ?? defaultLang;
   nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
 
-  analytics = false; //prefs.getBool("analytics") ?? true;
+  analytics = prefs.getBool("analytics") ?? true;
 
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
@@ -52,9 +53,9 @@ Future<void> main() async {
   await initialiseAnalytics();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
-    WindowOptions windowOptions = WindowOptions(
-      size: const Size(800, 600),
-      minimumSize: const Size(550, 384),
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(800, 600),
+      minimumSize: Size(550, 384),
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
@@ -219,12 +220,24 @@ class _FavoriteHomeState extends State<FavoriteHome> {
         IconButton(
           splashRadius: splashRadius,
           onPressed: () async {
-            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
-            //FirebaseCrashlytics.instance.crash();
+            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularWidget()));
             setState(() {
               bodyToPush = const FavoriteWidget();
             });
           },
+          tooltip: t.browse,
+          icon: const Icon(Icons.library_music),
+        ),
+      if (favoriteHome)
+        IconButton(
+          splashRadius: splashRadius,
+          onPressed: () async {
+            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchWidget()));
+            setState(() {
+              bodyToPush = const FavoriteWidget();
+            });
+          },
+          tooltip: t.search,
           icon: const Icon(Icons.search),
         ),
       if (favoriteHome)
@@ -233,6 +246,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
           onPressed: (() {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
           }),
+          tooltip: t.settingsView,
           icon: const Icon(Icons.settings_rounded),
         ),
     ];
@@ -298,11 +312,6 @@ class _FavoriteHomeState extends State<FavoriteHome> {
     ];
 
     return MainWindow(
-        appBar: mainAppBar,
-        display: display,
-        actions: actions,
-        actionsWindow: actionsWindow,
-        title: widget.title,
-        body: bodyToPush);
+        appBar: mainAppBar, display: display, actions: actions, actionsWindow: actionsWindow, title: widget.title, body: bodyToPush);
   }
 }

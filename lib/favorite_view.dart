@@ -90,125 +90,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     );
   }
 
-  var busy = false; // indicates if app is busy with other task
-
-  Future<void> goToAlbum(BuildContext context, int index) async {
-    // if clicked on favorite, load the album in view
-    if (busy) {
-      return;
-    } else {
-      busy = true;
-    }
-    // ignore: prefer_typing_uninitialized_variables
-    var mp3, flac, ogg = false;
-
-    List<String> tracks = [];
-    List<String> trackDuration = [];
-    String albumName = _favorites[index].albumName;
-    String albumLink = baseUrl + _favorites[index].albumLink;
-    List<String> trackURL = [];
-    List<String> coverURL = [];
-
-    List<String> tags = [];
-    List<String> trackSizeMP3 = [];
-    List<String> trackSizeFLAC = [];
-    List<String> trackSizeOGG = [];
-
-    Uri completedUrl = Uri.parse(baseUrl + _favorites[index].albumLink.replaceAll(baseUrl, ""));
-
-    //debugPrint(completed_url.toString());
-
-    AlbumTags toPush = AlbumTags(
-        tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
-
-    http.read(completedUrl).then((contents) async {
-      BeautifulSoup bs = BeautifulSoup(contents);
-
-      for (var element in bs.findAll('', class_: 'albumImage')) {
-        var imgurl = element.find('a')!['href'];
-        //debugPrint(imgurl);
-        coverURL.add(imgurl!);
-      }
-
-      if (coverURL.isEmpty) {
-        coverURL.add("none");
-      }
-
-      var link = bs.find('', id: 'songlist');
-
-      for (var row in link!.findAll('tbody')) {
-        //debugPrint("row");
-        for (var col in row.findAll('tr')) {
-          if (col.id != "") {
-            //debugPrint("COL-ID: " + col.id);
-          }
-          if (col.id == "songlist_header" || col.id == "songlist_footer") {
-            for (var tag in col.findAll('th')) {
-              tags.add(tag.text);
-            }
-            //debugPrint('TAGS: ' + tags.toString());
-
-            flac = tags.contains('FLAC');
-            mp3 = tags.contains('MP3');
-            ogg = tags.contains('OGG');
-            continue;
-          }
-
-          List<String> temptag = [];
-
-          var songname = tags.indexOf('Song Name');
-
-          for (var title in col.findAll('td')) {
-            temptag.add(title.text);
-            if (title.find('a') != null) {
-              var titleurl = title.find('a')!.attributes['href'];
-
-              if ((titleurl != "" || titleurl != null) && !trackURL.contains(titleurl)) {
-                trackURL.add(titleurl!);
-              }
-            }
-          }
-
-          if (temptag.length == tags.length + 1) {
-            trackDuration.add(temptag[songname + 1]);
-            tracks.add(temptag[songname]);
-
-            if (mp3) {
-              trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
-            }
-            if (flac) {
-              trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
-            }
-            if (ogg) {
-              trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
-            }
-          }
-        }
-      }
-
-      toPush = AlbumTags(
-          tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
-
-      //debugPrint("Final: " + toPush.AlbumName);
-      if (toPush.albumName != "Null") {
-        busy = false;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AlbumView(
-                    tags: toPush,
-                  )),
-        );
-        setState(() {});
-      } else {
-        busy = false;
-        debugPrint("error");
-      }
-      //debugPrint(toPush.coverURL.toString());
-    });
-    /**/
-  }
-
   @override
   Widget build(BuildContext context) {
     var t = AppLocalizations.of(context)!;
@@ -249,42 +130,10 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                         onTap: () async {
                           debugPrint("Tapped on favorite " + favorites[index].albumName);
                           if (!busy) {
-                            await goToAlbum(context, index);
+                            await goToAlbum(context, favorites[index].albumName, favorites[index].albumLink);
                           }
                         },
-                        child: getTitleText(
-                            index))) /*ctxmenu.ContextMenuRegion(
-                      onItemSelected: (itemSel) {
-                        switch (itemSel.title) {
-                          case "Remove":
-                            favorites.removeAt(index);
-                            setState(() {
-                              _favorites = favorites;
-                              saveFavs();
-                            });
-                            break;
-                          case "Open in Browser":
-                            launch(baseUrl + favorites[index].albumLink);
-                            break;
-                          default:
-                            break;
-                        }
-                      },
-                      menuItems: [ctxmenu.MenuItem(title: 'Remove'), ctxmenu.MenuItem(title: 'Open in Browser')],
-                      child: Card(
-                          shape: cardShape,
-                          child: InkWell(
-                              customBorder: cardShape,
-                              mouseCursor: MouseCursor.uncontrolled,
-                              onTap: () async {
-                                debugPrint("Tapped on favorite " + favorites[index].albumName);
-                                if (!busy) {
-                                  await goToAlbum(context, index);
-                                }
-                              },
-                              child: getTitleText(index))),
-                    )*/
-                );
+                        child: getTitleText(index))));
           },
         ),
       );
@@ -344,7 +193,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                         onTap: () async {
                           debugPrint("Tapped on favorite " + favorites[index].albumName);
                           if (!busy) {
-                            await goToAlbum(context, index);
+                            await goToAlbum(context, favorites[index].albumName, favorites[index].albumLink);
                           }
                         },
                         child: getTitleText(index))));

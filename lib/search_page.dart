@@ -64,7 +64,7 @@ SizedBox searchingIndicator() {
 
 var _searchResults = searchResults;
 
-var busy = false;
+//var busy = false;
 
 class SearchWidget extends StatefulWidget {
   const SearchWidget({Key? key}) : super(key: key);
@@ -79,141 +79,6 @@ String searchTermBefore = "";
 class _SearchWidgetState extends State<SearchWidget> {
   final fieldText = TextEditingController();
   var searched = false;
-
-  Future<void> goToAlbum(BuildContext context, int index) async {
-    if (busy) {
-      debugPrint("Im busy yo");
-      return;
-    } else {
-      busy = true;
-    }
-
-    // ignore: prefer_typing_uninitialized_variables
-    var mp3, flac, ogg = false;
-
-    List<String> tracks = [];
-    List<String> trackDuration = [];
-    String albumName = _searchResults[index].albumName;
-    String albumLink = baseUrl + _searchResults[index].albumLink;
-    List<String> trackURL = [];
-    List<String> coverURL = [];
-
-    List<String> tags = [];
-    List<String> trackSizeMP3 = [];
-    List<String> trackSizeFLAC = [];
-    List<String> trackSizeOGG = [];
-
-    Uri completedUrl = Uri.parse(baseUrl + _searchResults[index].albumLink.replaceAll(baseUrl, ""));
-
-    //debugPrint(completed_url.toString());
-
-    AlbumTags toPush = AlbumTags(
-        tracks, trackDuration, "Null", albumLink, trackURL, coverURL, false, false, false, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
-
-    http.read(completedUrl).then((contents) {
-      BeautifulSoup bs = BeautifulSoup(contents);
-
-      for (var element in bs.findAll('', class_: 'albumImage')) {
-        var imgurl = element.find('a')!['href'];
-        //debugPrint(imgurl);
-        coverURL.add(imgurl!);
-      }
-
-      if (coverURL.isEmpty) {
-        coverURL.add("none");
-      }
-
-      var link = bs.find('', id: 'songlist');
-
-      for (var row in link!.findAll('tbody')) {
-        debugPrint("row");
-        for (var col in row.findAll('tr')) {
-          if (col.id != "") {
-            debugPrint("COL-ID: " + col.id);
-          }
-          if (col.id == "songlist_header" || col.id == "songlist_footer") {
-            for (var tag in col.findAll('th')) {
-              tags.add(tag.text);
-            }
-            debugPrint('TAGS: ' + tags.toString());
-
-            flac = tags.contains('FLAC');
-            mp3 = tags.contains('MP3');
-            ogg = tags.contains('OGG');
-            continue;
-          }
-
-          List<String> temptag = [];
-
-          var songname = tags.indexOf('Song Name');
-
-          for (var title in col.findAll('td')) {
-            temptag.add(title.text);
-            if (title.find('a') != null) {
-              var titleurl = title.find('a')!.attributes['href'];
-
-              if ((titleurl != "" || titleurl != null) && !trackURL.contains(titleurl)) {
-                trackURL.add(titleurl!);
-              }
-            }
-          }
-
-          if (temptag.length == tags.length + 1) {
-            trackDuration.add(temptag[songname + 1]);
-            tracks.add(temptag[songname]);
-
-            if (mp3) {
-              trackSizeMP3.add(temptag[tags.indexOf('MP3') + 1]);
-            }
-            if (flac) {
-              trackSizeFLAC.add(temptag[tags.indexOf('FLAC') + 1]);
-            }
-            if (ogg) {
-              trackSizeOGG.add(temptag[tags.indexOf('OGG') + 1]);
-            }
-          }
-        }
-      }
-
-      toPush = AlbumTags(
-          tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
-
-      debugPrint("Final: " + toPush.albumName);
-      if (toPush.albumName != "Null") {
-        busy = false;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AlbumView(
-                    tags: toPush,
-                  )),
-        );
-      } else {
-        busy = false;
-        debugPrint("error");
-      }
-      //debugPrint(toPush.coverURL.toString());
-    });
-    /**/
-  }
-
-  /*bool foundInFavorites(AlbumStruct element) {
-    for (var fav in favorites) {
-      if (fav.albumName == element.albumName && fav.albumLink == element.albumLink) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  int locateInFavorites(AlbumStruct element) {
-    for (var i = 0; i < favorites.length; i++) {
-      if (favorites[i].albumName == element.albumName && favorites[i].albumLink == element.albumLink) {
-        return i;
-      }
-    }
-    return -1;
-  }*/
 
   bool searching = false;
 
@@ -356,7 +221,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                       mouseCursor: MouseCursor.uncontrolled,
                       onTap: () {
                         debugPrint("Tapped " + _searchResults[index].albumName);
-                        goToAlbum(context, index);
+                        goToAlbum(context, _searchResults[index].albumName, _searchResults[index].albumLink);
                       },
                       child: ListTile(
                         leading: Container(width: 50, height: 50, decoration: searchImage, child: noPicFound),

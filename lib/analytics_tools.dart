@@ -22,9 +22,13 @@ Future<void> initialiseAnalytics() async {
 
 Future<void> logEvent(eventName) async {
   if (analytics) {
-    await FirebaseAnalytics.instance.logEvent(
-      name: eventName,
-    );
+    try {
+      await FirebaseAnalytics.instance.logEvent(
+        name: eventName,
+      );
+    } catch (_) {
+      debugPrint("Failed to log!");
+    }
   }
 }
 
