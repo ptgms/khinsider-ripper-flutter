@@ -182,8 +182,8 @@ Future<void> goToAlbum(BuildContext context, aName, aLink) async {
       }
     }
 
-    toPush = AlbumTags(
-        tracks, trackDuration, albumName, albumLink, trackURL, coverURL, mp3, flac, ogg, tags, trackSizeMP3, trackSizeFLAC, trackSizeOGG);
+    toPush = AlbumTags(tracks, trackDuration, albumName.replaceAll("&amp;", "&"), albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
+        trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
     debugPrint("Final: " + toPush.albumName);
     if (toPush.albumName != "Null") {

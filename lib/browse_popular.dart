@@ -266,9 +266,9 @@ class _PopularWidgetState extends State<PopularWidget> {
             value = snapshot.data!;
           }
           return SettingsList(
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               platform: devicePlat,
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               darkTheme: SettingsThemeData(
                   settingsListBackground: Theme.of(context).scaffoldBackgroundColor,
                   settingsSectionBackground: sectionColor,
@@ -302,7 +302,10 @@ class _PopularWidgetState extends State<PopularWidget> {
             ),
           ));
           value.add(displayPlatforms);
-          return ListView(children: value);
+          return ListView(
+            children: value,
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          );
         });
 
     return MainWindow(

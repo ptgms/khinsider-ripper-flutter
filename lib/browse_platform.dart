@@ -252,7 +252,10 @@ class _PlatformBrowseState extends State<PlatformBrowse> {
                   style: TextStyle(fontSize: 24),
                 ),
               ));
-          return ListView(children: value);
+          return ListView(
+            children: value,
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          );
         });
 
     return MainWindow(
