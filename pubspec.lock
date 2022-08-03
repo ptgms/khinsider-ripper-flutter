@@ -197,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.7"
-  external_app_launcher:
-    dependency: "direct main"
-    description:
-      name: external_app_launcher
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   fake_async:
     dependency: transitive
     description:

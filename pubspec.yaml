@@ -50,9 +50,6 @@ dependencies:
   share_plus: ^4.0.1
   settings_ui: ^2.0.0
   file_picker: ^5.0.1
-  #bitsdojo_window:
-  #  path: bitsdojo_window/bitsdojo_window/
-  #native_context_menu: ^0.2.1+4
   intl: ^0.17.0
   country_codes: ^2.1.1
   carousel_slider: ^4.1.1
@@ -64,7 +61,7 @@ dependencies:
   firebase_core_desktop: ^1.0.1
   firebase_crashlytics: ^2.8.2
   firebase_performance: ^0.8.1+1
-  external_app_launcher: ^3.0.0
+  #external_app_launcher: ^3.0.0
 
 # dependency_overrides:
 #   firebase_core_platform_interface: 4.2.1
