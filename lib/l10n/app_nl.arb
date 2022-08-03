@@ -6,6 +6,9 @@
     "trackListView": "Nummer",
     "favorites": "Favorieten",
     "search": "Opzoeken",
+    "browse": "Browse",
+    "popular": "Popular",
+    "mostDownloaded": "Most Downloaded",
     "startSearch": "Begin met opzoeken!",
     "startSearchDescription": "Zoek iets op om resultaten te laten zien!",
     "searchForOSTs": "Zoek voor een OST",
@@ -18,6 +21,7 @@
     "downloading": "Wacht even, bezig met downloaden...",
     "noDefaultPath": "Waarschuwing: Geen pad om in op te slaan gekozen! Gebruik de map van het programma zelf. \n",
     "cancel": "Annuleren",
+    "show": "Show",
     "analytics": "Statistieken",
     "learnMore": "Meer info",
     "themeSystem": "Systeem",
@@ -62,6 +66,16 @@
     "downloadAlbum": "Download Album",
     "removeFromFavs": "Verwijder uit Favorieten",
     "addToFavs": "Voeg toe aan Favorieten",
+    "platform": "Platform",
+    "browsingPlatform": "Browsing {platform}",
+    "@browsingPlatform": {
+        "description": "Displayed when platform is selected in the browser",
+        "placeholders": {
+            "platform": {
+                "type": "String"
+            }
+        }
+    },
     "viewAllTracks": "Weergeef alle Nummers",
     "hideAllTracks": "Verberg alle Nummers",
     "downloadAllTracks": "Download alle Nummers",

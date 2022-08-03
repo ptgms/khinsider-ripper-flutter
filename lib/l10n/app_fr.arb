@@ -6,6 +6,9 @@
     "trackListView": "Nombres",
     "favorites": "Favoris",
     "search": "Chercher",
+    "browse": "Browse",
+    "popular": "Popular",
+    "mostDownloaded": "Most Downloaded",
     "startSearch": "Commencer la recherche !",
     "startSearchDescription": "Commencez la recherche pour afficher les résultats !",
     "searchForOSTs": "Chercher des OSTs",
@@ -18,6 +21,7 @@
     "downloading": "Veuillez patienter, chargement en cours...",
     "noDefaultPath": "Warning: No saving path specified! Using the programs' directory.\n",
     "cancel": "Annuler",
+    "show": "Show",
     "analytics": "Analytics",
     "learnMore": "Learn more",
     "themeSystem": "Système",
@@ -62,6 +66,16 @@
     "downloadAlbum": "Download Album",
     "removeFromFavs": "Supprimer des Favoris",
     "addToFavs": "Ajouter aux Favoris",
+    "platform": "Platform",
+    "browsingPlatform": "Browsing {platform}",
+    "@browsingPlatform": {
+        "description": "Displayed when platform is selected in the browser",
+        "placeholders": {
+            "platform": {
+                "type": "String"
+            }
+        }
+    },
     "viewAllTracks": "View all Tracks",
     "hideAllTracks": "Hide all Tracks",
     "downloadAllTracks": "Download all Tracks",

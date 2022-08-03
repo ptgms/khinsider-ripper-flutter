@@ -6,6 +6,9 @@
     "trackListView": "التسجيلات",
     "favorites": "المفضلين",
     "search": "البحث",
+    "browse": "Browse",
+    "popular": "Popular",
+    "mostDownloaded": "Most Downloaded",
     "startSearch": "!إبدأ بالبحث",
     "startSearchDescription": "إبدأ البحث لإظهار نتائج",
     "searchForOSTs": "إبحث عن تسجيلات",
@@ -18,6 +21,7 @@
     "downloading": "...ارجوك انتظر، يتم التنزيل",
     "noDefaultPath": "ملاحظة: لم يتم اختيار مكان للتنزيل! سنستخدم مكان التطبيق.\n",
     "cancel": "إلغاء",
+    "show": "Show",
     "analytics": "Analytics",
     "learnMore": "Learn more",
     "themeSystem": "النظام",
@@ -62,6 +66,16 @@
     "downloadAlbum": "تنزيل الألبوم",
     "removeFromFavs": "الحذف من المفضلات",
     "addToFavs": "الإضافة إلى المفضلات",
+    "platform": "Platform",
+    "browsingPlatform": "Browsing {platform}",
+    "@browsingPlatform": {
+        "description": "Displayed when platform is selected in the browser",
+        "placeholders": {
+            "platform": {
+                "type": "String"
+            }
+        }
+    },
     "viewAllTracks": "إظهار جميع التسجيلات",
     "hideAllTracks": "إخفاء جميع التسجيلات",
     "downloadAllTracks": "تنزيل جميع التسجيلات",

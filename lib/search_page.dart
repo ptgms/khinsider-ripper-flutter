@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/config.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'album_view.dart';
+import 'browse_popular.dart';
 
 SizedBox noResults() {
   return SizedBox(
@@ -275,6 +277,15 @@ class _SearchWidgetState extends State<SearchWidget> {
     List<Widget> actions = [
       if (!favoriteHome)
         IconButton(
+          splashRadius: splashRadius,
+          onPressed: () async {
+            final _ = await Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularWidget()));
+          },
+          tooltip: t.browse,
+          icon: const Icon(Icons.library_music),
+        ),
+      if (!favoriteHome)
+        IconButton(
             splashRadius: splashRadius,
             onPressed: () {
               Navigator.push(
@@ -293,8 +304,10 @@ class _SearchWidgetState extends State<SearchWidget> {
           }),
           icon: const Icon(Icons.settings_rounded),
         ),
-      if (!favoriteHome && (Platform.isMacOS || Platform.isLinux || Platform.isWindows)) const WindowButtons()
+      //if (!favoriteHome && (Platform.isMacOS || Platform.isLinux || Platform.isWindows)) const WindowButtons()
     ];
+
+    ValueNotifier<bool> clearVisible = ValueNotifier(false);
 
     Widget searchBox = Container(
       width: double.infinity,
@@ -302,21 +315,30 @@ class _SearchWidgetState extends State<SearchWidget> {
       decoration: BoxDecoration(color: colorSearch, borderRadius: BorderRadius.circular(10)),
       child: Center(
         child: TextField(
+          onChanged: (value) {
+            clearVisible.value = (value != "");
+          },
           onSubmitted: (term) async {
             searchPressed(term);
           },
           controller: fieldText,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                splashRadius: splashRadius,
-                icon: const Icon(
-                  Icons.clear,
-                  size: 17.0,
-                ),
-                onPressed: () {
-                  fieldText.clear();
-                },
+              suffixIcon: ValueListenableBuilder<bool>(
+                valueListenable: clearVisible,
+                builder: ((context, value, child) => value
+                    ? IconButton(
+                        splashRadius: splashRadius,
+                        icon: const Icon(
+                          Icons.clear,
+                          size: 17.0,
+                        ),
+                        onPressed: () {
+                          fieldText.clear();
+                          clearVisible.value = false;
+                        },
+                      )
+                    : Container()),
               ),
               hintText: t.searchForOSTs,
               border: InputBorder.none),
