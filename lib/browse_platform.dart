@@ -2,14 +2,10 @@ import 'dart:io';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:khinrip/config.dart';
 import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:http/http.dart' as http;
@@ -180,19 +176,9 @@ class _PlatformBrowseState extends State<PlatformBrowse> {
       settingsAppBar = null;
     }
 
-    var sectionColor = Colors.white10; //Theme.of(context).cardColor;
-    if (appTheme == 3) {
-      sectionColor = Colors.white10;
-    }
-
     // [
     //if (!Platform.isIOS && !Platform.isMacOS) SettingsSection(tiles: [systemLanguage]),
     //SettingsSection(tiles: sectionsLanguages)]
-
-    var devicePlat = DevicePlatform.iOS;
-    if (Platform.isAndroid) {
-      devicePlat = DevicePlatform.android;
-    }
 
     List<Widget> actionsWindow = [
       if (Platform.isMacOS) const SizedBox(width: 60),

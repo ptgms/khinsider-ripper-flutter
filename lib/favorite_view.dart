@@ -1,14 +1,10 @@
 import 'dart:io';
 
-import 'package:beautiful_soup_dart/beautiful_soup.dart';
 //import 'package:native_context_menu/native_context_menu.dart' as ctxmenu;
 import 'package:flutter/material.dart';
-import 'package:khinrip/album_view.dart';
 import 'package:khinrip/config.dart';
-import 'package:khinrip/structs.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -52,11 +48,11 @@ class FavoriteWidget extends StatefulWidget {
   const FavoriteWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _FavoriteWidgetState createState() => _FavoriteWidgetState();
 }
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
-  var _favorites = favorites;
 
   Widget getTitleText(int index) {
     // gets the cell text for a particular favorite
@@ -78,7 +74,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
           //appValueNotifier.update();
           favorites.removeAt(index);
           setState(() {
-            _favorites = favorites;
             saveFavs();
           });
         },
@@ -173,7 +168,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                             Navigator.of(context).pop();
                                             favorites.removeAt(index);
                                             setState(() {
-                                              _favorites = favorites;
                                               saveFavs();
                                             });
                                           },

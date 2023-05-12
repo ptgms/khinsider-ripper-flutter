@@ -202,5 +202,18 @@
         }
     },
 
-    "helpTranslation": "Help translating this App!"
+    "helpTranslation": "Help translating this App!",
+
+    "download_eta": "Estimated remaining time: {time}",
+    "@download_eta": {
+        "description": "The estimated remaining time for the download",
+        "placeholders": {
+            "time": {
+                "type": "String",
+                "example": "1 minute"
+            }
+        }
+    },
+
+    "download_gathering" : "Gathering Links, this might take a second..."
 }

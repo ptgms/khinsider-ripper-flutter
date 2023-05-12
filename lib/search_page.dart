@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:khinrip/favorite_view.dart';
 import 'package:khinrip/config.dart';
@@ -14,14 +13,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'album_view.dart';
 import 'browse_popular.dart';
 
 SizedBox noResults() {
-  return SizedBox(
+  return const SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
             child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -51,12 +49,12 @@ SizedBox emptySearch(context) {
 }
 
 SizedBox searchingIndicator() {
-  return SizedBox(
+  return const SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           Center(
             child: CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
           )
@@ -72,6 +70,7 @@ class SearchWidget extends StatefulWidget {
   const SearchWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _SearchWidgetState createState() => _SearchWidgetState();
 }
 
@@ -324,10 +323,7 @@ class _SearchWidgetState extends State<SearchWidget> {
           controller: fieldText,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
-              suffixIcon: ValueListenableBuilder<bool>(
-                valueListenable: clearVisible,
-                builder: ((context, value, child) => value
-                    ? IconButton(
+              suffixIcon: IconButton(
                         splashRadius: splashRadius,
                         icon: const Icon(
                           Icons.clear,
@@ -337,11 +333,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                           fieldText.clear();
                           clearVisible.value = false;
                         },
-                      )
-                    : Container()),
-              ),
+                      ),
               hintText: t.searchForOSTs,
-              border: InputBorder.none),
+              contentPadding: const EdgeInsets.all(10.0),
+              border: InputBorder.none)
         ),
       ),
     );

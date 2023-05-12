@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -50,6 +49,7 @@ Future<void> saveSettings() async {
   prefs.setBool("material_3", md3);
   prefs.setBool("window_border", windowBorder);
   prefs.setBool("nextTrackPrev", nextTrackPrev);
+  prefs.setInt("max_downloads", maxDownloads);
   // prefs.setBool("analytics", analytics);
 }
 
@@ -68,9 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final _loadedData = await rootBundle.loadString('assets/languages.json');
     var data = json.decode(_loadedData);
     setState(() {
-      languageCurrent = setLanguage == "system"
-          ? "System"
-          : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+      languageCurrent = setLanguage == "system" ? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
     });
   }
 
@@ -235,8 +233,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       await Permission.storage.request();
                     }
                   }
-                  String? path = await FilePicker.platform.getDirectoryPath(
-                      dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
+                  String? path = await FilePicker.platform.getDirectoryPath(dialogTitle: t.filePickerChoose, initialDirectory: Directory(homeDirectory()).path);
 
                   if (path != null) {
                     setState(() {
@@ -447,7 +444,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                 ),
-                                onPressed: () => FirebaseCrashlytics.instance.crash(),
+                                onPressed: () => null,
                                 child: const Text("Cause crash")),
                         ],
                       ),
@@ -624,6 +621,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                             onChanged: (value) {
                                               setStateAlert(() {
                                                 maxDownloads = value.toInt();
+                                                saveSettings();
                                               });
                                             })
                                       ],

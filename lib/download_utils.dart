@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 import 'package:flutter/material.dart';
@@ -18,20 +17,6 @@ String getSeperator() {
     return "/";
   }
 }
-
-// run multiple tasks in parallel with max concurrency and stream
-Future<void> runMultiple(List<Future<bool>> tasks) async {
-  await Future.wait(tasks);
-}
-
-Future<List<String>> getDirects(AlbumTags tags, String type) async {
-  List<String> directLinks = [];
-  Future.wait([getDirectLink(tags, 0, type)]);
-
-  return directLinks;
-}
-
-Future<void> getDirectLink(AlbumTags tags, int index, String type) async {}
 
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
@@ -64,21 +49,14 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   Uint8List bytes = (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload)).buffer.asUint8List();
   final stream = Stream.fromIterable(bytes);
   final bytesSave = await stream.toList();
-  var fileName = tags.tracks[index] + ".$type";
+  var fileName = "${tags.tracks[index]}.$type";
   debugPrint(await localPath);
   if (pathToSaveIn != "") {
-    fileName = pathToSaveIn + getSeperator() + tags.tracks[index] + ".$type";
+    fileName = "$pathToSaveIn${getSeperator()}${tags.tracks[index]}.$type";
   } else if (pathToSaveIn == "" && Platform.isIOS) {
-    fileName = await localPath + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
+    fileName = "${await localPath}${getSeperator()}${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
-    fileName = "/storage/emulated/0/Download" +
-        getSeperator() +
-        "KhinsiderRipper" +
-        getSeperator() +
-        tags.albumName.replaceAll(" ", "_") +
-        getSeperator() +
-        tags.tracks[index] +
-        ".$type";
+    fileName = "/storage/emulated/0/Download${getSeperator()}KhinsiderRipper${getSeperator()}${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
   }
 
   final _ = File(fileName).create(recursive: true).then(
@@ -89,6 +67,11 @@ Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
   );
   //download(stream, pathToSaveIn + "\\" + tags.tracks[index] + ".$type");
   return true;
+}
+
+String generateValidFolderName(String path) {
+  // Remove illegal characters from path
+  return path.replaceAll(":", "").replaceAll("?", "").replaceAll("/", "").replaceAll("\\", "").replaceAll("*", "").replaceAll("\"", "").replaceAll("<", "").replaceAll(">", "").replaceAll("|", "").replaceAll(" ", "_");
 }
 
 // used for downloading singular file from the album, used in track view.
@@ -111,30 +94,25 @@ Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async
       if (link.attributes['href'] != null) {
         if (link.attributes['href']!.endsWith(".$type")) {
           toDownload = link.attributes['href']!;
+          debugPrint("To download: $toDownload");
         }
       }
     }
     return false;
   });
+  debugPrint("Currently processing: $toDownload");
   Uint8List bytes = (await NetworkAssetBundle(Uri.parse(toDownload)).load(toDownload)).buffer.asUint8List();
   final stream = Stream.fromIterable(bytes);
   final bytesSave = await stream.toList();
-  var fileName = tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
+  var fileName = "${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
   debugPrint(await localPath);
   if (pathToSaveIn != "") {
-    fileName = pathToSaveIn + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
-    getSeperator() + tags.tracks[index] + ".$type";
+    fileName = "$pathToSaveIn${getSeperator()}${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
+    "${getSeperator()}${tags.tracks[index]}.$type";
   } else if (pathToSaveIn == "" && Platform.isIOS) {
-    fileName = await localPath + getSeperator() + tags.albumName.replaceAll(" ", "_") + getSeperator() + tags.tracks[index] + ".$type";
+    fileName = "${await localPath}${getSeperator()}${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
   } else if (pathToSaveIn == "" && Platform.isAndroid) {
-    fileName = "/storage/emulated/0/Download" +
-        getSeperator() +
-        "KhinsiderRipper" +
-        getSeperator() +
-        tags.albumName.replaceAll(" ", "_") +
-        getSeperator() +
-        tags.tracks[index] +
-        ".$type";
+    fileName = "/storage/emulated/0/Download${getSeperator()}KhinsiderRipper${getSeperator()}${generateValidFolderName(tags.albumName)}${getSeperator()}${tags.tracks[index]}.$type";
   }
 
   final _ = File(fileName).create(recursive: true).then(

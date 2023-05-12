@@ -19,7 +19,7 @@ class TrackView extends StatefulWidget {
   final AlbumTags tags;
 
   @override
-  // ignore: no_logic_in_create_state
+  // ignore: no_logic_in_create_state, library_private_types_in_public_api
   _TrackViewState createState() => _TrackViewState(tags: tags);
 }
 
@@ -241,7 +241,6 @@ class _TrackViewState extends State<TrackView> {
       behavior: SnackBarBehavior.floating,
     ));
     await downloadFile(tags, index, value);
-    var savedPath = await localPath;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
