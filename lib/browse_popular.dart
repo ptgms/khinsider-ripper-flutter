@@ -98,12 +98,12 @@ class _PopularWidgetState extends State<PopularWidget> {
   }
 
   SizedBox loadingIndicator() {
-    return SizedBox(
+    return const SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Center(
               child: CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
             )
@@ -248,7 +248,7 @@ class _PopularWidgetState extends State<PopularWidget> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),
@@ -261,7 +261,7 @@ class _PopularWidgetState extends State<PopularWidget> {
         builder: (context, snapshot) {
           List<SettingsTile> value = [];
           if (!snapshot.hasData) {
-            value = [SettingsTile(title: Text("Loading"))];
+            value = [SettingsTile(title: const Text("Loading"))];
           } else {
             value = snapshot.data!;
           }
@@ -272,7 +272,7 @@ class _PopularWidgetState extends State<PopularWidget> {
               darkTheme: SettingsThemeData(
                   settingsListBackground: Theme.of(context).scaffoldBackgroundColor,
                   settingsSectionBackground: sectionColor,
-                  titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+                  titleTextColor: Theme.of(context).textTheme.bodyLarge!.color!),
               sections: [SettingsSection(tiles: value)]);
         });
 
@@ -291,20 +291,20 @@ class _PopularWidgetState extends State<PopularWidget> {
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Text(
                   t.popular,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                 ),
               ));
           value.add(Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
             child: Text(
               t.platform,
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
           ));
           value.add(displayPlatforms);
           return ListView(
-            children: value,
             physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            children: value,
           );
         });
 

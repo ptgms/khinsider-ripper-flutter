@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl_standalone.dart';
-import 'package:khinrip/analytics_tools.dart';
 import 'package:khinrip/browse_popular.dart';
 import 'package:khinrip/search_page.dart';
 import 'package:khinrip/settings_page.dart';
@@ -40,8 +39,6 @@ Future<void> main() async {
   setLanguage = prefs.getString("language") ?? defaultLang;
   nextTrackPrev = prefs.getBool("nextTrackPrev") ?? true;
 
-  analytics = prefs.getBool("analytics") ?? true;
-
   // convert favorites in string list format to albumstruct list
   if (favNames != null && favLink != null) {
     for (var i = 0; i < favNames.length; i++) {
@@ -50,7 +47,6 @@ Future<void> main() async {
   }
 
   await findSystemLocale();
-  await initialiseAnalytics();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
@@ -75,7 +71,7 @@ class WindowButtons extends StatelessWidget {
   const WindowButtons({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    ThemeType _currentThemeType = ThemeType.auto;
+    ThemeType currentThemeType = ThemeType.auto;
     if (Platform.isMacOS) {
       return Container();
     }
@@ -83,13 +79,13 @@ class WindowButtons extends StatelessWidget {
       InkWell(
         autofocus: true,
         child: DecoratedMinimizeButton(
-          type: _currentThemeType,
+          type: currentThemeType,
           onPressed: () => windowManager.minimize(),
         ),
       ),
       InkWell(
         child: DecoratedMaximizeButton(
-          type: _currentThemeType,
+          type: currentThemeType,
           onPressed: () {
             windowManager.isMaximized().then((value) {
               if (value) {
@@ -103,7 +99,7 @@ class WindowButtons extends StatelessWidget {
       ),
       InkWell(
         child: DecoratedCloseButton(
-          type: _currentThemeType,
+          type: currentThemeType,
           onPressed: () => exit(0),
         ),
       ),
@@ -116,13 +112,13 @@ var dark = true;
 
 ThemeData amoledTheme = ThemeData(
     brightness: Brightness.dark,
-    backgroundColor: Colors.black,
     appBarTheme: const AppBarTheme(color: Colors.black),
     cardColor: Colors.black,
     scaffoldBackgroundColor: Colors.black,
     shadowColor: Colors.grey,
     bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Colors.black),
-    dialogBackgroundColor: Colors.grey);
+    dialogBackgroundColor: Colors.grey, 
+    colorScheme: const ColorScheme.dark(background: Colors.black));
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -304,7 +300,7 @@ class _FavoriteHomeState extends State<FavoriteHome> {
                 padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               )),
         ),

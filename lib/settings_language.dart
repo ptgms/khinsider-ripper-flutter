@@ -30,7 +30,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
   List<AbstractSettingsSection> sectionsSettings = [];
 
   void _loadData() async {
-    final _loadedData = await rootBundle.loadString('assets/languages.json');
+    final loadedData = await rootBundle.loadString('assets/languages.json');
     var languages = context.findAncestorWidgetOfExactType<MaterialApp>()?.supportedLocales;
     List<SettingsTile> sectionsLanguages = [];
     Widget selectedMark = Container();
@@ -44,10 +44,10 @@ class _LanguageSettingsState extends State<LanguageSettings> {
     }
     Future.delayed(Duration.zero, () {
       var t = AppLocalizations.of(context)!;
-      var data = json.decode(_loadedData);
+      var data = json.decode(loadedData);
       var systemLanguage = SettingsTile.navigation(
           title: Text(t.themeSystem),
-          leading: Text(data[defaultLocale + "_flag"]),
+          leading: Text(data["${defaultLocale}_flag"]),
           trailing: selectedMark,
           onPressed: (value) {
             setState(() {
@@ -98,7 +98,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
         sectionsLanguages.add(SettingsTile.navigation(
             title: Text(data[item.languageCode]),
             description: Row(children: credit),
-            leading: Text(data[item.languageCode + "_flag"]),
+            leading: Text(data["${item.languageCode}_flag"]),
             trailing: selectedMark,
             onPressed: (value) {
               setState(() {
@@ -220,7 +220,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),
@@ -234,7 +234,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
         darkTheme: SettingsThemeData(
             settingsListBackground: Theme.of(context).cardColor,
             settingsSectionBackground: sectionColor,
-            titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+            titleTextColor: Theme.of(context).textTheme.bodyLarge!.color!),
         //platform: DevicePlatform.android,
         sections: sectionsSettings);
 

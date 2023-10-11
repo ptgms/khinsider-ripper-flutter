@@ -384,6 +384,7 @@ class _AlbumViewState extends State<AlbumView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(getRoundedValue())),
         child: Row(children: [
           Expanded(
+            flex: 2,
             child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: SizedBox(
@@ -398,7 +399,6 @@ class _AlbumViewState extends State<AlbumView> {
                     ],
                   ),
                 )),
-            flex: 2,
           ),
         ]));
   }
@@ -496,7 +496,7 @@ class _AlbumViewState extends State<AlbumView> {
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
               alignment: Alignment.bottomLeft,
               child: Text(
-                t.trackListView + ": " + tags.tracks.length.toString(),
+                "${t.trackListView}: ${tags.tracks.length}",
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
@@ -532,7 +532,7 @@ class _AlbumViewState extends State<AlbumView> {
                                     ))),
                           ),
                         )),
-                    Visibility(child: TrackView(tags: tags), visible: isExpanded),
+                    Visibility(visible: isExpanded, child: TrackView(tags: tags)),
                   ])),
             ),
           )
@@ -612,7 +612,7 @@ class _AlbumViewState extends State<AlbumView> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),

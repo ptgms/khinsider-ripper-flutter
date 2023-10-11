@@ -221,7 +221,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                       customBorder: cardShape,
                       mouseCursor: MouseCursor.uncontrolled,
                       onTap: () {
-                        debugPrint("Tapped " + _searchResults[index].albumName);
+                        debugPrint("Tapped ${_searchResults[index].albumName}");
                         goToAlbum(context, _searchResults[index].albumName, _searchResults[index].albumLink);
                       },
                       child: ListTile(
@@ -395,7 +395,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),

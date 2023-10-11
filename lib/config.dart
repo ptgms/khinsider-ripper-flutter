@@ -136,13 +136,13 @@ Future<void> goToAlbum(BuildContext context, aName, aLink) async {
       debugPrint("row");
       for (var col in row.findAll('tr')) {
         if (col.id != "") {
-          debugPrint("COL-ID: " + col.id);
+          debugPrint("COL-ID: ${col.id}");
         }
         if (col.id == "songlist_header" || col.id == "songlist_footer") {
           for (var tag in col.findAll('th')) {
             tags.add(tag.text);
           }
-          debugPrint('TAGS: ' + tags.toString());
+          debugPrint('TAGS: $tags');
 
           flac = tags.contains('FLAC');
           mp3 = tags.contains('MP3');
@@ -185,7 +185,7 @@ Future<void> goToAlbum(BuildContext context, aName, aLink) async {
     toPush = AlbumTags(tracks, trackDuration, albumName.replaceAll("&amp;", "&"), albumLink, trackURL, coverURL, mp3, flac, ogg, tags,
         trackSizeMP3, trackSizeFLAC, trackSizeOGG);
 
-    debugPrint("Final: " + toPush.albumName);
+    debugPrint("Final: ${toPush.albumName}");
     if (toPush.albumName != "Null") {
       busy = false;
       Navigator.push(

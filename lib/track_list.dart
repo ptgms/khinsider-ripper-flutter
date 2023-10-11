@@ -122,7 +122,7 @@ class _TrackViewState extends State<TrackView> {
                       await audioPlayer.pause();
                     },
                     onChangeEnd: (value) async {
-                      debugPrint("new: " + ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt().toString());
+                      debugPrint("new: ${((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt()}");
                       await audioPlayer.seek(Duration(seconds: ((await audioPlayer.getDuration())!.inSeconds.toDouble() * value).toInt()));
                       await audioPlayer.resume();
                     },
@@ -442,7 +442,7 @@ class _TrackViewState extends State<TrackView> {
             } else if (trackListBehavior == 1) {
               Uri completedUrl = Uri.parse(baseUrl + tags.trackURL[index]);
 
-              debugPrint("yoooo " + completedUrl.toString());
+              debugPrint("yoooo $completedUrl");
 
               await http.read(completedUrl).then((contents) {
                 debugPrint(contents);
@@ -470,6 +470,7 @@ class _TrackViewState extends State<TrackView> {
             children: [
               Container(width: 55, height: 55, alignment: Alignment.center, child: Text((index + 1).toString())),
               Expanded(
+                flex: 2,
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
@@ -481,7 +482,6 @@ class _TrackViewState extends State<TrackView> {
                         Marquee(child: Text(tags.trackURL[index], style: const TextStyle(fontSize: 12, color: Colors.grey)))
                       ],
                     )),
-                flex: 2,
               ),
               if (trackListBehavior != 2)
                 IconButton(

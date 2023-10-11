@@ -65,10 +65,10 @@ class _SettingsPageState extends State<SettingsPage> {
   String languageCurrent = "";
 
   void _loadData() async {
-    final _loadedData = await rootBundle.loadString('assets/languages.json');
-    var data = json.decode(_loadedData);
+    final loadedData = await rootBundle.loadString('assets/languages.json');
+    var data = json.decode(loadedData);
     setState(() {
-      languageCurrent = setLanguage == "system" ? "System" : data[context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode + "_flag"];
+      languageCurrent = setLanguage == "system" ? "System" : data["${context.findAncestorWidgetOfExactType<MaterialApp>()!.locale!.languageCode}_flag"];
     });
   }
 
@@ -106,9 +106,9 @@ class _SettingsPageState extends State<SettingsPage> {
     var trackListSelect = trackListBehavior;
     var colorDownloadButton = Theme.of(context).hintColor;
 
-    GlobalKey _dropdownTheme = GlobalKey();
-    GlobalKey _dropdownTracklist = GlobalKey();
-    GlobalKey _dropdownPopUp = GlobalKey();
+    GlobalKey dropdownTheme = GlobalKey();
+    GlobalKey dropdownTracklist = GlobalKey();
+    GlobalKey dropdownPopUp = GlobalKey();
 
     if ((Platform.isAndroid || Platform.isIOS) && maxDownloads == 1) {
       colorDownloadButton = Colors.green;
@@ -202,7 +202,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),
@@ -216,7 +216,7 @@ class _SettingsPageState extends State<SettingsPage> {
       darkTheme: SettingsThemeData(
           settingsListBackground: Theme.of(context).cardColor,
           settingsSectionBackground: sectionColor,
-          titleTextColor: Theme.of(context).textTheme.bodyText1!.color!),
+          titleTextColor: Theme.of(context).textTheme.bodyLarge!.color!),
       //platform: DevicePlatform.android,
       sections: [
         if (!Platform.isIOS)
@@ -317,7 +317,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SettingsTile.navigation(
               trailing: DropdownButton<String>(
                   alignment: AlignmentDirectional.centerEnd,
-                  key: _dropdownTheme,
+                  key: dropdownTheme,
                   icon: const Icon(Icons.chevron_right_outlined),
                   underline: Container(),
                   //iconSize: 0.0,
@@ -354,22 +354,22 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   items: [
                     DropdownMenuItem(
-                      child: Text(t.themeSystem, textAlign: TextAlign.center),
                       value: "System",
+                      child: Text(t.themeSystem, textAlign: TextAlign.center),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.themeLight, textAlign: TextAlign.center),
                       value: "Light",
+                      child: Text(t.themeLight, textAlign: TextAlign.center),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.themeDark),
                       value: "Dark",
+                      child: Text(t.themeDark),
                     ),
-                    DropdownMenuItem(child: Text(t.themeBlack), value: "Black"),
+                    DropdownMenuItem(value: "Black", child: Text(t.themeBlack)),
                   ]),
               title: Text(t.appTheme),
               onPressed: (context) {
-                openDropdown(_dropdownTheme);
+                openDropdown(dropdownTheme);
               },
             ),
             SettingsTile.switchTile(
@@ -397,95 +397,11 @@ class _SettingsPageState extends State<SettingsPage> {
         SettingsSection(
           title: Text(t.behavior),
           tiles: [
-            SettingsTile.switchTile(
-                initialValue: analytics,
-                onToggle: (value) {
-                  setState(() {
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    analytics = value;
-                    saveSettings();
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    behavior: SnackBarBehavior.floating,
-                    content: Text(t.relaunchNotice),
-                    action: SnackBarAction(
-                        //textColor: Colors.white,
-                        label: t.exit,
-                        onPressed: () {
-                          exit(0);
-                        }),
-                  ));
-                },
-                title: Text(t.analytics),
-                description: InkWell(
-                  child: Text(
-                    t.learnMore,
-                    style: const TextStyle(color: Colors.blue),
-                  ),
-                  onTap: () {
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: Text(t.analytics),
-                        content: const Text("Analytics collects ONLY the following data:\n"
-                            "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
-                            "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
-                            "You can fully opt out. By unchecking, the Analytic component does not even get initialised.\n"
-                            "Crash collection currently does not work under Linux, MacOS and Windows."),
-                        actions: [
-                          TextButton(
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () => Navigator.pop(context, null),
-                              child: const Text("OK")),
-                          if ((Platform.isAndroid || Platform.isIOS) && analytics)
-                            TextButton(
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                ),
-                                onPressed: () => null,
-                                child: const Text("Cause crash")),
-                        ],
-                      ),
-                    );
-                  },
-                ) /*TextButton(
-                    onPressed: () {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Analytics'),
-                          content: const Text("Analytics collects ONLY the following data:\n"
-                              "•Crashes (including platform and OS)\n•When a song is downloaded (without the actual songname)\n"
-                              "No identifiable data (like device IDs, the Song you are trying to Download, etc) are collected.\n"
-                              "You can fully opt out. By unchecking, the Analytic component does not even get initialised.\n"
-                              "Crash collection currently does not work under Linux, MacOS and Windows."),
-                          actions: [
-                            TextButton(
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                ),
-                                onPressed: () => Navigator.pop(context, null),
-                                child: const Text("OK")),
-                            if ((Platform.isAndroid || Platform.isIOS) && analytics)
-                              TextButton(
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  onPressed: () => FirebaseCrashlytics.instance.crash(),
-                                  child: const Text("Cause crash")),
-                          ],
-                        ),
-                      );
-                    },
-                    child: const Text("Learn more"))*/
-                ),
             SettingsTile.navigation(
               title: Text(t.trackListTapBehavior),
               description: Text(t.trackListTapBehaviorDescription),
               trailing: DropdownButton<String>(
-                  key: _dropdownTracklist,
+                  key: dropdownTracklist,
                   alignment: AlignmentDirectional.centerEnd,
                   icon: const Icon(Icons.chevron_right_outlined),
                   underline: Container(),
@@ -515,20 +431,20 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   items: [
                     DropdownMenuItem(
-                      child: Text(t.trackListPreview),
                       value: "Preview",
+                      child: Text(t.trackListPreview),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.trackListBrowser),
                       value: "Browser",
+                      child: Text(t.trackListBrowser),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.trackListDownload),
                       value: "Download",
+                      child: Text(t.trackListDownload),
                     )
                   ]),
               onPressed: (context) {
-                openDropdown(_dropdownTracklist);
+                openDropdown(dropdownTracklist);
               },
             ),
             SettingsTile.switchTile(
@@ -545,7 +461,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text(t.popUps),
               description: Text(t.popUpsDescription),
               trailing: DropdownButton<String>(
-                  key: _dropdownPopUp,
+                  key: dropdownPopUp,
                   alignment: AlignmentDirectional.centerEnd,
                   icon: const Icon(Icons.chevron_right_outlined),
                   underline: Container(),
@@ -575,20 +491,20 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   items: [
                     DropdownMenuItem(
-                      child: Text(t.popupBehaviorAuto),
                       value: "Auto",
+                      child: Text(t.popupBehaviorAuto),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.popupBehaviorPopup),
                       value: "Pop-up",
+                      child: Text(t.popupBehaviorPopup),
                     ),
                     DropdownMenuItem(
-                      child: Text(t.popupBehaviorBottom),
                       value: "Bottom",
+                      child: Text(t.popupBehaviorBottom),
                     )
                   ]),
               onPressed: (context) {
-                openDropdown(_dropdownPopUp);
+                openDropdown(dropdownPopUp);
               },
             ),
             SettingsTile.navigation(

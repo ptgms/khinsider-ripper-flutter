@@ -8,8 +8,6 @@ import 'package:khinrip/structs.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
-import 'analytics_tools.dart';
-
 String getSeperator() {
   if (Platform.isWindows) {
     return "\\";
@@ -20,7 +18,6 @@ String getSeperator() {
 
 // for downloading a file from album - used in for loop
 Future<bool> downloadFile(AlbumTags tags, int index, String type) async {
-  await logEvent("downloadTrackAlbum");
   if (Platform.isAndroid) {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
@@ -76,7 +73,6 @@ String generateValidFolderName(String path) {
 
 // used for downloading singular file from the album, used in track view.
 Future<bool> downloadFileFromAlbum(AlbumTags tags, int index, String type) async {
-  await logEvent("downloadTrack");
   if (Platform.isAndroid) {
     var status = await Permission.storage.status;
     if (!status.isGranted) {

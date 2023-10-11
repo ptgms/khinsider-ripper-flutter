@@ -102,12 +102,12 @@ class _PlatformBrowseState extends State<PlatformBrowse> {
   }
 
   SizedBox loadingIndicator() {
-    return SizedBox(
+    return const SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Center(
               child: CircularProgressIndicator(), // Text("Start a search!", style: TextStyle(fontSize: 25),
             )
@@ -212,7 +212,7 @@ class _PlatformBrowseState extends State<PlatformBrowse> {
                 padding: const EdgeInsets.fromLTRB(10, 5, 0, 0),
                 child: Text(
                   titleAppBar,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               ))),
@@ -235,12 +235,12 @@ class _PlatformBrowseState extends State<PlatformBrowse> {
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Text(
                   t.mostDownloaded,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                 ),
               ));
           return ListView(
-            children: value,
             physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            children: value,
           );
         });
 

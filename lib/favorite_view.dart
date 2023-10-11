@@ -123,7 +123,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                         customBorder: cardShape,
                         mouseCursor: MouseCursor.uncontrolled,
                         onTap: () async {
-                          debugPrint("Tapped on favorite " + favorites[index].albumName);
+                          debugPrint("Tapped on favorite ${favorites[index].albumName}");
                           if (!busy) {
                             await goToAlbum(context, favorites[index].albumName, favorites[index].albumLink);
                           }
@@ -185,7 +185,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                                   )));
                         },
                         onTap: () async {
-                          debugPrint("Tapped on favorite " + favorites[index].albumName);
+                          debugPrint("Tapped on favorite ${favorites[index].albumName}");
                           if (!busy) {
                             await goToAlbum(context, favorites[index].albumName, favorites[index].albumLink);
                           }
