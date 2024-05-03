@@ -215,5 +215,7 @@
         }
     },
 
-    "download_gathering" : "Gathering Links, this might take a second..."
+    "download_gathering" : "Gathering Links, this might take a second...",
+
+    "errorDownloading": "Error!"
 }

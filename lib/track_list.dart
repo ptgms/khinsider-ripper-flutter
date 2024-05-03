@@ -240,8 +240,30 @@ class _TrackViewState extends State<TrackView> {
       content: Text(t.downloading),
       behavior: SnackBarBehavior.floating,
     ));
-    await downloadFile(tags, index, value);
+
+    debugPrint("value: $value");
+
+    String link = await getDirectDownloadLink(baseUrl + tags.trackURL[index], value);
+    Uint8List file = await downloadFile(link);
+    bool saved = await saveFile(file, "${tags.tracks[index]}.$value", tags.albumName);
+    debugPrint("Saved: $saved");
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    if (saved) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.none,
+        duration: const Duration(seconds: 1),
+        content: Text(getSnackBarContent(pathToSaveIn, context)),
+        behavior: SnackBarBehavior.floating,
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        dismissDirection: DismissDirection.none,
+        duration: const Duration(seconds: 1),
+        content: Text(t.errorDownloading),
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
   }
 
   void displayPreviewAlert(index) async {
@@ -369,8 +391,7 @@ class _TrackViewState extends State<TrackView> {
       } else {
         showDialog<String>(
           context: context,
-          builder: (BuildContext context) =>
-              AlertDialog(title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
+          builder: (BuildContext context) => AlertDialog(title: Text(t.downloadSong), content: Text(tags.tracks[index]), actions: getButtons(tags, index)),
         ).then((value) {
           if (value != null) {
             downloadSong(index, value, context);
